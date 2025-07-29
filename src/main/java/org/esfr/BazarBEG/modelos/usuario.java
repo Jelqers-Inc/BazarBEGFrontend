@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-public class Usuario {
+public class usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
