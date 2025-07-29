@@ -18,7 +18,7 @@ public class Pedido {
 
     @ManyToOne
     @JoinColumn(name = "usuarioid")
-    private Usuario usuario;
+    private usuario usuario;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
     private List<DetallePedido> detalles;
