@@ -1,25 +1,35 @@
 package org.esfr.BazarBEG.modelos;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+
 import java.util.Date;
 import java.util.List;
 
 @Entity
+@Table(name = "pedidos")
 public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotNull(message = "La fecha del pedido no puede ser nula")
+    @PastOrPresent(message = "La fecha no puede ser futura")
     @Temporal(TemporalType.DATE)
     private Date fechaPedido;
 
+    @NotBlank(message = "El estado no puede estar vacío")
     private String estado;
+
+    @PositiveOrZero(message = "El total no puede ser negativo")
     private float total;
 
+    @NotNull(message = "El usuario no puede ser nulo")
     @ManyToOne
     @JoinColumn(name = "usuarioid")
     private usuario usuario;
 
+    @NotEmpty(message = "Debe haber al menos un detalle en el pedido")
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
     private List<DetallePedido> detalles;
 

@@ -1,22 +1,32 @@
 package org.esfr.BazarBEG.modelos;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 @Entity
+@Table(name = "catalogos")
+
 public class Catalogo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotBlank(message = "El nombre no puede estar vacío")
     private String nombre;
-    private String archivoPDF;
+
+    @Lob
+    @NotNull(message = "El archivo PDF es obligatorio")
+    private byte[] archivoPDF;
 
     @Lob
     private byte[] imagen;
 
     @ManyToOne
     @JoinColumn(name = "categoriaid")
+    @NotNull(message = "La categoría es obligatoria")
     private Categoria categoria;
 
     // Getters y Setters
@@ -37,11 +47,11 @@ public class Catalogo {
         this.imagen = imagen;
     }
 
-    public String getArchivoPDF() {
+    public byte[] getArchivoPDF() {
         return archivoPDF;
     }
 
-    public void setArchivoPDF(String archivoPDF) {
+    public void setArchivoPDF(byte[] archivoPDF) {
         this.archivoPDF = archivoPDF;
     }
 

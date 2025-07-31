@@ -1,16 +1,22 @@
 package org.esfr.BazarBEG.modelos;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 
 @Entity
+@Table(name = "detallePedido")
 public class DetallePedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Min(value = 1, message = "La cantidad debe ser al menos 1")
     private int cantidad;
+
+    @Min(value = 0, message = "El precio unitario no puede ser negativo")
     private float precioUnitario;
 
+    // Getters y Setters
     public int getId() {
         return id;
     }
@@ -59,5 +65,4 @@ public class DetallePedido {
     @JoinColumn(name = "productoid")
     private Producto producto;
 
-    // Getters y Setters
 }

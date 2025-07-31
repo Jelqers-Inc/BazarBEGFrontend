@@ -1,18 +1,33 @@
 package org.esfr.BazarBEG.modelos;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 import java.util.Date;
 import java.util.List;
 
+
 @Entity
+@Table(name = "usuarios")
 public class usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotBlank(message = "El nombre no puede estar vacío")
     private String nombre;
-    private String email; //Hay que validar como Email
+
+    @Email(message = "El correo no es válido")
+    @NotBlank(message = "El correo no puede estar vacío")
+    private String email;
+
+    @NotBlank(message = "La contraseña no puede estar vacía")
+    @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     private String contraseña;
+
+    @NotBlank(message = "El rol no puede estar vacío")
     private String rol;
 
     @Temporal(TemporalType.DATE)
@@ -20,6 +35,7 @@ public class usuario {
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<Pedido> pedidos;
+
 
     // Getters y Setters
 

@@ -1,16 +1,27 @@
 package org.esfr.BazarBEG.modelos;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
 @Entity
+@Table(name = "productos")
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
+
+    @NotBlank(message = "La descripción es obligatoria")
     private String descripcion;
+
+    @Positive(message = "El precio debe ser mayor que 0")
     private float precio;
+
+    @Min(value = 0, message = "El stock no puede ser negativo")
     private int stock;
 
     @Lob
@@ -19,7 +30,6 @@ public class Producto {
     @ManyToOne
     @JoinColumn(name = "categoriaid")
     private Categoria categoria;
-
     // Getters y Setters
 
     public int getId() {
