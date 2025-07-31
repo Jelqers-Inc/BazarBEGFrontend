@@ -1,14 +1,18 @@
 package org.esfr.BazarBEG.modelos;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+
 import java.util.List;
 
 @Entity
+@Table(name = "categorias")
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
     @Lob
