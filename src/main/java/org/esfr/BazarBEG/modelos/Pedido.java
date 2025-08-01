@@ -27,7 +27,7 @@ public class Pedido {
     @NotNull(message = "El usuario no puede ser nulo")
     @ManyToOne
     @JoinColumn(name = "usuarioid")
-    private usuario usuario;
+    private Usuario usuario;
 
     @NotEmpty(message = "Debe haber al menos un detalle en el pedido")
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
@@ -67,11 +67,11 @@ public class Pedido {
         this.total = total;
     }
 
-    public usuario getUsuario() {
+    public Usuario getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(usuario usuario) {
+    public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
 

@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "usuarios")
-public class usuario {
+public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -27,11 +27,13 @@ public class usuario {
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     private String contraseña;
 
-    @NotBlank(message = "El rol no puede estar vacío")
-    private String rol;
-
     @Temporal(TemporalType.DATE)
     private Date fechaRegistro;
+
+    @ManyToOne
+    @JoinColumn(name = "rol_id")
+    private Rol rol;
+
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<Pedido> pedidos;
@@ -71,13 +73,6 @@ public class usuario {
         this.contraseña = contraseña;
     }
 
-    public String getRol() {
-        return rol;
-    }
-
-    public void setRol(String rol) {
-        this.rol = rol;
-    }
 
     public Date getFechaRegistro() {
         return fechaRegistro;
