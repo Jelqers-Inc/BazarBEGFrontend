@@ -29,5 +29,6 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Integer> {
     // Buscar por nombre y rol
     List<Usuario> findByNombreAndRol(String nombre, Rol rol);
 
+    Optional<Usuario> findByEmail(String email);
 }
 
