@@ -1,99 +1,167 @@
 <!DOCTYPE html>
 <html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+  <head>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Plus+Jakarta+Sans%3Awght%40400%3B500%3B700%3B800"
+    />
 
-    xmlns:th="http://www.thymeleaf.org"
-    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <title>Bazar de Cosmeticos</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
 
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-    <title>Sistema de cosméticos</title>
-    <link th:href="@{css/styles.css}" rel="stylesheet" />
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    <script src="https://cdn//jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
-<body>
-<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-    <!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="#">ESFE -</a>
-    <!-- Sidebar Toggle-->
-    <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
-    <!-- Navbar Search-->
-    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-        <div class="input-group">
-            <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
-            <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  </head>
+  <body>
+    <div class="relative flex size-full min-h-screen flex-col bg-[#f9f8fc] group/design-root overflow-x-hidden" style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'>
+      <div class="layout-container flex h-full grow flex-col">
+        <header class="flex bg-purple-200 text-purple-900 items-center justify-between whitespace-nowrap border-b border-solid border-b-[#ebe7f3] px-10 py-3">
+          <div class="flex bg-purple-200 text-purple-900 items-center gap-8">
+            <div class="flex items-center gap-4 text-[#120e1b]">
+              <div class="size-4">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z" fill="currentColor"></path></svg>
+              </div>
+              <h2 class="text-[#120e1b] text-lg font-bold leading-tight tracking-[-0.015em]">Bazar BEG</h2>
+            </div>
+            <div class="flex items-center gap-9">
+              <a class="text-[#120e1b] text-sm font-medium leading-normal" href="#">Maquillaje y Uñas</a>
+              <a class="text-[#120e1b] text-sm font-medium leading-normal" href="#">Cuidado de la Piel y Rostro</a>
+              <a class="text-[#120e1b] text-sm font-medium leading-normal" href="#">Cabello y Cuerpo</a>
+              <a class="text-[#120e1b] text-sm font-medium leading-normal" href="#">Accesorios y Regalos</a>
+            </div>
+          </div>
+          <div class="flex flex-1 justify-end gap-8">
+            <label class="flex flex-col min-w-40 !h-10 max-w-64">
+              <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                <div
+                  class="text-[#654d99] flex border-none bg-[#ebe7f3] items-center justify-center pl-4 rounded-l-lg border-r-0"
+                  data-icon="MagnifyingGlass"
+                  data-size="24px"
+                  data-weight="regular"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                    <path
+                      d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
+                    ></path>
+                  </svg>
+                </div>
+                <input
+                  placeholder="Search"
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#120e1b] focus:outline-0 focus:ring-0 border-none bg-[#ebe7f3] focus:border-none h-full placeholder:text-[#654d99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                  value=""
+                />
+              </div>
+            </label>
+            <div class="flex gap-2">
+              <button
+                class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#ebe7f3] text-[#120e1b] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5"
+              >
+                <div class="text-[#120e1b]" data-icon="Heart" data-size="20px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                    <path
+                      d="M178,32c-20.65,0-38.73,8.88-50,23.89C116.73,40.88,98.65,32,78,32A62.07,62.07,0,0,0,16,94c0,70,103.79,126.66,108.21,129a8,8,0,0,0,7.58,0C136.21,220.66,240,164,240,94A62.07,62.07,0,0,0,178,32ZM128,206.8C109.74,196.16,32,147.69,32,94A46.06,46.06,0,0,1,78,48c19.45,0,35.78,10.36,42.6,27a8,8,0,0,0,14.8,0c6.82-16.67,23.15-27,42.6-27a46.06,46.06,0,0,1,46,46C224,147.61,146.24,196.15,128,206.8Z"
+                    ></path>
+                  </svg>
+                </div>
+              </button>
+              <button
+                class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#ebe7f3] text-[#120e1b] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5"
+              >
+                <div class="text-[#120e1b]" data-icon="ShoppingBag" data-size="20px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                    <path
+                      d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,160H40V56H216V200ZM176,88a48,48,0,0,1-96,0,8,8,0,0,1,16,0,32,32,0,0,0,64,0,8,8,0,0,1,16,0Z"
+                    ></path>
+                  </svg>
+                </div>
+              </button>
+            </div>
+            <div
+              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDtGu5qvXtW6vYGjwOujpAdu5IHHIFzcAbSgMO_ki82zu-iWcN3sCi2Oy-1Djur3we-NnTp_-XIEI3UAsgPwrwN-m7l-7lJ9BI_cmX3NJnVOV9KpR5IG0vSg8M_TAL4bhPTuF2ASb-PmU8QbxweDEZzQGONh8lTH0M2EQi8Am_dQcbKA5skVMMFGVgJevNb9_XZpVZto10sUj2LmArw03m_6HZKNvLoBEJ6c0uvZfA6Vb7HHeONxXKUS_Zc16tuS_adZkqxd431DTA");'
+            ></div>
+          </div>
+        </header>
+        <div class="px-40 flex flex-1 justify-center py-5">
+          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+            <div class="@container">
+              <div class="@[480px]:p-4">
+                <div
+                  class="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-lg items-start justify-end px-4 pb-10 @[480px]:px-10"
+                  style='background-image: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuA2L5nYqtDFU1174IPOdOQkHNR2UqhewHK8PAdUQA0PHZgUMVTpilTFYsEcRx8CyVbPemenAEPj8gmPqBhfbhWNX8eutWg5i4FQQDXb5OkgvTyPS6QCjlN0NZJqAEcw6KV5Cv5QA96iK2mPj7iV4XYxa9ysMpxEkkwKvCOD0y4eITMPFI_GVCxqzS080BkEn6utLfoWT1uGX48Q10FL3ModHnXFZoFUQYJo8w8P4A0li929QzN1JPXJd-7UwXZ3OQKo_rYYt8otFO8");'
+                >
+                  <div class="flex flex-col gap-2 text-left">
+                    <h1
+                      class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]"
+                    >
+                      BAZAR  B.E.G
+                    </h1>
+                    <h2 class="text-white text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
+                     Brilla. Encanta. Gobierna.
+                    </h2>
+                    <h2 class="text-white text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
+                      El brillo suplica por ti y encuentralo aquí
+                    </h2>
+                  </div>
+                  <button
+                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#672aea] text-[#f9f8fc] text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em]"
+                  >
+                    <span class="truncate">Shop Now</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+           
+            <h2 class="text-[#120e1b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Comprar por Categorías</h2>
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
+              <div class="flex flex-col gap-3 pb-3">
+                <div
+                  class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
+                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB9L210sHS6OpOjwZncQgcZGUaissHINyEgiC45ek1se7hx69zWyMTrhjIt8GX8Ir4fKRYgY9IOp4VilRRlGQGXcIrBZXF2jY5GoA7_39ZxogfplxXdGNYahl2k84dtNMcBiCrYB_OdBrPvYLdPdt5g4luXp1fAODUc1rMSDk-WaAgIeBTh9S7Q_DF01WQLkFhJZah0_ZUipp-D5FwNvum4zhe-D53k742REEIdJONRVWwmvc7vMAcWPX-miwTd-3nnlFaPtuMtaK4");'
+                ></div>
+                <p class="text-[#120e1b] text-base font-medium leading-normal">Maquillaje y Uñas</p>
+              </div>
+              <div class="flex flex-col gap-3 pb-3">
+                <div
+                  class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
+                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAph3N6nOqe-AAKmjA0IOcXBo05hT3eiwxKPGTa-UaH44t-lTpjlr5cG5X3U-oHDd_jUFL_uWxnVLU66nxPPr-oqfDoKzMIWgeHR2xYkeu91znNK6wQobMferAO9jIOEUPZHXkcyTTNZuz1KGSc4N_hNhQ5VLuvIY53HI4GoAHch_en1wjjC6ExXKXoiyU9tAGQarZnGEZ9EGVesX-pcu4KoDit94GYZidKOKXd9DSjiHOmli8w8OAeHuQ4XVgdo458Vy8GYW_EhHY");'
+                ></div>
+                <p class="text-[#120e1b] text-base font-medium leading-normal">Cuidado de la Piel y Rostro</p>
+              </div>
+              <div class="flex flex-col gap-3 pb-3">
+                <div
+                  class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
+                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAjGvoRgWG6daJrdtj3dcyiClKXsI6s844VcAuuWN3fmDsdhvFUaMlW2-Uu-3SSKVrCQIiDBIi86x5k-hGFcKb8yKVhxkY2basA-BI1t97mDE-EOhz4PH9n2hPt2_ShIlGmaX9aAON7hUlMoyhfQZL-jXzMfTpA5T_xoiS-9D6xgB51JzykxbAgwFwmT4Qiw9EQkLxNSeohULFEYmagLfAwRhpEMSBtc8i-8jpYnqjmEJ2DqRKmRSWitEWiFCZicfWLMi23Md7fu60");'
+                ></div>
+                <p class="text-[#120e1b] text-base font-medium leading-normal">Cabello y Cuerpo</p>
+              </div>
+              <div class="flex flex-col gap-3 pb-3">
+                <div
+                  class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
+                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAqE8OWjqcpYe28zE-Z6ol13qs9N3kq9khncj13nKHmKAqOYwdN-snGDzlY1N4-7bbIUWOOaBqJeZdSLdJTSb-1QnRC84rZCau2w2jvMBIjhCXRvaYtcWvxGNwOQr_dzIqzmC43LMvWbDz94lu-dfOdqYUfUjJDuE5XyVQYNZ5DzVwyTmflc1ihwae3u8HDcAbuEoqyWVldJjlwvDR1hQrMrBsEblLrQQ3EX44oCgdypwC0nFvF0FlbLdvdYbxIIhCt09HxUxXYzi8");'
+                ></div>
+                <p class="text-[#120e1b] text-base font-medium leading-normal">Accesorios y Regalos</p>
+              </div>
+            </div>
+           
+          </div>
         </div>
-    </form>
-    <!-- Navbar-->
-    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#!">Settings</a></li>
-                <li><a class="dropdown-item" href="#!">Activity Log</a></li>
-                <li><hr class="dropdown-divider" /></li>
-                <li><a class="dropdown-item" href="#!">Logout</a></li>
-            </ul>
-        </li>
-    </ul>
-</nav>
-<div id="layoutSidenav">
-    <div id="layoutSidenav_nav">
-        <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-            <div class="sb-sidenav-menu">
-                <div class="nav">
-                    <div class="sb-sidenav-menu-heading">Mantenimientos</div>
-                    <a class="nav-link" href="#">
-                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                        Categoria1
-                    </a>
-                    <a class="nav-link" href="#">
-                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                        Categoria2
-                    </a>
-                    <a class="nav-link" href="#">
-                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                        Categoria3
-                    </a>
-                    <a class="nav-link" href="#">
-                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                        Categoria4
-                    </a>
-                </div>
-            </div>
-            <div class="sb-sidenav-footer">
-                <div class="small">Logged in as:</div>
-                Sistema de cosméticos
-            </div>
-        </nav>
-    </div>
-    <div id="layoutSidenav_content">
-        <main>
-            <div class="container-fluid px-4">
-
-               <div layout:fragment="content">
-                   <p>Changing contents</p>
-               </div>
-            </div>
-        </main>
-        <footer class="py-4 bg-light mt-auto">
-            <div class="container-fluid px-4">
-                <div class="d-flex align-items-center justify-content-between small">
-                    <div class="text-muted">Copyright &copy; Sistema de cosméticos 2025</div>
-                    <div>
-                        <a href="#">Privacy Policy</a>
-                        &middot;
-                        <a href="#">Terms &amp; Conditions</a>
-                    </div>
-                </div>
-            </div>
+        <footer class="flex justify-center">
+          <div class="flex max-w-[960px] flex-1 flex-col">
+            <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
+              <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
+                <a class="text-[#654d99] text-base font-normal leading-normal min-w-40" href="#">Acerca de Nosotros</a>
+                <a class="text-[#654d99] text-base font-normal leading-normal min-w-40" href="#">Contactanos</a>
+              </div>
+              <p class="text-[#654d99] text-base font-normal leading-normal">@2025 BazarBEG. Todos los derechos reservados.</p>
+            </footer>
+          </div>
         </footer>
+      </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-<script src="@{js/scripts.js}"></script>
-</body>
+  </body>
 </html>
