@@ -15,8 +15,8 @@ public interface IUsuarioService {
     Usuario obtenerPorId(int id);
 
     // Métodos específicos de la clase Usuario
-    Usuario registrar(Usuario usuario);
-    Usuario iniciarSesion(String email, String contrasena);
+    //Usuario registrar(Usuario usuario);
+    //Usuario iniciarSesion(String email, String contrasena);
     List<Pedido> verHistorialPedidos(int idUsuario);
 
     Page<Usuario> obtenerTodosPaginados(Pageable pageable);

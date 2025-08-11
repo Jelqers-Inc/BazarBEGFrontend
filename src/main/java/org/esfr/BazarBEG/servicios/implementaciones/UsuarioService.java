@@ -7,7 +7,7 @@ import org.esfr.BazarBEG.servicios.interfaces.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -20,8 +20,8 @@ public class UsuarioService implements IUsuarioService {
     @Autowired
     private IUsuarioRepository usuarioRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+//    @Autowired
+//    private PasswordEncoder passwordEncoder;
 
     @Override
     public Usuario crear(Usuario usuario) {
@@ -43,29 +43,29 @@ public class UsuarioService implements IUsuarioService {
         return usuarioRepository.findById(id).orElse(null);
     }
 
-        @Override
-        public Usuario registrar(Usuario usuario) {
+//        @Override
+//        public Usuario registrar(Usuario usuario) {
+//
+//            String contraseñaEncriptada = passwordEncoder.encode(usuario.getContraseña());
+//            usuario.setContraseña(contraseñaEncriptada);
+//
+//            usuario.setFechaRegistro(new Date());
+//            return usuarioRepository.save(usuario);
 
-            String contraseñaEncriptada = passwordEncoder.encode(usuario.getContraseña());
-            usuario.setContraseña(contraseñaEncriptada);
-
-            usuario.setFechaRegistro(new Date());
-            return usuarioRepository.save(usuario);
-
-}
-        @Override
-        public Usuario iniciarSesion(String email, String contrasena) {
-            Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(email);
-            if (usuarioOptional.isPresent()) {
-                Usuario usuario = usuarioOptional.get();
-                if (passwordEncoder.matches(contrasena, usuario.getContraseña())) {
-                    return usuario;
-                }
-            }
-
-            return null;
-
-        }
+//}
+//        @Override
+//        public Usuario iniciarSesion(String email, String contrasena) {
+//            Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(email);
+//            if (usuarioOptional.isPresent()) {
+//                Usuario usuario = usuarioOptional.get();
+//                if (passwordEncoder.matches(contrasena, usuario.getContraseña())) {
+//                    return usuario;
+//                }
+//            }
+//
+//            return null;
+//
+//        }
 
     @Override
     public List<Pedido> verHistorialPedidos(int idUsuario) {

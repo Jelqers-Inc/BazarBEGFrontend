@@ -81,7 +81,7 @@ public class UsuarioController {
         usuario.setStatus(1);
 
 
-        usuarioService.registrar(usuario);
+        //usuarioService.registrar(usuario);
 
         attributes.addFlashAttribute("msg", "Usuario creado correctamente");
         return "redirect:/usuarios";
