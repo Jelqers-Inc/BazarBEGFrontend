@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IDetalleProductoRepository extends JpaRepository<DetallePedido, Integer> {
+
     // Buscar todos los detalles de un pedido específico
     List<DetallePedido> findByPedido(Pedido pedido);
 
@@ -17,9 +18,6 @@ public interface IDetalleProductoRepository extends JpaRepository<DetallePedido,
 
     // Buscar por producto
     List<DetallePedido> findByProducto(Producto producto);
-
-    // Buscar por ID de producto
-    List<DetallePedido> findByProductoId(int productoId);
 
     // Buscar por pedido y producto
     Optional<DetallePedido> findByPedidoAndProducto(Pedido pedido, Producto producto);
