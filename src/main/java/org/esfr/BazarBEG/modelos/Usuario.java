@@ -89,4 +89,21 @@ public class Usuario {
     public void setPedidos(List<Pedido> pedidos) {
         this.pedidos = pedidos;
     }
+
+    @Column(name = "status")
+    private int status;
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+
+    public void setRol(Rol rol) {
+    }
+
+
 }

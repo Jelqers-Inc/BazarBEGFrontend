@@ -1,0 +1,46 @@
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/layouts/_mainLayout">
+
+<div layout:fragment="content">
+    <h2 class="mt-4">Listado de Usuarios</h2>
+
+    <a class="btn btn-primary mb-3" th:href="@{/usuarios/create}">
+        <i class="fas fa-plus"></i> Nuevo Usuario
+    </a>
+
+    <table class="table table-bordered">
+        <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Fecha de Registro</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="usuario : ${usuarios.content}">
+            <td th:text="${usuario.id}">1</td>
+            <td th:text="${usuario.nombre}">Nombre</td>
+            <td th:text="${usuario.email}">correo@ejemplo.com</td>
+            <td th:text="${usuario.rol != null ? usuario.rol.nombre : 'Sin Rol'}">Rol</td>
+            <td th:text="${#dates.format(usuario.fechaRegistro, 'dd/MM/yyyy')}">01/01/2025</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- PAGINACIÓN -->
+    <nav th:if="${pageNumbers != null}">
+        <ul class="pagination justify-content-center">
+            <li th:each="pageNum : ${pageNumbers}"
+                th:classappend="${usuarios.number + 1} == ${pageNum} ? 'active'">
+                <a class="page-link"
+                   th:href="@{'/usuarios'(page=${pageNum}, size=${usuarios.size})}"
+                   th:text="${pageNum}">1</a>
+            </li>
+        </ul>
+    </nav>
+
+</div>
