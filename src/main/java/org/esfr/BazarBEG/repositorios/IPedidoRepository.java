@@ -27,4 +27,11 @@ public interface IPedidoRepository extends JpaRepository<Pedido, Integer> {
 
     Page<Pedido> findAll(Pageable pageable);
 
+    // Buscar por estado con paginación, ignorando mayúsculas y minúsculas
+    Page<Pedido> findByEstadoIgnoreCase(String estado, Pageable pageable);
+
+    // Buscar por fecha y estado con paginación, ignorando mayúsculas y minúsculas
+    Page<Pedido> findByFechaPedidoAndEstadoIgnoreCase(Date fechaPedido, String estado, Pageable pageable);
+
+
 }

@@ -21,4 +21,11 @@ public interface IRolRepository extends JpaRepository<Rol, Integer> {
 
     Page<Rol> findAll(Pageable pageable);
 
+    // Buscar rol por nombre que contenga texto con paginación
+    Page<Rol> findByNombreContainingIgnoreCase(String nombre, Pageable pageable);
+
+    // Buscar rol cuyo nombre empiece con texto dado, con paginación
+    Page<Rol> findByNombreStartingWithIgnoreCase(String prefijo, Pageable pageable);
+
+
 }
