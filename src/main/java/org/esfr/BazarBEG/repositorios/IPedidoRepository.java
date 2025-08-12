@@ -1,6 +1,8 @@
 package org.esfr.BazarBEG.repositorios;
 
 import org.esfr.BazarBEG.modelos.Pedido;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
@@ -22,4 +24,7 @@ public interface IPedidoRepository extends JpaRepository<Pedido, Integer> {
 
     // Buscar por fecha y estado ignorando mayúsculas y minúsculas
     List<Pedido> findByFechaPedidoAndEstadoIgnoreCase(Date fechaPedido, String estado);
+
+    Page<Pedido> findAll(Pageable pageable);
+
 }

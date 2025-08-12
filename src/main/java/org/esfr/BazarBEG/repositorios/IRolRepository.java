@@ -1,6 +1,8 @@
 package org.esfr.BazarBEG.repositorios;
 
 import org.esfr.BazarBEG.modelos.Rol;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -16,4 +18,7 @@ public interface IRolRepository extends JpaRepository<Rol, Integer> {
 
     // Buscar roles
     List<Rol> findByNombreContainingIgnoreCase(String nombre);
+
+    Page<Rol> findAll(Pageable pageable);
+
 }

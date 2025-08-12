@@ -17,18 +17,17 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Integer> {
     // Buscar por nombre ignorando mayúsculas y minúsculas
     List<Usuario> findByNombreIgnoreCase(String nombre);
 
-    // Buscar por nombre que contenga texto
-    List<Usuario> findByNombreContainingIgnoreCase(String nombre);
+    // Buscar por nombre que contenga texto y por rol
+    List<Usuario> findByNombreContainingIgnoreCaseAndRol(String nombre, Rol rol);
 
     // Buscar por ID
     Optional<Usuario> findById(int id);
-
-    // Buscar por rol
-    List<Usuario> findByRol(Rol rol);
 
     // Buscar por nombre y rol
     List<Usuario> findByNombreAndRol(String nombre, Rol rol);
 
     Optional<Usuario> findByEmail(String email);
+
+    Page<Usuario> findByRol(Rol rol, Pageable pageable);
 }
 

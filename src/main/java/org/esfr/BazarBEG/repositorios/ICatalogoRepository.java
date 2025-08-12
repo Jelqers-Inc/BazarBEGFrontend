@@ -1,6 +1,8 @@
 package org.esfr.BazarBEG.repositorios;
 
 import org.esfr.BazarBEG.modelos.Catalogo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -22,4 +24,7 @@ public interface ICatalogoRepository extends JpaRepository<Catalogo, Integer> {
 
     // Buscar por nombre e id exactos
     Optional<Catalogo> findByNombreAndId(String nombre, int id);
+
+    // Paginación general
+    Page<Catalogo> findAll(Pageable pageable);
 }
