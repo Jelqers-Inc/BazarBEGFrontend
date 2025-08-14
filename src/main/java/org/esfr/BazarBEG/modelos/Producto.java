@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 
+
+//Modelo producto creado, para asociar commit
 @Entity
 @Table(name = "productos")
 public class Producto {
