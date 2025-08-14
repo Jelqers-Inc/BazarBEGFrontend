@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
-
+//Modelo categoria, para asociar el commit con la tarea
 @Entity
 @Table(name = "categorias")
 public class Categoria {
