@@ -25,6 +25,6 @@ public interface ICatalogoRepository extends JpaRepository<Catalogo, Integer> {
     // Buscar por nombre e id exactos
     Optional<Catalogo> findByNombreAndId(String nombre, int id);
 
-    // Paginación general
-    Page<Catalogo> findAll(Pageable pageable);
+    // Búsqueda por nombre con paginación
+    Page<Catalogo> findByNombreContainingIgnoreCase(String nombre, Pageable pageable);
 }

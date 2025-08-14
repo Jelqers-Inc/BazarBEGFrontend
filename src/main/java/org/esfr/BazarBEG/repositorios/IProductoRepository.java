@@ -25,10 +25,13 @@ public interface IProductoRepository extends JpaRepository<Producto, Integer> {
     // Buscar por nombre y categoría
     List<Producto> findByNombreAndCategoria(String nombre, Categoria categoria);
 
-    // Buscar productos con stock igual a 0 (agotados)
-    List<Producto> findByStockEquals(int cantidad);
 
-    // Buscar por categoría (paginado)
-    Page<Producto> findByCategoria(Categoria categoria, Pageable pageable);
+    // Búsqueda combinada con paginación
+    Page<Producto> findByNombreContainingIgnoreCaseOrCategoria_NombreContainingIgnoreCase(
+            String nombre, String categoriaNombre, Pageable pageable
+    );
+
+    // Buscar productos con stock igual a 0 (agotados)
+    Page<Producto> findByStockEquals(int cantidad, Pageable pageable);
 
 }

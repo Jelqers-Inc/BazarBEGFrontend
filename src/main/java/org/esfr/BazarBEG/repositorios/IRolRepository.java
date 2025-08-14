@@ -13,19 +13,11 @@ public interface IRolRepository extends JpaRepository<Rol, Integer> {
     // Buscar rol por nombre exacto
     Optional<Rol> findByNombre(String nombre);
 
-    // Buscar rol por nombre ignorando mayúsculas y minúsculas
+    // Buscar rol único por nombre
     Optional<Rol> findByNombreIgnoreCase(String nombre);
 
-    // Buscar roles
-    List<Rol> findByNombreContainingIgnoreCase(String nombre);
-
-    Page<Rol> findAll(Pageable pageable);
-
-    // Buscar rol por nombre que contenga texto con paginación
+    // Paginación y búsqueda
     Page<Rol> findByNombreContainingIgnoreCase(String nombre, Pageable pageable);
-
-    // Buscar rol cuyo nombre empiece con texto dado, con paginación
-    Page<Rol> findByNombreStartingWithIgnoreCase(String prefijo, Pageable pageable);
 
 
 }

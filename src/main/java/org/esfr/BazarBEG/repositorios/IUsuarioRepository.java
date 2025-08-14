@@ -26,15 +26,12 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Integer> {
     // Buscar por nombre y rol
     List<Usuario> findByNombreAndRol(String nombre, Rol rol);
 
+    // Buscar por email
     Optional<Usuario> findByEmail(String email);
 
-    Page<Usuario> findByRol(Rol rol, Pageable pageable);
-
-    // Buscar por nombre que contenga texto con paginación
-    Page<Usuario> findByNombreContainingIgnoreCase(String nombre, Pageable pageable);
-
-    // Buscar nombre que contenga texto y por email que contenga texto con paginación
-    Page<Usuario> findByNombreContainingIgnoreCaseAndEmailContainingIgnoreCase(String nombre, String email, Pageable pageable);
-
+    // Paginación con búsqueda combinada
+    Page<Usuario> findByNombreContainingIgnoreCaseOrRol_NombreContainingIgnoreCase(
+            String nombre, String rolNombre, Pageable pageable
+    );
 }
 
