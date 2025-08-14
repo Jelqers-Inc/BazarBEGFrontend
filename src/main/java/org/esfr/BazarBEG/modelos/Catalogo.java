@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+//Modelo categoria creado, para asociar commit
 
 @Entity
 @Table(name = "catalogos")
