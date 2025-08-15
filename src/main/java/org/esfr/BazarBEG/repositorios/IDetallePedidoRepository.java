@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface IDetalleProductoRepository extends JpaRepository<DetallePedido, Integer> {
+public interface IDetallePedidoRepository extends JpaRepository<DetallePedido, Integer> {
 
     // Buscar todos los detalles de un pedido específico
     List<DetallePedido> findByPedido(Pedido pedido);
