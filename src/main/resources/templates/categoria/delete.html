@@ -1,0 +1,35 @@
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/layouts/_mainLayout">
+
+<div layout:fragment="content" class="p-6">
+  <h1 class="text-2xl font-bold text-gray-800 mb-4">Eliminar Categoría</h1>
+
+  <p class="mb-4 text-gray-700">¿Estás seguro que deseas eliminar la siguiente categoría?</p>
+
+  <div class="bg-white p-4 rounded-lg shadow mb-4">
+    <p><span class="font-semibold">ID:</span> <span th:text="${categoria.id}"></span></p>
+    <p><span class="font-semibold">Nombre:</span> <span th:text="${categoria.nombre}"></span></p>
+    <p><span class="font-semibold">Imagen:</span>
+      <img th:if="${categoria.imagen != null}"
+           th:src="@{/categorias/imagen/{id}(id=${categoria.id})}"
+           alt="Imagen categoría"
+           class="w-16 h-16 object-cover rounded-md">
+      <span th:if="${categoria.imagen == null}" class="text-gray-500">Sin imagen</span>
+    </p>
+  </div>
+
+  <form th:action="@{/categorias/delete}" method="post">
+    <input type="hidden" name="id" th:value="${categoria.id}">
+    <button type="submit"
+            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+      Eliminar
+    </button>
+    <a th:href="@{/categorias}"
+       class="px-4 py-2 ml-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-colors">
+      Cancelar
+    </a>
+  </form>
+</div>
+</html>

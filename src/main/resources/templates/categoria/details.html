@@ -1,0 +1,44 @@
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/layouts/_mainLayout">
+
+<div layout:fragment="content" class="p-6">
+
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">Detalles de Categoría</h1>
+
+    <div class="bg-white shadow rounded-lg p-6">
+        <dl class="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6">
+
+            <div>
+                <dt class="text-sm font-medium text-gray-500">ID</dt>
+                <dd class="mt-1 text-sm text-gray-900" th:text="${categoria.id}"></dd>
+            </div>
+
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Nombre</dt>
+                <dd class="mt-1 text-sm text-gray-900" th:text="${categoria.nombre}"></dd>
+            </div>
+
+            <div class="sm:col-span-2">
+                <dt class="text-sm font-medium text-gray-500">Imagen</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                    <img th:if="${categoria.imagen != null}"
+                         th:src="@{/categorias/imagen/{id}(id=${categoria.id})}"
+                         alt="Imagen categoría"
+                         class="object-cover w-32 h-32 rounded-md">
+                    <span th:if="${categoria.imagen == null}" class="text-gray-500 text-sm">Sin imagen</span>
+                </dd>
+            </div>
+
+        </dl>
+
+        <div class="mt-6 flex space-x-4">
+            <a th:href="@{/categorias/edit/{id}(id=${categoria.id})}"
+               class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Editar</a>
+            <a th:href="@{/categorias}"
+               class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Regresar</a>
+        </div>
+    </div>
+</div>
+</html>

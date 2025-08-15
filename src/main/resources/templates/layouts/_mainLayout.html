@@ -15,6 +15,8 @@
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   </head>
   <body>
     <div class="relative flex size-full min-h-screen flex-col bg-[#f9f8fc] group/design-root overflow-x-hidden" style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'>
@@ -28,7 +30,7 @@
               <h2 class="text-[#120e1b] text-lg font-bold leading-tight tracking-[-0.015em]">Bazar BEG</h2>
             </div>
             <div class="flex items-center gap-9">
-              <a class="text-[#120e1b] text-sm font-medium leading-normal" href="#">Maquillaje y Uñas</a>
+              <a class="text-[#120e1b] text-sm font-medium leading-normal" th:href="@{/categorias}">Maquillaje y Uñas INDEX</a>
               <a class="text-[#120e1b] text-sm font-medium leading-normal" href="#">Cuidado de la Piel y Rostro</a>
               <a class="text-[#120e1b] text-sm font-medium leading-normal" href="#">Cabello y Cuerpo</a>
               <a class="text-[#120e1b] text-sm font-medium leading-normal" href="#">Accesorios y Regalos</a>
