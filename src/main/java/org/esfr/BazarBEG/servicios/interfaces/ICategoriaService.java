@@ -1,7 +1,6 @@
 package org.esfr.BazarBEG.servicios.interfaces;
 
 import org.esfr.BazarBEG.modelos.Categoria;
-import org.esfr.BazarBEG.modelos.Producto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
