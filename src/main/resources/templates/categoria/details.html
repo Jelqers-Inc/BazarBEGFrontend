@@ -23,10 +23,11 @@
             <div class="sm:col-span-2">
                 <dt class="text-sm font-medium text-gray-500">Imagen</dt>
                 <dd class="mt-1 text-sm text-gray-900">
-                    <img th:if="${categoria.imagen != null}"
-                         th:src="@{/categorias/imagen/{id}(id=${categoria.id})}"
-                         alt="Imagen categoría"
-                         class="object-cover w-32 h-32 rounded-md">
+                    <div th:if="${categoria.imagen != null}">
+                        <img th:src="@{/categorias/imagen/{id}(id=${categoria.id})}"
+                             alt="Imagen categoría"
+                             class="w-32 h-32 object-cover rounded-md">
+                    </div>
                     <span th:if="${categoria.imagen == null}" class="text-gray-500 text-sm">Sin imagen</span>
                 </dd>
             </div>
@@ -40,5 +41,6 @@
                class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Regresar</a>
         </div>
     </div>
+
 </div>
 </html>

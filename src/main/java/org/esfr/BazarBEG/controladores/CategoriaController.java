@@ -3,15 +3,22 @@ package org.esfr.BazarBEG.controladores;
 import org.esfr.BazarBEG.modelos.Categoria;
 import org.esfr.BazarBEG.servicios.interfaces.ICategoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,11 +28,16 @@ import java.util.stream.IntStream;
 @RequestMapping("/categorias")
 public class CategoriaController {
 
+    private static final String UPLOAD_DIR = "src/main/resources/static/uploads/categorias/";
+
     @Autowired
     private ICategoriaService categoriaService;
 
+    // -------------------- LISTADO --------------------
     @GetMapping
-    public String index(Model model,@RequestParam("page") Optional<Integer> page,@RequestParam("size") Optional<Integer> size) {
+    public String index(Model model,
+                        @RequestParam("page") Optional<Integer> page,
+                        @RequestParam("size") Optional<Integer> size) {
         int currentPage = page.orElse(1) - 1;
         int pageSize = size.orElse(5);
         Pageable pageable = PageRequest.of(currentPage, pageSize);
@@ -44,24 +56,65 @@ public class CategoriaController {
         return "categoria/index";
     }
 
+    // -------------------- CREAR --------------------
     @GetMapping("/create")
     public String create(Categoria categoria) {
         return "categoria/create";
     }
 
     @PostMapping("/save")
-    public String save(Categoria categoria, BindingResult result, Model model, RedirectAttributes attributes) {
+    public String save(Categoria categoria,
+                       @RequestParam("fileImagen") MultipartFile fileImagen,
+                       BindingResult result,
+                       Model model,
+                       RedirectAttributes attributes) {
+
         if (result.hasErrors()) {
             model.addAttribute(categoria);
             attributes.addFlashAttribute("error", "No se pudo guardar debido a un error.");
             return "categoria/create";
         }
 
+        try {
+            if (fileImagen != null && !fileImagen.isEmpty()) {
+                Path uploadPath = Paths.get(UPLOAD_DIR);
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+
+                String fileName = fileImagen.getOriginalFilename();
+                Path filePath = uploadPath.resolve(fileName);
+                Files.copy(fileImagen.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                // Si es edición, elimina la imagen anterior
+                if (categoria.getId() != null && categoria.getId() > 0) {
+                    Categoria categoriaExistente = categoriaService.buscarPorId(categoria.getId()).orElse(null);
+                    if (categoriaExistente != null && categoriaExistente.getImagen() != null) {
+                        Path fileAnterior = uploadPath.resolve(categoriaExistente.getImagen());
+                        Files.deleteIfExists(fileAnterior);
+                    }
+                }
+
+                categoria.setImagen(fileName); // guarda el nombre del archivo
+            } else if (categoria.getId() != null && categoria.getId() > 0) {
+                // Mantener la imagen anterior si no suben nueva
+                Categoria categoriaExistente = categoriaService.buscarPorId(categoria.getId()).orElse(null);
+                if (categoriaExistente != null) {
+                    categoria.setImagen(categoriaExistente.getImagen());
+                }
+            }
+
+        } catch (IOException e) {
+            attributes.addFlashAttribute("error", "Error al procesar la imagen: " + e.getMessage());
+            return "redirect:/categorias/create";
+        }
+
         categoriaService.crearOEditar(categoria);
-        attributes.addFlashAttribute("msg", "Categoría creada correctamente");
+        attributes.addFlashAttribute("msg", "Categoría guardada correctamente");
         return "redirect:/categorias";
     }
 
+    // -------------------- DETALLES --------------------
     @GetMapping("/details/{id}")
     public String details(@PathVariable("id") Integer id, Model model) {
         Categoria categoria = categoriaService.buscarPorId(id).orElse(null);
@@ -69,6 +122,7 @@ public class CategoriaController {
         return "categoria/details";
     }
 
+    // -------------------- EDITAR --------------------
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") Integer id, Model model) {
         Categoria categoria = categoriaService.buscarPorId(id).orElse(null);
@@ -76,6 +130,7 @@ public class CategoriaController {
         return "categoria/edit";
     }
 
+    // -------------------- ELIMINAR --------------------
     @GetMapping("/remove/{id}")
     public String remove(@PathVariable("id") Integer id, Model model) {
         Categoria categoria = categoriaService.buscarPorId(id).orElse(null);
@@ -83,11 +138,55 @@ public class CategoriaController {
         return "categoria/delete";
     }
 
-
     @PostMapping("/delete")
-    public String delete(Categoria categoria, RedirectAttributes attributes) {
-        categoriaService.eliminarPorId(categoria.getId());
-        attributes.addFlashAttribute("msg", "Categoría eliminada correctamente");
+    public String delete(@RequestParam("id") Integer id, RedirectAttributes attributes) {
+        Optional<Categoria> catData = categoriaService.buscarPorId(id);
+
+        if (catData.isPresent()) {
+            Categoria categoria = catData.get();
+
+            // Eliminar imagen si existe
+            if (categoria.getImagen() != null) {
+                try {
+                    Path uploadPath = Paths.get(UPLOAD_DIR);
+                    Path filePath = uploadPath.resolve(categoria.getImagen());
+                    Files.deleteIfExists(filePath);
+                } catch (IOException e) {
+                    attributes.addFlashAttribute("error", "Error al eliminar la imagen: " + e.getMessage());
+                    return "redirect:/categorias";
+                }
+            }
+
+            categoriaService.eliminarPorId(id);
+            attributes.addFlashAttribute("msg", "Categoría eliminada correctamente");
+        } else {
+            attributes.addFlashAttribute("error", "La categoría no existe");
+        }
+
         return "redirect:/categorias";
     }
+
+    // -------------------- SERVIR IMÁGENES --------------------
+    @GetMapping("/imagen/{id}")
+    @ResponseBody
+    public ResponseEntity<Resource> mostrarImagen(@PathVariable Integer id) {
+        try {
+            Categoria categoria = categoriaService.buscarPorId(id).orElse(null);
+            if (categoria != null && categoria.getImagen() != null) {
+                Path filePath = Paths.get(UPLOAD_DIR, categoria.getImagen());
+                Resource resource = new UrlResource(filePath.toUri());
+                if (resource.exists() || resource.isReadable()) {
+                    String mimeType = Files.probeContentType(filePath);
+                    return ResponseEntity.ok()
+                            .contentType(MediaType.parseMediaType(mimeType))
+                            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                            .body(resource);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
 }

@@ -20,7 +20,8 @@
     </script>
   </div>
 
-  <form th:action="@{/categorias/save}" th:object="${categoria}" method="post" class="space-y-4">
+  <form th:action="@{/categorias/save}" th:object="${categoria}"
+        method="post" class="space-y-4" enctype="multipart/form-data">
 
     <div>
       <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
@@ -29,16 +30,17 @@
              required>
     </div>
 
-    <!-- Imagen: la dejaremos para después -->
-    <!-- <div>
-        <label for="imagen" class="block text-sm font-medium text-gray-700">Imagen</label>
-        <input type="file" th:field="*{imagen}" id="imagen" class="mt-1 block w-full text-sm text-gray-500">
-    </div> -->
+    <div>
+      <label for="imagen" class="block text-sm font-medium text-gray-700">Imagen</label>
+      <input type="file" name="fileImagen" id="imagen"
+             class="mt-1 block w-full text-sm text-gray-500">
+    </div>
 
     <div class="flex space-x-4 mt-4">
       <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">Guardar</button>
       <a th:href="@{/categorias}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancelar</a>
     </div>
   </form>
+
 </div>
 </html>

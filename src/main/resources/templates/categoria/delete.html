@@ -12,11 +12,12 @@
     <p><span class="font-semibold">ID:</span> <span th:text="${categoria.id}"></span></p>
     <p><span class="font-semibold">Nombre:</span> <span th:text="${categoria.nombre}"></span></p>
     <p><span class="font-semibold">Imagen:</span>
-      <img th:if="${categoria.imagen != null}"
-           th:src="@{/categorias/imagen/{id}(id=${categoria.id})}"
+    <div th:if="${categoria.imagen != null}">
+      <img th:src="@{/categorias/imagen/{id}(id=${categoria.id})}"
            alt="Imagen categoría"
-           class="w-16 h-16 object-cover rounded-md">
-      <span th:if="${categoria.imagen == null}" class="text-gray-500">Sin imagen</span>
+           class="w-24 h-24 object-cover rounded-md">
+    </div>
+    <span th:if="${categoria.imagen == null}" class="text-gray-500">Sin imagen</span>
     </p>
   </div>
 
@@ -32,4 +33,5 @@
     </a>
   </form>
 </div>
+
 </html>

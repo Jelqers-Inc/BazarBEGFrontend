@@ -10,25 +10,28 @@ import java.util.List;
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
-    @Lob
-    private byte[] imagen;
+    private String imagen;
 
     @OneToMany(mappedBy = "categoria")
     private List<Producto> productos;
 
     // Getters y Setters
 
-    public int getId() {
-        return id;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 
     public String getNombre() {
@@ -39,14 +42,6 @@ public class Categoria {
         this.nombre = nombre;
     }
 
-    public byte[] getImagen() {
-        return imagen;
-    }
-
-    public void setImagen(byte[] imagen) {
-        this.imagen = imagen;
-    }
-
     public List<Producto> getProductos() {
         return productos;
     }
@@ -54,5 +49,10 @@ public class Categoria {
     public void setProductos(List<Producto> productos) {
         this.productos = productos;
     }
+
+    public Integer getId() {
+        return id;
+    }
 }
+
 
