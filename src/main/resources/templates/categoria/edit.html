@@ -1,11 +1,9 @@
 <html lang="es"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="/layouts/_mainLayout">
+      layout:decorate="/layouts/_mainLayoutAdmin.html">
 
 <div layout:fragment="content" class="p-6">
-
-  <h1 class="text-2xl font-bold text-gray-800 mb-4">Editar Categoría</h1>
 
   <div th:if="${error}">
     <script th:inline="javascript">
