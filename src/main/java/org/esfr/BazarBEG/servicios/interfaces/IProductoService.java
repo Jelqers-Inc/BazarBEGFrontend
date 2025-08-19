@@ -17,4 +17,6 @@ public interface IProductoService {
     Producto crearOEditar(Producto producto);
 
     void eliminarPorId(Integer id);
+
+    Page<Producto> buscarTodosPaginados(Pageable pageable);
 }

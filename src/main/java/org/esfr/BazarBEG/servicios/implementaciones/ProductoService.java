@@ -44,4 +44,9 @@ public class ProductoService implements IProductoService {
     public void eliminarPorId(Integer id) {
         productoRepository.deleteById(id);
     }
+
+    @Override
+    public Page<Producto> buscarTodosPaginados(Pageable pageable) {
+        return productoRepository.findAll(pageable);
+    }
 }

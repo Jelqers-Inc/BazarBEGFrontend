@@ -90,6 +90,8 @@ CREATE TABLE usuarios (
 INSERT INTO usuarios (nombre, email, contraseña, rol_id)
 VALUES ('Admin BEG', 'adminBEG@gmail.com', SHA2('admin123', 256), 1);  -- ID 1 = ADMIN
 
---Modificando el campo imagen
+--Modificando las tablas que manejan imagenes
 ALTER TABLE categorias MODIFY COLUMN imagen_url VARCHAR(255);
+
+ALTER TABLE productos MODIFY COLUMN imagen_url VARCHAR(255);
 

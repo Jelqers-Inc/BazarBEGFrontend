@@ -1,7 +1,8 @@
 package org.esfr.BazarBEG.controladores;
 
-import org.esfr.BazarBEG.modelos.Categoria;
+import org.esfr.BazarBEG.modelos.Producto;
 import org.esfr.BazarBEG.servicios.interfaces.ICategoriaService;
+import org.esfr.BazarBEG.servicios.interfaces.IProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -17,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
@@ -25,11 +27,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Controller
-@RequestMapping("/categorias")
-public class CategoriaController {
+@RequestMapping("/productos")
+public class ProductoController {
 
-    private static final String UPLOAD_DIR = "src/main/resources/static/uploads/categorias/";
+    private static final String UPLOAD_DIR = "src/main/resources/static/uploads/productos/";
 
+    @Autowired
+    private IProductoService productoService;
     @Autowired
     private ICategoriaService categoriaService;
 
@@ -42,10 +46,10 @@ public class CategoriaController {
         int pageSize = size.orElse(5);
         Pageable pageable = PageRequest.of(currentPage, pageSize);
 
-        Page<Categoria> categorias = categoriaService.buscarTodosPaginados(pageable);
-        model.addAttribute("categorias", categorias);
+        Page<Producto> productos = productoService.buscarTodosPaginados(pageable);
+        model.addAttribute("productos", productos);
 
-        int totalPages = categorias.getTotalPages();
+        int totalPages = productos.getTotalPages();
         if (totalPages > 0) {
             List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
                     .boxed()
@@ -53,24 +57,36 @@ public class CategoriaController {
             model.addAttribute("pageNumbers", pageNumbers);
         }
 
-        return "categoria/index";
+        return "producto/index";
     }
 
     // -------------------- CREAR --------------------
+
     @GetMapping("/create")
-    public String create(Categoria categoria) {
-        return "categoria/create";
+    public String create(Producto producto, Model model) {
+        // Pasar la lista de categorías al modelo
+        model.addAttribute("categorias", categoriaService.obtenerTodos());
+        return "producto/create";
     }
 
     @PostMapping("/save")
-    public String save(Categoria categoria,@RequestParam("fileImagen") MultipartFile fileImagen, BindingResult result,
-                       Model model, RedirectAttributes attributes) {
+    public String save(
+            Producto producto,
+            @RequestParam("categoria.id") Integer categoriaId, // Recibimos el id de la categoría
+            @RequestParam("fileImagen") MultipartFile fileImagen,
+            BindingResult result,
+            Model model,
+            RedirectAttributes attributes) {
 
+        // Validación
         if (result.hasErrors()) {
-            model.addAttribute(categoria);
+            model.addAttribute(producto);
             attributes.addFlashAttribute("error", "No se pudo guardar debido a un error.");
-            return "categoria/create";
+            return "producto/create";
         }
+
+        // Asignar la categoría al producto
+        producto.setCategoria(categoriaService.buscarPorId(categoriaId).orElse(null));
 
         try {
             if (fileImagen != null && !fileImagen.isEmpty()) {
@@ -83,94 +99,100 @@ public class CategoriaController {
                 Path filePath = uploadPath.resolve(fileName);
                 Files.copy(fileImagen.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-                // Si es edición, elimina la imagen anterior
-                if (categoria.getId() != null && categoria.getId() > 0) {
-                    Categoria categoriaExistente = categoriaService.buscarPorId(categoria.getId()).orElse(null);
-                    if (categoriaExistente != null && categoriaExistente.getImagen() != null) {
-                        Path fileAnterior = uploadPath.resolve(categoriaExistente.getImagen());
+                // Si es edición, eliminar la imagen anterior
+                if (producto.getId() != null && producto.getId() > 0) {
+                    Producto productoExistente = productoService.buscarPorId(producto.getId()).orElse(null);
+                    if (productoExistente != null && productoExistente.getImagen() != null) {
+                        Path fileAnterior = uploadPath.resolve(productoExistente.getImagen());
                         Files.deleteIfExists(fileAnterior);
                     }
                 }
 
-                categoria.setImagen(fileName); // guarda el nombre del archivo
-            } else if (categoria.getId() != null && categoria.getId() > 0) {
-                // Mantener la imagen anterior si no suben nueva
-                Categoria categoriaExistente = categoriaService.buscarPorId(categoria.getId()).orElse(null);
-                if (categoriaExistente != null) {
-                    categoria.setImagen(categoriaExistente.getImagen());
+                producto.setImagen(fileName);
+            } else if (producto.getId() != null && producto.getId() > 0) {
+                // Mantener la imagen anterior si no se sube nueva
+                Producto productoExistente = productoService.buscarPorId(producto.getId()).orElse(null);
+                if (productoExistente != null) {
+                    producto.setImagen(productoExistente.getImagen());
                 }
             }
 
         } catch (IOException e) {
             attributes.addFlashAttribute("error", "Error al procesar la imagen: " + e.getMessage());
-            return "redirect:/categorias/create";
+            return "redirect:/productos/create";
         }
 
-        categoriaService.crearOEditar(categoria);
-        attributes.addFlashAttribute("msg", "Categoría guardada correctamente");
-        return "redirect:/categorias";
+        // Guardar producto
+        productoService.crearOEditar(producto);
+        attributes.addFlashAttribute("msg", "Producto guardado correctamente");
+        return "redirect:/productos";
     }
+
 
     // -------------------- DETALLES --------------------
     @GetMapping("/details/{id}")
     public String details(@PathVariable("id") Integer id, Model model) {
-        Categoria categoria = categoriaService.buscarPorId(id).orElse(null);
-        model.addAttribute("categoria", categoria);
-        return "categoria/details";
+        Producto producto = productoService.buscarPorId(id).orElse(null);
+        model.addAttribute("producto", producto);
+        return "producto/details";
     }
 
     // -------------------- EDITAR --------------------
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") Integer id, Model model) {
-        Categoria categoria = categoriaService.buscarPorId(id).orElse(null);
-        model.addAttribute("categoria", categoria);
-        return "categoria/edit";
+        Producto producto = productoService.buscarPorId(id).orElse(null);
+        model.addAttribute("producto", producto);
+
+        // Pasar también la lista de categorías
+        model.addAttribute("categorias", categoriaService.obtenerTodos());
+        return "producto/edit";
     }
 
     // -------------------- ELIMINAR --------------------
     @GetMapping("/remove/{id}")
     public String remove(@PathVariable("id") Integer id, Model model) {
-        Categoria categoria = categoriaService.buscarPorId(id).orElse(null);
-        model.addAttribute("categoria", categoria);
-        return "categoria/delete";
+        Producto producto = productoService.buscarPorId(id).orElse(null);
+        model.addAttribute("producto", producto);
+        return "producto/delete";
     }
 
     @PostMapping("/delete")
     public String delete(@RequestParam("id") Integer id, RedirectAttributes attributes) {
-        Optional<Categoria> catData = categoriaService.buscarPorId(id);
+        Optional<Producto> prodData = productoService.buscarPorId(id);
 
-        if (catData.isPresent()) {
-            Categoria categoria = catData.get();
+        if (prodData.isPresent()) {
+            Producto producto = prodData.get();
 
             // Eliminar imagen si existe
-            if (categoria.getImagen() != null) {
+            if (producto.getImagen() != null) {
                 try {
                     Path uploadPath = Paths.get(UPLOAD_DIR);
-                    Path filePath = uploadPath.resolve(categoria.getImagen());
+                    Path filePath = uploadPath.resolve(producto.getImagen());
                     Files.deleteIfExists(filePath);
                 } catch (IOException e) {
                     attributes.addFlashAttribute("error", "Error al eliminar la imagen: " + e.getMessage());
-                    return "redirect:/categorias";
+                    return "redirect:/productos";
                 }
             }
 
-            categoriaService.eliminarPorId(id);
-            attributes.addFlashAttribute("msg", "Categoría eliminada correctamente");
+            productoService.eliminarPorId(id);
+            attributes.addFlashAttribute("msg", "Producto eliminado correctamente");
         } else {
-            attributes.addFlashAttribute("error", "La categoría no existe");
+            attributes.addFlashAttribute("error", "El producto no existe");
         }
 
-        return "redirect:/categorias";
+        return "redirect:/productos";
     }
+
 
     // -------------------- SERVIR IMÁGENES --------------------
     @GetMapping("/imagen/{id}")
     @ResponseBody
     public ResponseEntity<Resource> mostrarImagen(@PathVariable Integer id) {
         try {
-            Categoria categoria = categoriaService.buscarPorId(id).orElse(null);
-            if (categoria != null && categoria.getImagen() != null) {
-                Path filePath = Paths.get(UPLOAD_DIR, categoria.getImagen());
+            Producto producto = productoService.buscarPorId(id).orElse(null);
+            if (producto != null && producto.getImagen() != null) {
+                Path filePath = Paths.get(UPLOAD_DIR, producto.getImagen());
                 Resource resource = new UrlResource(filePath.toUri());
                 if (resource.exists() || resource.isReadable()) {
                     String mimeType = Files.probeContentType(filePath);

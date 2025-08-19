@@ -1,0 +1,98 @@
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/layouts/_mainLayout">
+
+<div layout:fragment="content" class="p-6">
+
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">Editar Producto</h1>
+
+    <!-- Mensaje de error -->
+    <div th:if="${error}">
+        <script th:inline="javascript">
+            Swal.fire({
+              title: 'Error',
+              text: [[${error}]],
+              icon: 'error',
+              timer: 2500,
+              showConfirmButton: true
+            });
+        </script>
+    </div>
+
+    <!-- Mensaje de éxito -->
+    <div th:if="${msg}">
+        <script th:inline="javascript">
+            Swal.fire({
+              title: '¡Éxito!',
+              text: [[${msg}]],
+              icon: 'success',
+              timer: 2000,
+              showConfirmButton: false
+            });
+        </script>
+    </div>
+
+    <form th:action="@{/productos/save}" th:object="${producto}" method="post" enctype="multipart/form-data" class="space-y-4">
+
+        <input type="hidden" th:field="*{id}"/>
+
+        <div>
+            <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
+            <input type="text" th:field="*{nombre}" id="nombre" placeholder="Nombre del producto"
+                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                   required>
+        </div>
+
+        <div>
+            <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+            <textarea th:field="*{descripcion}" id="descripcion" placeholder="Descripción del producto"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                      rows="3" required></textarea>
+        </div>
+
+        <div>
+            <label for="precio" class="block text-sm font-medium text-gray-700">Precio</label>
+            <input type="number" step="0.01" th:field="*{precio}" id="precio"
+                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                   required>
+        </div>
+
+        <div>
+            <label for="stock" class="block text-sm font-medium text-gray-700">Stock</label>
+            <input type="number" th:field="*{stock}" id="stock"
+                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                   required>
+        </div>
+
+        <div>
+            <label for="categoria" class="block text-sm font-medium text-gray-700">Categoría</label>
+            <select th:field="*{categoria.id}" id="categoria"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                    required>
+                <option value="" disabled>Selecciona una categoría</option>
+                <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}"
+                        th:selected="${cat.id} == ${producto.categoria.id}"></option>
+            </select>
+        </div>
+
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Imagen Actual</label>
+            <div th:if="${producto.imagen != null}" class="mb-2">
+                <img th:src="@{/productos/imagen/{id}(id=${producto.id})}" alt="Imagen producto" class="w-32 h-32 object-cover rounded-md">
+            </div>
+            <div th:if="${producto.imagen == null}" class="text-gray-500 text-sm mb-2">No hay imagen subida</div>
+
+            <label for="imagen" class="block text-sm font-medium text-gray-700">Cambiar Imagen</label>
+            <input type="file" name="fileImagen" id="imagen" class="mt-1 block w-full text-sm text-gray-500">
+        </div>
+
+        <div class="flex space-x-4 mt-4">
+            <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">Guardar</button>
+            <a th:href="@{/productos}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancelar</a>
+        </div>
+
+    </form>
+</div>
+</html>
