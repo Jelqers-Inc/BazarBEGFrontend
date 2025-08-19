@@ -1,46 +1,61 @@
 <html lang="es"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="/layouts/_mainLayout">
+      layout:decorate="/layouts/_mainLayoutAdmin">
 
 <div layout:fragment="content" class="p-6">
 
-    <h1 class="text-2xl font-bold text-gray-800 mb-4">Detalles de Categoría</h1>
+    <div class="flex items-center justify-center min-h-screen bg-gray-100 p-8">
+    <div class="w-full max-w-xl bg-white rounded-xl shadow-2xl p-8">
+        
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-extrabold text-purple-800">Detalles de la Categoría</h2>
+            <p class="mt-2 text-sm text-gray-500">
+                Información detallada sobre la categoría seleccionada.
+            </p>
+        </div>
 
-    <div class="bg-white shadow rounded-lg p-6">
-        <dl class="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6">
+        <div class="space-y-6">
 
-            <div>
-                <dt class="text-sm font-medium text-gray-500">ID</dt>
-                <dd class="mt-1 text-sm text-gray-900" th:text="${categoria.id}"></dd>
+            <div class="flex flex-col items-center justify-center bg-gray-50 p-6 rounded-lg border border-gray-200 shadow-sm">
+                <span class="text-sm font-semibold uppercase text-gray-500 mb-2">Imagen de la Categoría</span>
+                <img th:if="${categoria.imagen != null}"
+                     th:src="@{/categorias/imagen/{id}(id=${categoria.id})}"
+                     alt="Imagen de la categoría"
+                     class="w-48 h-48 object-cover rounded-lg shadow-md border border-gray-300">
+                <div th:if="${categoria.imagen == null}" class="w-48 h-48 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <span class="text-gray-500 text-sm font-semibold text-center">Sin imagen</span>
+                </div>
             </div>
 
-            <div>
-                <dt class="text-sm font-medium text-gray-500">Nombre</dt>
-                <dd class="mt-1 text-sm text-gray-900" th:text="${categoria.nombre}"></dd>
-            </div>
-
-            <div class="sm:col-span-2">
-                <dt class="text-sm font-medium text-gray-500">Imagen</dt>
-                <dd class="mt-1 text-sm text-gray-900">
-                    <div th:if="${categoria.imagen != null}">
-                        <img th:src="@{/categorias/imagen/{id}(id=${categoria.id})}"
-                             alt="Imagen categoría"
-                             class="w-32 h-32 object-cover rounded-md">
+            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 shadow-sm">
+                <dl class="divide-y divide-gray-200">
+                    <div class="py-4">
+                        <dt class="text-sm font-medium text-gray-500">ID</dt>
+                        <dd class="mt-1 text-lg font-semibold text-gray-900" th:text="${categoria.id}"></dd>
                     </div>
-                    <span th:if="${categoria.imagen == null}" class="text-gray-500 text-sm">Sin imagen</span>
-                </dd>
+                    <div class="py-4">
+                        <dt class="text-sm font-medium text-gray-500">Nombre</dt>
+                        <dd class="mt-1 text-lg font-semibold text-gray-900" th:text="${categoria.nombre}"></dd>
+                    </div>
+                </dl>
             </div>
+        </div>
 
-        </dl>
-
-        <div class="mt-6 flex space-x-4">
+        <div class="mt-8 flex justify-end space-x-4">
             <a th:href="@{/categorias/edit/{id}(id=${categoria.id})}"
-               class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Editar</a>
+               class="px-6 py-3 bg-green-600 text-white rounded-full font-semibold
+                      hover:bg-green-700 transform hover:scale-105 transition duration-300">
+                Editar
+            </a>
             <a th:href="@{/categorias}"
-               class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Regresar</a>
+               class="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-semibold
+                      hover:bg-gray-300 transform hover:scale-105 transition duration-300">
+                Regresar
+            </a>
         </div>
     </div>
+</div>
 
 </div>
 </html>

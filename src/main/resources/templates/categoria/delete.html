@@ -1,37 +1,56 @@
 <html lang="es"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="/layouts/_mainLayout">
+      layout:decorate="/layouts/_mainLayoutAdmin.html">
 
 <div layout:fragment="content" class="p-6">
-  <h1 class="text-2xl font-bold text-gray-800 mb-4">Eliminar Categoría</h1>
+<div class="flex items-center justify-center min-h-screen bg-gray-100 p-6">
+    <div class="w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden">
+        
+        <div class="bg-red-50 px-8 py-6 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-red-600 mr-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <h2 class="text-3xl font-extrabold text-red-800">Confirmación de Eliminación</h2>
+        </div>
 
-  <p class="mb-4 text-gray-700">¿Estás seguro que deseas eliminar la siguiente categoría?</p>
+        <div class="p-8">
+            <p class="text-lg text-gray-700 mb-6 text-center">
+                ¿Estás seguro que deseas eliminar la siguiente categoría? Esta acción es irreversible.
+            </p>
 
-  <div class="bg-white p-4 rounded-lg shadow mb-4">
-    <p><span class="font-semibold">ID:</span> <span th:text="${categoria.id}"></span></p>
-    <p><span class="font-semibold">Nombre:</span> <span th:text="${categoria.nombre}"></span></p>
-    <p><span class="font-semibold">Imagen:</span>
-    <div th:if="${categoria.imagen != null}">
-      <img th:src="@{/categorias/imagen/{id}(id=${categoria.id})}"
-           alt="Imagen categoría"
-           class="w-24 h-24 object-cover rounded-md">
+            <div class="flex flex-col items-center bg-gray-50 p-6 rounded-lg border border-gray-200 shadow-sm">
+                <div class="flex-shrink-0 mb-4">
+                    <img th:if="${categoria.imagen != null}"
+                         th:src="@{/categorias/imagen/{id}(id=${categoria.id})}"
+                         alt="Imagen de la categoría"
+                         class="w-32 h-32 object-cover rounded-lg shadow-md">
+                    <div th:if="${categoria.imagen == null}" class="w-32 h-32 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <span class="text-gray-500 text-sm font-semibold text-center">Sin imagen</span>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm font-semibold uppercase text-gray-500">ID: <span th:text="${categoria.id}" class="text-gray-900 normal-case ml-1"></span></p>
+                    <h3 th:text="${categoria.nombre}" class="mt-1 text-2xl font-bold text-purple-800"></h3>
+                </div>
+            </div>
+
+            <form th:action="@{/categorias/delete}" method="post" class="mt-8 flex justify-center space-x-6">
+                <input type="hidden" name="id" th:value="${categoria.id}">
+                <a th:href="@{/categorias}"
+                   class="px-8 py-4 bg-gray-300 text-gray-800 font-semibold rounded-full hover:bg-gray-400
+                          transform hover:scale-105 transition duration-300">
+                    Cancelar
+                </a>
+                <button type="submit"
+                        class="px-8 py-4 bg-red-600 text-white font-semibold rounded-full hover:bg-red-700
+                               transform hover:scale-105 transition duration-300">
+                    Eliminar
+                </button>
+            </form>
+        </div>
     </div>
-    <span th:if="${categoria.imagen == null}" class="text-gray-500">Sin imagen</span>
-    </p>
-  </div>
-
-  <form th:action="@{/categorias/delete}" method="post">
-    <input type="hidden" name="id" th:value="${categoria.id}">
-    <button type="submit"
-            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-      Eliminar
-    </button>
-    <a th:href="@{/categorias}"
-       class="px-4 py-2 ml-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-colors">
-      Cancelar
-    </a>
-  </form>
+</div>
 </div>
 
 </html>
