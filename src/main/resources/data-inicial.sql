@@ -95,3 +95,26 @@ ALTER TABLE categorias MODIFY COLUMN imagen_url VARCHAR(255);
 
 ALTER TABLE productos MODIFY COLUMN imagen_url VARCHAR(255);
 
+DROP TABLE IF EXISTS catalogos;
+
+CREATE TABLE catalogos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT NOT NULL,
+    fecha_inicio DATE NOT NULL,
+    fecha_fin DATE NOT NULL,
+    portada_imagen VARCHAR(255) NOT NULL,
+    pdf_path VARCHAR(255),
+    categoria_id INT,
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id)
+);
+
+CREATE TABLE catalogo_productos (
+    catalogo_id INT NOT NULL,
+    producto_id INT NOT NULL,
+    PRIMARY KEY (catalogo_id, producto_id),
+    FOREIGN KEY (catalogo_id) REFERENCES catalogos(id) ON DELETE CASCADE,
+    FOREIGN KEY (producto_id) REFERENCES productos(id)
+);
+
+

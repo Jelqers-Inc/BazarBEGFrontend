@@ -1,0 +1,121 @@
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/layouts/_mainLayout">
+
+<div layout:fragment="content" class="p-6">
+
+  <h1 class="text-2xl font-bold text-gray-800 mb-4">Crear Nuevo Catálogo</h1>
+
+  <!-- Mensaje de error -->
+  <div th:if="${error}">
+    <script th:inline="javascript">
+      Swal.fire({
+        title: 'Error',
+        text: [[${error}]],
+        icon: 'error',
+        timer: 2500,
+        showConfirmButton: true
+      });
+    </script>
+  </div>
+
+  <!-- Mensaje de éxito -->
+  <div th:if="${msg}">
+    <script th:inline="javascript">
+      Swal.fire({
+        title: '¡Éxito!',
+        text: [[${msg}]],
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    </script>
+  </div>
+
+  <form th:action="@{/catalogos/save}" th:object="${catalogo}" method="post" enctype="multipart/form-data" class="space-y-4">
+
+    <!-- Nombre -->
+    <div>
+      <label class="block font-medium text-gray-700">Nombre:</label>
+      <input type="text" th:field="*{nombre}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required/>
+    </div>
+
+    <!-- Descripción -->
+    <div>
+      <label class="block font-medium text-gray-700">Descripción:</label>
+      <textarea th:field="*{descripcion}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+    </div>
+
+    <!-- Fechas -->
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block font-medium text-gray-700">Fecha Inicio:</label>
+        <input type="date" th:field="*{fechaInicio}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required/>
+      </div>
+      <div>
+        <label class="block font-medium text-gray-700">Fecha Fin:</label>
+        <input type="date" th:field="*{fechaFin}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required/>
+      </div>
+    </div>
+
+    <!-- Categoría -->
+    <div>
+      <label class="block font-medium text-gray-700">Categoría:</label>
+      <select th:field="*{categoria.id}" id="categoriaSelect" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+        <option value="" disabled selected>Seleccione una categoría</option>
+        <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}"></option>
+      </select>
+    </div>
+
+    <!-- Productos -->
+    <div>
+      <label class="block font-medium text-gray-700">Productos:</label>
+      <select multiple name="productosIds" id="productosSelect" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+        <option value="" disabled>Seleccione productos</option>
+      </select>
+    </div>
+
+    <!-- Portada -->
+    <div>
+      <label class="block font-medium text-gray-700">Imagen de Portada:</label>
+      <input type="file" name="portadaFile" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required/>
+    </div>
+
+    <div class="flex justify-end">
+      <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">Guardar Catálogo</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const categoriaSelect = document.getElementById('categoriaSelect');
+      const productosSelect = document.getElementById('productosSelect');
+
+      categoriaSelect.addEventListener('change', function() {
+          const categoriaId = this.value;
+          if (!categoriaId) return;
+
+          fetch('/catalogos/productosPorCategoria/' + categoriaId)
+              .then(resp => resp.json())
+              .then(data => {
+                  productosSelect.innerHTML = '';
+                  if (data.length === 0) {
+                      const option = document.createElement('option');
+                      option.text = 'No hay productos';
+                      option.disabled = true;
+                      productosSelect.appendChild(option);
+                  } else {
+                      data.forEach(p => {
+                          const option = document.createElement('option');
+                          option.value = p.id;
+                          option.text = `${p.nombre} ($${p.precio})`;
+                          productosSelect.appendChild(option);
+                      });
+                  }
+              }).catch(err => console.error(err));
+      });
+  });
+</script>
+</html>

@@ -34,4 +34,6 @@ public interface IProductoRepository extends JpaRepository<Producto, Integer> {
     // Buscar productos con stock igual a 0 (agotados)
     Page<Producto> findByStockEquals(int cantidad, Pageable pageable);
 
+    List<Producto> findByIdIn(List<Integer> ids);
+    List<Producto> findByCategoriaId(Integer categoriaId);
 }

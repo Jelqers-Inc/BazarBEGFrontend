@@ -1,0 +1,110 @@
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/layouts/_mainLayoutAdmin.html">
+
+<div layout:fragment="content" class="p-6">
+
+  <h1 class="text-2xl font-bold text-gray-800 mb-4">Editar Catálogo</h1>
+
+  <!-- Formulario -->
+  <form th:action="@{/catalogos/update/{id}(id=${catalogo.id})}" th:object="${catalogo}" method="post" enctype="multipart/form-data" class="space-y-4">
+
+    <div>
+      <label for="nombre" class="block text-sm font-medium text-gray-700">Título</label>
+      <input type="text" th:field="*{nombre}" id="nombre"
+             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" required>
+    </div>
+
+    <div>
+      <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+      <textarea th:field="*{descripcion}" id="descripcion"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" rows="3" required></textarea>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label for="fechaInicio" class="block text-sm font-medium text-gray-700">Fecha de inicio</label>
+        <input type="date" th:field="*{fechaInicio}" id="fechaInicio"
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" required>
+      </div>
+      <div>
+        <label for="fechaFin" class="block text-sm font-medium text-gray-700">Fecha de finalización</label>
+        <input type="date" th:field="*{fechaFin}" id="fechaFin"
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" required>
+      </div>
+    </div>
+
+    <!-- Select de Categoría -->
+    <div>
+      <label for="categoria" class="block text-sm font-medium text-gray-700">Categoría</label>
+      <select id="categoria" name="categoriaId" required
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+        <option value="" disabled>Selecciona una categoría</option>
+        <option th:each="cat : ${categorias}"
+                th:value="${cat.id}"
+                th:text="${cat.nombre}"
+                th:selected="${catalogo.categoria != null and cat.id == catalogo.categoria.id}">
+        </option>
+      </select>
+    </div>
+
+    <!-- Select de Productos -->
+    <div>
+      <label for="productos" class="block text-sm font-medium text-gray-700">Productos</label>
+      <select th:name="productosIds" id="productos" multiple
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+        <option th:each="prod : ${productos}"
+                th:value="${prod.id}"
+                th:text="${prod.nombre}"
+                th:selected="${catalogo.productos.contains(prod)}">
+        </option>
+      </select>
+      <p class="text-gray-500 text-sm mt-1">Se mostrarán solo los productos de la categoría seleccionada.</p>
+    </div>
+
+    <!-- Portada -->
+    <div>
+      <label for="portadaFile" class="block text-sm font-medium text-gray-700">Portada</label>
+      <input type="file" name="portadaFile" id="portadaFile" class="mt-1 block w-full text-sm text-gray-500">
+      <div th:if="${catalogo.portadaImagen != null}" class="mt-2">
+        <img th:src="@{${catalogo.portadaImagen}}" alt="Portada" class="w-32 h-auto rounded-md">
+      </div>
+    </div>
+
+    <!-- Vista previa PDF -->
+    <div th:if="${catalogo.pdfPath != null}" class="mt-2">
+      <a th:href="@{${catalogo.pdfPath}}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300" target="_blank">
+        Vista Previa PDF
+      </a>
+    </div>
+
+    <div class="flex space-x-4 mt-4">
+      <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">Actualizar</button>
+      <a th:href="@{/catalogos}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancelar</a>
+    </div>
+
+  </form>
+</div>
+
+<!-- Script AJAX para actualizar productos -->
+<script>
+  document.getElementById("categoria").addEventListener("change", function() {
+      let categoriaId = this.value;
+      let productosSelect = document.getElementById("productos");
+
+      fetch('/catalogos/productosPorCategoria/' + categoriaId)
+          .then(response => response.json())
+          .then(productos => {
+              productosSelect.innerHTML = "";
+              productos.forEach(prod => {
+                  let option = document.createElement("option");
+                  option.value = prod.id;
+                  option.text = prod.nombre;
+                  productosSelect.add(option);
+              });
+          });
+  });
+</script>
+
+</html>

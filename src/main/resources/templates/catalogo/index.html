@@ -1,0 +1,82 @@
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/layouts/_mainLayoutAdmin.html">
+
+<div layout:fragment="content" class="p-6">
+
+  <!-- Mensaje de confirmación -->
+  <div th:if="${msg}">
+    <script th:inline="javascript">
+      Swal.fire({
+        title: '¡Éxito!',
+        text: [[${msg}]],
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    </script>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div th:if="${error}">
+    <script th:inline="javascript">
+      Swal.fire({
+        title: 'Error',
+        text: [[${error}]],
+        icon: 'error',
+        timer: 2500,
+        showConfirmButton: true
+      });
+    </script>
+  </div>
+
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-bold text-gray-800">Gestión de Catálogos</h1>
+    <a th:href="@{/catalogos/create}" class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+      Nuevo Catálogo
+    </a>
+  </div>
+
+  <div class="overflow-x-auto bg-white rounded-lg shadow">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+      <tr>
+        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
+        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Nombre</th>
+        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Fecha Inicio</th>
+        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Fecha Fin</th>
+        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Categoría</th>
+        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Acciones</th>
+      </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+      <tr th:each="catalogo : ${catalogos.content}">
+        <td th:text="${catalogo.id}" class="px-6 py-4 whitespace-nowrap"></td>
+        <td th:text="${catalogo.nombre}" class="px-6 py-4 whitespace-nowrap"></td>
+        <td th:text="${#dates.format(catalogo.fechaInicio, 'dd/MM/yyyy')}" class="px-6 py-4 whitespace-nowrap"></td>
+        <td th:text="${#dates.format(catalogo.fechaFin, 'dd/MM/yyyy')}" class="px-6 py-4 whitespace-nowrap"></td>
+        <td th:text="${catalogo.categoria.nombre}" class="px-6 py-4 whitespace-nowrap"></td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+          <a th:href="@{/catalogos/details/{id}(id=${catalogo.id})}" class="text-blue-600 hover:text-blue-900 mr-2">Detalles</a>
+          <a th:href="@{/catalogos/edit/{id}(id=${catalogo.id})}" class="text-green-600 hover:text-green-900 mr-2">Editar</a>
+          <a th:href="@{/catalogos/delete/{id}(id=${catalogo.id})}" class="text-red-600 hover:text-red-900">Eliminar</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  <nav aria-label="Page navigation" class="mt-4">
+    <ul class="flex justify-center">
+      <li th:each="pageNumber : ${pageNumbers}" class="mx-1">
+        <a th:href="@{|/catalogos?page=${pageNumber}|}" th:text="${pageNumber}" class="block px-3 py-1 text-sm rounded-lg"
+           th:classappend="${catalogos.number + 1 == pageNumber} ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'">
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+</div>
+</html>

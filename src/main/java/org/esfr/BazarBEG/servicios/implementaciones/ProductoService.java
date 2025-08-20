@@ -49,4 +49,15 @@ public class ProductoService implements IProductoService {
     public Page<Producto> buscarTodosPaginados(Pageable pageable) {
         return productoRepository.findAll(pageable);
     }
+
+    @Override
+    public List<Producto> buscarPorIds(List<Integer> ids) {
+        return productoRepository.findByIdIn(ids);
+    }
+
+    @Override
+    public List<Producto> findByCategoriaId(Integer categoriaId) {
+        return productoRepository.findByCategoriaId(categoriaId);
+    }
+
 }
