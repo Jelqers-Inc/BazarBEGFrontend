@@ -1,7 +1,7 @@
 <html lang="es"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="/layouts/_mainLayout">
+      layout:decorate="/layouts/_mainLayoutAdmin.html">
 
 <div layout:fragment="content" class="p-6">
 
@@ -31,47 +31,61 @@
         </script>
     </div>
 
-    <div class="flex items-center justify-between mb-4">
-        <h1 class="text-2xl font-bold text-gray-800">Listado de Productos</h1>
-        <a th:href="@{/productos/create}" class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+   <div class="container mx-auto p-8">
+    <div class="flex flex-col sm:flex-row items-center justify-between mb-8">
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
+            Gestión de Productos
+        </h1>
+        <a th:href="@{/productos/create}" class="flex items-center gap-2 px-6 py-3 mt-4 sm:mt-0 bg-purple-600 text-white font-medium rounded-xl 
+            shadow-lg hover:bg-purple-700 transform hover:scale-105 transition duration-300">
             Nuevo Producto
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
         </a>
     </div>
 
-    <div class="overflow-x-auto bg-white rounded-lg shadow">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-            <tr>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Nombre</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Precio</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Stock</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Imagen</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Acciones</th>
-            </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-            <tr th:each="producto : ${productos}">
-                <td th:text="${producto.id}" class="px-6 py-4 whitespace-nowrap"></td>
-                <td th:text="${producto.nombre}" class="px-6 py-4 whitespace-nowrap"></td>
-                <td th:text="${producto.precio}" class="px-6 py-4 whitespace-nowrap"></td>
-                <td th:text="${producto.stock}" class="px-6 py-4 whitespace-nowrap"></td>
-                <td class="px-6 py-4">
-                    <img th:if="${producto.imagen != null}"
-                         th:src="@{/productos/imagen/{id}(id=${producto.id})}"
-                         alt="Imagen producto"
-                         class="object-cover w-16 h-16 rounded-md">
-                    <span th:if="${producto.imagen == null}" class="text-gray-500 text-sm">Sin imagen</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a th:href="@{/productos/details/{id}(id=${producto.id})}" class="text-blue-600 hover:text-blue-900 mr-2">Detalles</a>
-                    <a th:href="@{/productos/edit/{id}(id=${producto.id})}" class="text-green-600 hover:text-green-900 mr-2">Editar</a>
-                    <a th:href="@{/productos/remove/{id}(id=${producto.id})}" class="text-red-600 hover:text-red-900">Eliminar</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div th:each="producto : ${productos}" class="bg-white rounded-xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 overflow-hidden">
+            <div class="h-48 overflow-hidden">
+                <img th:if="${producto.imagen != null}"
+                     th:src="@{/productos/imagen/{id}(id=${producto.id})}"
+                     alt="Imagen del producto"
+                     class="w-full h-full object-cover">
+                <div th:if="${producto.imagen == null}" class="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <span class="text-gray-500 font-semibold text-sm">Sin Imagen</span>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <div class="flex items-baseline justify-between mb-2">
+                    <h2 th:text="${producto.nombre}" class="text-xl font-bold text-gray-900 truncate"></h2>
+                    <span th:text="'$' + ${#numbers.formatDecimal(producto.precio, 1, 'POINT', 2, 'COMMA')}" class="text-lg font-extrabold text-purple-600"></span>
+                </div>
+
+                <div class="flex items-baseline justify-between text-sm text-gray-500 mb-4">
+                    <p>ID: <span th:text="${producto.id}" class="font-medium"></span></p>
+                    <p>Stock: <span th:text="${producto.stock}" class="font-medium"></span></p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <a th:href="@{/productos/details/{id}(id=${producto.id})}"
+                       class="flex-1 text-center py-2 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700 transition duration-300 text-sm font-medium">
+                        Detalles
+                    </a>
+                    <a th:href="@{/productos/edit/{id}(id=${producto.id})}"
+                       class="flex-1 text-center py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition duration-300 text-sm font-medium">
+                        Editar
+                    </a>
+                    <a th:href="@{/productos/remove/{id}(id=${producto.id})}"
+                       class="flex-1 text-center py-2 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-300 text-sm font-medium">
+                        Eliminar
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
     <!-- Paginación -->
     <nav aria-label="Page navigation" class="mt-4">
