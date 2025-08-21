@@ -35,5 +35,6 @@ public interface IProductoRepository extends JpaRepository<Producto, Integer> {
     Page<Producto> findByStockEquals(int cantidad, Pageable pageable);
 
     List<Producto> findByIdIn(List<Integer> ids);
+
     List<Producto> findByCategoriaId(Integer categoriaId);
 }

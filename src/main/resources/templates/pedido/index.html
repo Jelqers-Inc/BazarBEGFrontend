@@ -1,0 +1,41 @@
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="/layouts/_mainLayoutAdmin.html">
+
+<div layout:fragment="content" class="p-6">
+
+    <div th:if="${msg}">
+        <script th:inline="javascript">
+            Swal.fire({title:'¡Éxito!', text:[[${msg}]], icon:'success', timer:2000, showConfirmButton:false});
+        </script>
+    </div>
+
+    <div th:if="${error}">
+        <script th:inline="javascript">
+            Swal.fire({title:'Error', text:[[${error}]], icon:'error', timer:2500, showConfirmButton:true});
+        </script>
+    </div>
+
+    <div class="container mx-auto p-8">
+        <div class="flex flex-col sm:flex-row items-center justify-between mb-8">
+            <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">Gestión de Pedidos</h1>
+            <a th:href="@{/pedidos/create}" class="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700">Nuevo Pedido</a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div th:each="pedido : ${pedidos}" class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold">Pedido #<span th:text="${pedido.id}"></span></h2>
+                <p>Usuario: <span th:text="${pedido.usuario.nombre}"></span></p>
+                <p>Fecha: <span th:text="${#dates.format(pedido.fechaPedido,'dd/MM/yyyy')}"></span></p>
+                <p>Total: $<span th:text="${pedido.total}"></span></p>
+                <div class="flex gap-2 mt-4">
+                    <a th:href="@{/pedidos/details/{id}(id=${pedido.id})}" class="bg-blue-600 text-white px-3 py-1 rounded">Detalles</a>
+                    <a th:href="@{/pedidos/edit/{id}(id=${pedido.id})}" class="bg-green-600 text-white px-3 py-1 rounded">Editar</a>
+                    <a th:href="@{/pedidos/remove/{id}(id=${pedido.id})}" class="bg-red-600 text-white px-3 py-1 rounded">Eliminar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</html>

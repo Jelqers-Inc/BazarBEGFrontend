@@ -5,78 +5,51 @@
 
 <div layout:fragment="content" class="p-6">
 
-  <!-- Mensaje de confirmación -->
-  <div th:if="${msg}">
+  <div th:if="${msg}" class="mb-4">
     <script th:inline="javascript">
-      Swal.fire({
-        title: '¡Éxito!',
-        text: [[${msg}]],
-        icon: 'success',
-        timer: 2000,
-        showConfirmButton: false
-      });
+      Swal.fire({ title: '¡Éxito!', text: [[${msg}]], icon: 'success', timer: 2000, showConfirmButton: false });
     </script>
   </div>
-
-  <!-- Mensaje de error -->
-  <div th:if="${error}">
-    <script th:inline="javascript">
-      Swal.fire({
-        title: 'Error',
-        text: [[${error}]],
-        icon: 'error',
-        timer: 2500,
-        showConfirmButton: true
-      });
-    </script>
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold text-gray-800">Catálogos</h1>
+    <a href="/catalogos/create" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Crear Nuevo Catálogo</a>
   </div>
 
-  <div class="flex items-center justify-between mb-4">
-    <h1 class="text-2xl font-bold text-gray-800">Gestión de Catálogos</h1>
-    <a th:href="@{/catalogos/create}" class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-      Nuevo Catálogo
-    </a>
-  </div>
-
-  <div class="overflow-x-auto bg-white rounded-lg shadow">
-    <table class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-50">
-      <tr>
-        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
-        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Nombre</th>
-        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Fecha Inicio</th>
-        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Fecha Fin</th>
-        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Categoría</th>
-        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Acciones</th>
-      </tr>
-      </thead>
-      <tbody class="bg-white divide-y divide-gray-200">
-      <tr th:each="catalogo : ${catalogos.content}">
-        <td th:text="${catalogo.id}" class="px-6 py-4 whitespace-nowrap"></td>
-        <td th:text="${catalogo.nombre}" class="px-6 py-4 whitespace-nowrap"></td>
-        <td th:text="${#dates.format(catalogo.fechaInicio, 'dd/MM/yyyy')}" class="px-6 py-4 whitespace-nowrap"></td>
-        <td th:text="${#dates.format(catalogo.fechaFin, 'dd/MM/yyyy')}" class="px-6 py-4 whitespace-nowrap"></td>
-        <td th:text="${catalogo.categoria.nombre}" class="px-6 py-4 whitespace-nowrap"></td>
-        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-          <a th:href="@{/catalogos/details/{id}(id=${catalogo.id})}" class="text-blue-600 hover:text-blue-900 mr-2">Detalles</a>
-          <a th:href="@{/catalogos/edit/{id}(id=${catalogo.id})}" class="text-green-600 hover:text-green-900 mr-2">Editar</a>
-          <a th:href="@{/catalogos/delete/{id}(id=${catalogo.id})}" class="text-red-600 hover:text-red-900">Eliminar</a>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+  <table class="min-w-full border border-gray-200">
+    <thead>
+    <tr class="bg-gray-100">
+      <th class="p-2 border">Nombre</th>
+      <th class="p-2 border">Categoría</th>
+      <th class="p-2 border">Fecha Inicio</th>
+      <th class="p-2 border">Fecha Fin</th>
+      <th class="p-2 border">Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="cat : ${catalogos.content}">
+      <td class="p-2 border" th:text="${cat.nombre}"></td>
+      <td class="p-2 border" th:text="${cat.categoria != null ? cat.categoria.nombre : '-'}"></td>
+      <td class="p-2 border" th:text="${cat.fechaInicio}"></td>
+      <td class="p-2 border" th:text="${cat.fechaFin}"></td>
+      <td class="p-2 border flex flex-wrap gap-2">
+        <a th:href="@{'/catalogos/details/' + ${cat.id}}" class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Detalle</a>
+        <a th:href="@{'/catalogos/edit/' + ${cat.id}}" class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">Editar</a>
+        <a th:href="@{'/catalogos/delete/' + ${cat.id}}" class="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700">Eliminar</a>
+        <a th:href="@{'/catalogos/reporte/inline?id=' + ${cat.id}}" target="_blank" class="px-2 py-1 bg-gray-600 text-white rounded hover:bg-gray-700">Vista Previa PDF</a>
+        <a th:href="@{'/catalogos/reporte/attachment?id=' + ${cat.id}}" class="px-2 py-1 bg-purple-600 text-white rounded hover:bg-purple-700">Descargar PDF</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
 
   <!-- Paginación -->
-  <nav aria-label="Page navigation" class="mt-4">
-    <ul class="flex justify-center">
-      <li th:each="pageNumber : ${pageNumbers}" class="mx-1">
-        <a th:href="@{|/catalogos?page=${pageNumber}|}" th:text="${pageNumber}" class="block px-3 py-1 text-sm rounded-lg"
-           th:classappend="${catalogos.number + 1 == pageNumber} ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'">
-        </a>
+  <div class="mt-4" th:if="${pageNumbers != null}">
+    <ul class="flex gap-2">
+      <li th:each="i : ${pageNumbers}">
+        <a th:href="@{'/catalogos?page=' + ${i}}" class="px-2 py-1 border rounded hover:bg-gray-100" th:text="${i}"></a>
       </li>
     </ul>
-  </nav>
+  </div>
 
 </div>
 </html>

@@ -4,6 +4,7 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
+import jakarta.servlet.http.HttpServletResponse;
 import org.esfr.BazarBEG.modelos.Catalogo;
 import org.esfr.BazarBEG.modelos.Producto;
 import org.esfr.BazarBEG.servicios.interfaces.ICatalogoService;
@@ -23,6 +24,10 @@ import jakarta.validation.Valid;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -66,10 +71,10 @@ public class CatalogoController {
 
     // -------------------- CREAR --------------------
     @GetMapping("/create")
-    public String createCatalogo(Model model) {
-        Catalogo catalogo = new Catalogo();
-        model.addAttribute("catalogo", catalogo);
+    public String create(Model model) {
+        model.addAttribute("catalogo", new Catalogo());
         model.addAttribute("categorias", categoriaService.obtenerTodos());
+        model.addAttribute("productos", new ArrayList<Producto>());
         return "catalogo/create";
     }
 
@@ -77,55 +82,63 @@ public class CatalogoController {
     @GetMapping("/productosPorCategoria/{categoriaId}")
     @ResponseBody
     public List<Map<String, Object>> productosPorCategoria(@PathVariable Integer categoriaId) {
-        List<Producto> productos = productoService.findByCategoriaId(categoriaId);
-
-        return productos.stream().map(p -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", p.getId());
-            map.put("nombre", p.getNombre());
-            map.put("precio", p.getPrecio());
-            return map;
-        }).collect(Collectors.toList());
+        return productoService.findByCategoriaId(categoriaId)
+                .stream()
+                .map(p -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", p.getId());
+                    map.put("nombre", p.getNombre());
+                    map.put("precio", p.getPrecio());
+                    return map;
+                })
+                .collect(Collectors.toList());
     }
 
     // -------------------- GUARDAR --------------------
     @PostMapping("/save")
-    public String save(@Valid @ModelAttribute Catalogo catalogo,
-                       BindingResult result,
+    public String save(@ModelAttribute Catalogo catalogo,
                        @RequestParam(value = "portadaFile", required = false) MultipartFile portadaFile,
                        @RequestParam(value = "productosIds", required = false) List<Integer> productosIds,
-                       RedirectAttributes redirect) throws IOException {
+                       RedirectAttributes redirect) {
 
-        if (result.hasErrors()) {
-            return "catalogo/create";
+        try {
+            // Resolver categoría seleccionada
+            if (catalogo.getCategoria() != null && catalogo.getCategoria().getId() != null) {
+                catalogo.setCategoria(categoriaService.buscarPorId(catalogo.getCategoria().getId()).orElse(null));
+            }
+
+            // Guardar portada
+            if (portadaFile != null && !portadaFile.isEmpty()) {
+                Path uploadPath = Paths.get("C:/bazar/uploads/catalogos/"); // ruta absoluta segura
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+
+                String fileName = "portada_" + System.currentTimeMillis() + "_" + portadaFile.getOriginalFilename();
+                Files.copy(portadaFile.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+                catalogo.setPortadaImagen("/uploads/catalogos/" + fileName);
+            }
+
+            // Guardar productos seleccionados
+            if (productosIds != null && !productosIds.isEmpty()) {
+                catalogo.setProductos(productoService.buscarPorIds(productosIds));
+            } else {
+                catalogo.setProductos(new ArrayList<>());
+            }
+
+            // Guardar catálogo en BD
+            catalogoService.crearOEditar(catalogo);
+
+            redirect.addFlashAttribute("msg", "Catálogo guardado correctamente");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirect.addFlashAttribute("error", "Error al guardar el catálogo: " + e.getMessage());
+            return "redirect:/catalogos/create";
         }
 
-        // -------------------- Guardar portada si existe --------------------
-        if (portadaFile != null && !portadaFile.isEmpty()) {
-            String fileName = "portada_" + System.currentTimeMillis() + "_" + portadaFile.getOriginalFilename();
-            String portadaPath = UPLOAD_DIR + fileName;
-            portadaFile.transferTo(new File(portadaPath));
-            catalogo.setPortadaImagen("/uploads/catalogos/" + fileName);
-        }
-
-        // -------------------- Asociar productos si se seleccionaron --------------------
-        if (productosIds != null && !productosIds.isEmpty()) {
-            List<Producto> productosSeleccionados = productoService.buscarPorIds(productosIds);
-            catalogo.setProductos(productosSeleccionados);
-        } else {
-            catalogo.setProductos(new ArrayList<>());
-        }
-
-        // -------------------- Generar PDF --------------------
-        String pdfPath = generarPDF(catalogo);
-        catalogo.setPdfPath(pdfPath);
-
-        // -------------------- Guardar catálogo --------------------
-        catalogoService.crearOEditar(catalogo);
-
-        redirect.addFlashAttribute("msg", "Catálogo guardado correctamente");
         return "redirect:/catalogos";
     }
+
 
 
     // -------------------- DETALLES --------------------
@@ -144,15 +157,8 @@ public class CatalogoController {
                 .orElseThrow(() -> new IllegalArgumentException("Catálogo no encontrado"));
         model.addAttribute("catalogo", catalogo);
         model.addAttribute("categorias", categoriaService.obtenerTodos());
-
-        List<Producto> productos;
-        if (catalogo.getCategoria() != null) {
-            productos = productoService.findByCategoriaId(catalogo.getCategoria().getId());
-        } else {
-            productos = new ArrayList<>();
-        }
-        model.addAttribute("productos", productos);
-
+        model.addAttribute("productos", catalogo.getCategoria() != null ?
+                productoService.findByCategoriaId(catalogo.getCategoria().getId()) : new ArrayList<>());
         return "catalogo/edit";
     }
 
@@ -164,9 +170,7 @@ public class CatalogoController {
                          @RequestParam("productosIds") List<Integer> productosIds,
                          RedirectAttributes redirect) throws IOException {
 
-        if (result.hasErrors()) {
-            return "catalogo/edit";
-        }
+        if (result.hasErrors()) return "catalogo/edit";
 
         Catalogo catalogoExistente = catalogoService.buscarPorId(id)
                 .orElseThrow(() -> new IllegalArgumentException("Catálogo no encontrado"));
@@ -178,22 +182,21 @@ public class CatalogoController {
         catalogoExistente.setCategoria(catalogo.getCategoria());
 
         if (!portadaFile.isEmpty()) {
-            String portadaPath = UPLOAD_DIR + "portada_" + System.currentTimeMillis() + "_" + portadaFile.getOriginalFilename();
-            portadaFile.transferTo(new File(portadaPath));
-            catalogoExistente.setPortadaImagen("/uploads/catalogos/" + "portada_" + System.currentTimeMillis() + "_" + portadaFile.getOriginalFilename());
+            String portadaName = "portada_" + System.currentTimeMillis() + "_" + portadaFile.getOriginalFilename();
+            portadaFile.transferTo(new File(UPLOAD_DIR + portadaName));
+            catalogoExistente.setPortadaImagen("/uploads/catalogos/" + portadaName);
         }
 
-        List<Producto> productosSeleccionados = productoService.buscarPorIds(productosIds);
-        catalogoExistente.setProductos(productosSeleccionados);
-
-        // Regenerar PDF
-        String pdfPath = generarPDF(catalogoExistente);
-        catalogoExistente.setPdfPath(pdfPath);
-
+        catalogoExistente.setProductos(productoService.buscarPorIds(productosIds));
+        catalogoExistente.setPdfPath(generarPDF(catalogoExistente));
         catalogoService.crearOEditar(catalogoExistente);
+
         redirect.addFlashAttribute("success", "Catálogo actualizado correctamente");
         return "redirect:/catalogos";
     }
+
+
+
 
     // -------------------- ELIMINAR --------------------
     @GetMapping("/delete/{id}")
@@ -225,7 +228,98 @@ public class CatalogoController {
         }
 
         document.close();
-
-        return "/uploads/catalogos/" + pdfFileName; // ruta relativa para vista previa
+        return "/uploads/catalogos/" + pdfFileName;
     }
+
+    // -------------------- VISTA PREVIA PDF --------------------
+    @PostMapping("/preview-pdf")
+    public void previewPDF(@ModelAttribute Catalogo catalogo,
+                           @RequestParam(value = "portadaFile", required = false) MultipartFile portadaFile,
+                           @RequestParam(value = "productosIds", required = false) List<Integer> productosIds,
+                           HttpServletResponse response) throws IOException {
+
+        // Resolver categoría
+        if (catalogo.getCategoria() != null && catalogo.getCategoria().getId() != null) {
+            catalogo.setCategoria(
+                    categoriaService.buscarPorId(catalogo.getCategoria().getId()).orElse(null)
+            );
+        }
+
+        // Resolver productos seleccionados
+        if (productosIds != null && !productosIds.isEmpty()) {
+            catalogo.setProductos(productoService.buscarPorIds(productosIds));
+        } else catalogo.setProductos(new ArrayList<>());
+
+        // Preparar PDF
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "inline; filename=catalogo_preview.pdf");
+
+        PdfWriter writer = new PdfWriter(response.getOutputStream());
+        PdfDocument pdfDoc = new PdfDocument(writer);
+        Document document = new Document(pdfDoc);
+
+        // Título y detalles
+        document.add(new Paragraph("Catálogo: " + catalogo.getNombre()));
+        document.add(new Paragraph("Descripción: " + catalogo.getDescripcion()));
+        document.add(new Paragraph("Fecha inicio: " + catalogo.getFechaInicio()));
+        document.add(new Paragraph("Fecha fin: " + catalogo.getFechaFin()));
+
+        if (catalogo.getCategoria() != null)
+            document.add(new Paragraph("Categoría: " + catalogo.getCategoria().getNombre()));
+
+        // Imagen de portada desde el archivo recibido
+        if (portadaFile != null && !portadaFile.isEmpty()) {
+            byte[] bytes = portadaFile.getBytes();
+            com.itextpdf.layout.element.Image img = new com.itextpdf.layout.element.Image(
+                    com.itextpdf.io.image.ImageDataFactory.create(bytes)
+            );
+            img.setAutoScale(true);
+            document.add(img);
+        }
+
+        // Productos
+        document.add(new Paragraph("Productos:"));
+        for (Producto p : catalogo.getProductos()) {
+            document.add(new Paragraph("- " + p.getNombre() + " ($" + p.getPrecio() + ")"));
+        }
+
+        document.close();
+    }
+
+
+    // -------------------- REPORTE PDF (descarga o vista previa) --------------------
+    @GetMapping("/reporte/{visualizacion}")
+    public void generarReportePDF(@PathVariable("visualizacion") String visualizacion,
+                                  @RequestParam("id") int catalogoId,
+                                  HttpServletResponse response) throws IOException {
+
+        Catalogo catalogo = catalogoService.buscarPorId(catalogoId)
+                .orElseThrow(() -> new IllegalArgumentException("Catálogo no encontrado"));
+
+        String contentDisposition = visualizacion.equalsIgnoreCase("attachment") ?
+                "attachment; filename=catalogo.pdf" :
+                "inline; filename=catalogo.pdf";
+
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", contentDisposition);
+
+        PdfWriter writer = new PdfWriter(response.getOutputStream());
+        PdfDocument pdfDoc = new PdfDocument(writer);
+        Document document = new Document(pdfDoc);
+
+        document.add(new Paragraph("Catálogo: " + catalogo.getNombre()));
+        document.add(new Paragraph("Descripción: " + catalogo.getDescripcion()));
+        document.add(new Paragraph("Fecha inicio: " + catalogo.getFechaInicio()));
+        document.add(new Paragraph("Fecha fin: " + catalogo.getFechaFin()));
+        if (catalogo.getCategoria() != null)
+            document.add(new Paragraph("Categoría: " + catalogo.getCategoria().getNombre()));
+
+        document.add(new Paragraph("Productos:"));
+        for (Producto p : catalogo.getProductos()) {
+            document.add(new Paragraph("- " + p.getNombre() + " $" + p.getPrecio()));
+        }
+
+        document.close();
+    }
+
 }
