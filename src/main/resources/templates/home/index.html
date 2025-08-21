@@ -35,38 +35,19 @@
               </div>
             </div>
            
-            <h2 class="text-[#120e1b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Comprar por Categorías</h2>
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
-              <div class="flex flex-col gap-3 pb-3">
-                <div
-                  class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
-                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB9L210sHS6OpOjwZncQgcZGUaissHINyEgiC45ek1se7hx69zWyMTrhjIt8GX8Ir4fKRYgY9IOp4VilRRlGQGXcIrBZXF2jY5GoA7_39ZxogfplxXdGNYahl2k84dtNMcBiCrYB_OdBrPvYLdPdt5g4luXp1fAODUc1rMSDk-WaAgIeBTh9S7Q_DF01WQLkFhJZah0_ZUipp-D5FwNvum4zhe-D53k742REEIdJONRVWwmvc7vMAcWPX-miwTd-3nnlFaPtuMtaK4");'
-                ></div>
-                <p class="text-[#120e1b] text-base font-medium leading-normal">Maquillaje y Uñas</p>
-              </div>
-              <div class="flex flex-col gap-3 pb-3">
-                <div
-                  class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
-                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAph3N6nOqe-AAKmjA0IOcXBo05hT3eiwxKPGTa-UaH44t-lTpjlr5cG5X3U-oHDd_jUFL_uWxnVLU66nxPPr-oqfDoKzMIWgeHR2xYkeu91znNK6wQobMferAO9jIOEUPZHXkcyTTNZuz1KGSc4N_hNhQ5VLuvIY53HI4GoAHch_en1wjjC6ExXKXoiyU9tAGQarZnGEZ9EGVesX-pcu4KoDit94GYZidKOKXd9DSjiHOmli8w8OAeHuQ4XVgdo458Vy8GYW_EhHY");'
-                ></div>
-                <p class="text-[#120e1b] text-base font-medium leading-normal">Cuidado de la Piel y Rostro</p>
-              </div>
-              <div class="flex flex-col gap-3 pb-3">
-                <div
-                  class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
-                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAjGvoRgWG6daJrdtj3dcyiClKXsI6s844VcAuuWN3fmDsdhvFUaMlW2-Uu-3SSKVrCQIiDBIi86x5k-hGFcKb8yKVhxkY2basA-BI1t97mDE-EOhz4PH9n2hPt2_ShIlGmaX9aAON7hUlMoyhfQZL-jXzMfTpA5T_xoiS-9D6xgB51JzykxbAgwFwmT4Qiw9EQkLxNSeohULFEYmagLfAwRhpEMSBtc8i-8jpYnqjmEJ2DqRKmRSWitEWiFCZicfWLMi23Md7fu60");'
-                ></div>
-                <p class="text-[#120e1b] text-base font-medium leading-normal">Cabello y Cuerpo</p>
-              </div>
-              <div class="flex flex-col gap-3 pb-3">
-                <div
-                  class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
-                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAqE8OWjqcpYe28zE-Z6ol13qs9N3kq9khncj13nKHmKAqOYwdN-snGDzlY1N4-7bbIUWOOaBqJeZdSLdJTSb-1QnRC84rZCau2w2jvMBIjhCXRvaYtcWvxGNwOQr_dzIqzmC43LMvWbDz94lu-dfOdqYUfUjJDuE5XyVQYNZ5DzVwyTmflc1ihwae3u8HDcAbuEoqyWVldJjlwvDR1hQrMrBsEblLrQQ3EX44oCgdypwC0nFvF0FlbLdvdYbxIIhCt09HxUxXYzi8");'
-                ></div>
-                <p class="text-[#120e1b] text-base font-medium leading-normal">Accesorios y Regalos</p>
-              </div>
-            </div>
-           
+           <h2 class="text-[#120e1b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Comprar por Categorías</h2>
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 p-4">
+    <div th:each="categoria : ${categorias}" class="flex flex-col gap-3 pb-3">
+        <a th:href="@{'/categorias/' + ${categoria.id}}"> <div
+              class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
+              th:style="'background-image: url(/uploads/categorias/' + ${categoria.imagen} + ');'"
+            ></div>
+        </a>
+        <p th:text="${categoria.nombre}" class="text-[#120e1b] text-base font-medium leading-normal"></p>
+    </div>
+</div>
+            
+
           </div>
         </div>
 
