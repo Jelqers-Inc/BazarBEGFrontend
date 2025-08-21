@@ -136,32 +136,34 @@ public class CategoriaController {
     }
 
     @PostMapping("/delete")
-    public String delete(@RequestParam("id") Integer id, RedirectAttributes attributes) {
-        Optional<Categoria> catData = categoriaService.buscarPorId(id);
+public String delete(@RequestParam("id") Integer id, RedirectAttributes attributes) {
+    Optional<Categoria> catData = categoriaService.buscarPorId(id);
 
-        if (catData.isPresent()) {
+    if (catData.isPresent()) {
+        try {
             Categoria categoria = catData.get();
+            categoriaService.eliminarPorId(id);
 
-            // Eliminar imagen si existe
+            // Solo si la eliminación de la BD es exitosa, eliminamos el archivo.
             if (categoria.getImagen() != null) {
-                try {
-                    Path uploadPath = Paths.get(UPLOAD_DIR);
-                    Path filePath = uploadPath.resolve(categoria.getImagen());
-                    Files.deleteIfExists(filePath);
-                } catch (IOException e) {
-                    attributes.addFlashAttribute("error", "Error al eliminar la imagen: " + e.getMessage());
-                    return "redirect:/categorias";
-                }
+                Path uploadPath = Paths.get(UPLOAD_DIR);
+                Path filePath = uploadPath.resolve(categoria.getImagen());
+                Files.deleteIfExists(filePath);
             }
 
-            categoriaService.eliminarPorId(id);
             attributes.addFlashAttribute("msg", "Categoría eliminada correctamente");
-        } else {
-            attributes.addFlashAttribute("error", "La categoría no existe");
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            attributes.addFlashAttribute("error", "No se puede eliminar la categoría porque contiene productos.");
+            // Si hay un error, no hacemos nada con el archivo, la imagen se mantiene.
+        } catch (IOException e) {
+            attributes.addFlashAttribute("error", "Error al eliminar la imagen: " + e.getMessage());
         }
-
-        return "redirect:/categorias";
+    } else {
+        attributes.addFlashAttribute("error", "La categoría no existe.");
     }
+
+    return "redirect:/categorias";
+}
 
     // -------------------- SERVIR IMÁGENES --------------------
     @GetMapping("/imagen/{id}")
