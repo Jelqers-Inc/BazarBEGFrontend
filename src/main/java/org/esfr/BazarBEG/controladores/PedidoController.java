@@ -1,24 +1,31 @@
 package org.esfr.BazarBEG.controladores;
 
-import org.esfr.BazarBEG.modelos.Pedido;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.element.Table;
+import jakarta.servlet.http.HttpServletResponse;
 import org.esfr.BazarBEG.modelos.DetallePedido;
-import org.esfr.BazarBEG.modelos.Producto;
+import org.esfr.BazarBEG.modelos.Pedido;
 import org.esfr.BazarBEG.servicios.interfaces.IPedidoService;
-import org.esfr.BazarBEG.servicios.interfaces.IDetallePedidoService;
-import org.esfr.BazarBEG.servicios.interfaces.IProductoService;
-import org.esfr.BazarBEG.servicios.interfaces.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Date;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Controller
 @RequestMapping("/pedidos")
@@ -27,123 +34,114 @@ public class PedidoController {
     @Autowired
     private IPedidoService pedidoService;
 
-    @Autowired
-    private IDetallePedidoService detallePedidoService;
-
-    @Autowired
-    private IProductoService productoService;
-
-    @Autowired
-    private IUsuarioService usuarioService;
-
-    // ----------------- Listado de Pedidos -----------------
+    // -------------------- LISTADO --------------------
     @GetMapping
     public String index(Model model,
-                        @RequestParam("page") Integer page,
-                        @RequestParam("size") Integer size) {
-
-        int currentPage = (page == null || page < 1) ? 0 : page - 1;
-        int pageSize = (size == null || size < 1) ? 5 : size;
-
+                        @RequestParam("page") Optional<Integer> page,
+                        @RequestParam("size") Optional<Integer> size) {
+        int currentPage = page.orElse(1) - 1;
+        int pageSize = size.orElse(5);
         Pageable pageable = PageRequest.of(currentPage, pageSize);
-        Page<Pedido> pedidos = pedidoService.buscarTodosPaginados(pageable);
 
+        Page<Pedido> pedidos = pedidoService.buscarTodosPaginados(pageable);
         model.addAttribute("pedidos", pedidos);
 
         int totalPages = pedidos.getTotalPages();
         if (totalPages > 0) {
-            model.addAttribute("pageNumbers", java.util.stream.IntStream.rangeClosed(1, totalPages).boxed().toList());
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("pageNumbers", pageNumbers);
         }
 
         return "pedido/index";
     }
 
-    // ----------------- Crear Pedido -----------------
-    @GetMapping("/create")
-    public String create(Model model) {
-        model.addAttribute("pedido", new Pedido());
-        model.addAttribute("usuarios", usuarioService.obtenerTodos());
-        model.addAttribute("productos", productoService.obtenerTodos());
-        return "pedido/create";
-    }
-
-    @PostMapping("/save")
-    public String save(@ModelAttribute Pedido pedido,
-                       BindingResult result,
-                       @RequestParam("productoIds") List<Integer> productoIds,
-                       @RequestParam("cantidades") List<Integer> cantidades,
-                       RedirectAttributes attributes,
-                       Model model) {
-
-        if (result.hasErrors() || productoIds.isEmpty() || cantidades.isEmpty()) {
-            model.addAttribute("usuarios", usuarioService.obtenerTodos());
-            model.addAttribute("productos", productoService.obtenerTodos());
-            attributes.addFlashAttribute("error", "Debe seleccionar al menos un producto y su cantidad");
-            return "pedido/create";
-        }
-
-        float total = 0;
-        for (int i = 0; i < productoIds.size(); i++) {
-            Producto p = productoService.buscarPorId(productoIds.get(i)).orElse(null);
-            if (p != null) {
-                DetallePedido detalle = new DetallePedido();
-                detalle.setProducto(p);
-                detalle.setCantidad(cantidades.get(i));
-                detalle.setPrecioUnitario(p.getPrecio());
-                detalle.setPedido(pedido);
-                total += p.getPrecio() * cantidades.get(i);
-                pedido.getDetalles().add(detalle);
-            }
-        }
-
-        pedido.setTotal(total);
-        pedido.setFechaPedido(new Date());
-        pedidoService.crearOEditar(pedido);
-        attributes.addFlashAttribute("msg", "Pedido creado correctamente");
-        return "redirect:/pedidos";
-    }
-
-    // ----------------- Ver detalles -----------------
+    // -------------------- DETALLE --------------------
     @GetMapping("/details/{id}")
     public String details(@PathVariable("id") Integer id, Model model) {
-        Pedido pedido = pedidoService.buscarPorId(id).orElse(null);
-        if (pedido == null) {
-            model.addAttribute("error", "Pedido no encontrado");
-            return "redirect:/pedidos";
-        }
+        Pedido pedido = pedidoService.buscarPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado con ID: " + id));
         model.addAttribute("pedido", pedido);
         return "pedido/details";
     }
 
-    // ----------------- Editar Pedido -----------------
-    @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") Integer id, Model model) {
-        Pedido pedido = pedidoService.buscarPorId(id).orElse(null);
-        if (pedido == null) {
-            model.addAttribute("error", "Pedido no encontrado");
-            return "redirect:/pedidos";
-        }
-        model.addAttribute("pedido", pedido);
-        model.addAttribute("usuarios", usuarioService.obtenerTodos());
-        model.addAttribute("productos", productoService.obtenerTodos());
-        return "pedido/edit";
-    }
-
-    @PostMapping("/update/{id}")
-    public String update(@PathVariable("id") Integer id,
-                         @ModelAttribute Pedido pedido,
-                         RedirectAttributes attributes) {
-        pedido.setId(id);
-        pedidoService.crearOEditar(pedido);
-        attributes.addFlashAttribute("msg", "Pedido actualizado correctamente");
-        return "redirect:/pedidos";
-    }
-
-    // ----------------- Eliminar Pedido -----------------
-    @GetMapping("/remove/{id}")
-    public String remove(@PathVariable("id") Integer id, RedirectAttributes attributes) {
+    // -------------------- ELIMINA  --------------------
+    @PostMapping("/delete/{id}")
+    public String delete(@PathVariable("id") Integer id, RedirectAttributes redirect) {
         pedidoService.eliminarPorId(id);
-        attributes.addFlashAttribute("msg", "Pedido eliminado correctamente");
+        redirect.addFlashAttribute("msg", "Pedido eliminado exitosamente");
         return "redirect:/pedidos";
+    }
+
+    // -------------------- CONFIRMACIÓN DE ELIMINACIÓN --------------------
+    @GetMapping("/delete-confirm/{id}")
+    public String showDeleteConfirmation(@PathVariable("id") Integer id, Model model) {
+        Pedido pedido = pedidoService.buscarPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado con ID: " + id));
+        model.addAttribute("pedido", pedido);
+        return "pedido/delete";
+    }
+
+    // ------- FACTURA PDF ------
+    @GetMapping("/factura/{id}")
+    public void generarFacturaPDF(@PathVariable("id") Integer id, HttpServletResponse response) throws IOException {
+        // 1. Obtener el pedido con todos los datos necesarios
+        //    Ahora este método del servicio cargará los detalles y el usuario de forma segura
+        Pedido pedido = pedidoService.buscarPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado con ID: " + id));
+
+        // 2. Configurar la respuesta HTTP
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "inline; filename=factura_" + id + ".pdf");
+
+        // 3. Crear el documento PDF
+        PdfWriter writer = new PdfWriter(response.getOutputStream());
+        PdfDocument pdfDoc = new PdfDocument(writer);
+        Document document = new Document(pdfDoc);
+
+        // 4. Construir el contenido de la factura
+        // Título
+        document.add(new Paragraph("FACTURA DE PEDIDO")
+                .setFontSize(20)
+                .setBold()
+                .setTextAlignment(TextAlignment.CENTER)
+                .setMarginBottom(20));
+
+        // Información del cliente y del pedido
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        document.add(new Paragraph("Número de Pedido: " + pedido.getId()));
+        document.add(new Paragraph("Cliente: " + pedido.getUsuario().getNombre()));
+        document.add(new Paragraph("Fecha: " + sdf.format(pedido.getFechaPedido())));
+        document.add(new Paragraph("Estado: " + pedido.getEstado()));
+        document.add(new Paragraph("\n"));
+
+        // Tabla de detalles del pedido
+        float[] columnWidths = {200F, 50F, 50F, 70F};
+        Table table = new Table(columnWidths);
+
+
+        table.addCell(new Cell().add(new Paragraph("Producto").setBold()));
+        table.addCell(new Cell().add(new Paragraph("Cantidad").setBold()));
+        table.addCell(new Cell().add(new Paragraph("Precio U.").setBold()));
+        table.addCell(new Cell().add(new Paragraph("Subtotal").setBold()));
+
+        for (DetallePedido detalle : pedido.getDetalles()) {
+            table.addCell(new Cell().add(new Paragraph(detalle.getProducto().getNombre())));
+            table.addCell(new Cell().add(new Paragraph(String.valueOf(detalle.getCantidad()))));
+            table.addCell(new Cell().add(new Paragraph(String.format("%.2f", detalle.getPrecioUnitario()))));
+            table.addCell(new Cell().add(new Paragraph(String.format("%.2f", detalle.getCantidad() * detalle.getPrecioUnitario()))));
+        }
+
+        document.add(table);
+
+        // Total del pedido
+        document.add(new Paragraph("\n"));
+        document.add(new Paragraph("TOTAL: $" + String.format("%.2f", pedido.getTotal()))
+                .setBold()
+                .setTextAlignment(TextAlignment.RIGHT));
+
+        // 5. Cerrar el documento
+        document.close();
     }
 }
