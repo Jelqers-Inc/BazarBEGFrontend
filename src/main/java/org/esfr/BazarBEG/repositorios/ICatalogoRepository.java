@@ -4,6 +4,8 @@ import org.esfr.BazarBEG.modelos.Catalogo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,5 +32,13 @@ public interface ICatalogoRepository extends JpaRepository<Catalogo, Integer> {
 
     // Búsqueda de catálogos por categoria
     List<Catalogo> findByCategoriaId(Integer categoriaId);
+
+    // Nueva consulta para cargar el catálogo y sus productos
+    @Query("SELECT c FROM Catalogo c LEFT JOIN FETCH c.productos WHERE c.id = :id")
+    Optional<Catalogo> findByIdWithProducts(@Param("id") Integer id);
+
+    @Query("SELECT c FROM Catalogo c LEFT JOIN FETCH c.productos p LEFT JOIN FETCH c.categoria cat WHERE c.id = :id")
+    Optional<Catalogo> findByIdWithDetails(@Param("id") Integer id);
+
 
 }

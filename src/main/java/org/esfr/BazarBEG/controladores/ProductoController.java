@@ -64,7 +64,6 @@ public class ProductoController {
 
     @GetMapping("/create")
     public String create(Producto producto, Model model) {
-        // Pasar la lista de categorías al modelo
         model.addAttribute("categorias", categoriaService.obtenerTodos());
         return "producto/create";
     }
@@ -72,20 +71,18 @@ public class ProductoController {
     @PostMapping("/save")
     public String save(
             Producto producto,
-            @RequestParam("categoria.id") Integer categoriaId, // Recibimos el id de la categoría
+            @RequestParam("categoria.id") Integer categoriaId,
             @RequestParam("fileImagen") MultipartFile fileImagen,
             BindingResult result,
             Model model,
             RedirectAttributes attributes) {
 
-        // Validación
         if (result.hasErrors()) {
             model.addAttribute(producto);
             attributes.addFlashAttribute("error", "No se pudo guardar debido a un error.");
             return "producto/create";
         }
 
-        // Asignar la categoría al producto
         producto.setCategoria(categoriaService.buscarPorId(categoriaId).orElse(null));
 
         try {
@@ -99,34 +96,25 @@ public class ProductoController {
                 Path filePath = uploadPath.resolve(fileName);
                 Files.copy(fileImagen.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-                // Si es edición, eliminar la imagen anterior
-                if (producto.getId() != null && producto.getId() > 0) {
-                    Producto productoExistente = productoService.buscarPorId(producto.getId()).orElse(null);
-                    if (productoExistente != null && productoExistente.getImagen() != null) {
-                        Path fileAnterior = uploadPath.resolve(productoExistente.getImagen());
-                        Files.deleteIfExists(fileAnterior);
-                    }
-                }
+                // **CAMBIO CRUCIAL:** Guarda la ruta completa que el navegador pueda interpretar
+                producto.setImagen("/uploads/productos/" + fileName);
 
-                producto.setImagen(fileName);
             } else if (producto.getId() != null && producto.getId() > 0) {
-                // Mantener la imagen anterior si no se sube nueva
                 Producto productoExistente = productoService.buscarPorId(producto.getId()).orElse(null);
                 if (productoExistente != null) {
                     producto.setImagen(productoExistente.getImagen());
                 }
             }
-
         } catch (IOException e) {
             attributes.addFlashAttribute("error", "Error al procesar la imagen: " + e.getMessage());
             return "redirect:/productos/create";
         }
 
-        // Guardar producto
         productoService.crearOEditar(producto);
         attributes.addFlashAttribute("msg", "Producto guardado correctamente");
         return "redirect:/productos";
     }
+
 
 
     // -------------------- DETALLES --------------------
@@ -163,11 +151,12 @@ public class ProductoController {
         if (prodData.isPresent()) {
             Producto producto = prodData.get();
 
-            // Eliminar imagen si existe
             if (producto.getImagen() != null) {
                 try {
+                    // Extrae solo el nombre del archivo de la ruta almacenada
+                    String fileName = Paths.get(producto.getImagen()).getFileName().toString();
                     Path uploadPath = Paths.get(UPLOAD_DIR);
-                    Path filePath = uploadPath.resolve(producto.getImagen());
+                    Path filePath = uploadPath.resolve(fileName);
                     Files.deleteIfExists(filePath);
                 } catch (IOException e) {
                     attributes.addFlashAttribute("error", "Error al eliminar la imagen: " + e.getMessage());
@@ -182,30 +171,6 @@ public class ProductoController {
         }
 
         return "redirect:/productos";
-    }
-
-
-    // -------------------- SERVIR IMÁGENES --------------------
-    @GetMapping("/imagen/{id}")
-    @ResponseBody
-    public ResponseEntity<Resource> mostrarImagen(@PathVariable Integer id) {
-        try {
-            Producto producto = productoService.buscarPorId(id).orElse(null);
-            if (producto != null && producto.getImagen() != null) {
-                Path filePath = Paths.get(UPLOAD_DIR, producto.getImagen());
-                Resource resource = new UrlResource(filePath.toUri());
-                if (resource.exists() || resource.isReadable()) {
-                    String mimeType = Files.probeContentType(filePath);
-                    return ResponseEntity.ok()
-                            .contentType(MediaType.parseMediaType(mimeType))
-                            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                            .body(resource);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return ResponseEntity.notFound().build();
     }
 
 }

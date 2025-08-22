@@ -1,7 +1,7 @@
 <html lang="es"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="/layouts/_mainLayout">
+      layout:decorate="/layouts/_mainLayout.html">
 
 <div layout:fragment="content" class="p-6">
 
@@ -9,46 +9,39 @@
 
     <div class="bg-white p-6 rounded-lg shadow-md space-y-4">
 
-        <!-- Nombre -->
         <div>
             <label class="block text-sm font-medium text-gray-700">Nombre:</label>
             <p class="mt-1 text-gray-900" th:text="${producto.nombre}">Nombre del producto</p>
         </div>
 
-        <!-- Descripción -->
         <div>
             <label class="block text-sm font-medium text-gray-700">Descripción:</label>
             <p class="mt-1 text-gray-900" th:text="${producto.descripcion}">Descripción del producto</p>
         </div>
 
-        <!-- Precio -->
         <div>
             <label class="block text-sm font-medium text-gray-700">Precio:</label>
             <p class="mt-1 text-gray-900" th:text="${producto.precio}">0.00</p>
         </div>
 
-        <!-- Stock -->
         <div>
             <label class="block text-sm font-medium text-gray-700">Stock:</label>
             <p class="mt-1 text-gray-900" th:text="${producto.stock}">0</p>
         </div>
 
-        <!-- Categoría -->
         <div>
             <label class="block text-sm font-medium text-gray-700">Categoría:</label>
             <p class="mt-1 text-gray-900" th:text="${producto.categoria != null ? producto.categoria.nombre : 'Sin categoría'}">Categoría</p>
         </div>
 
-        <!-- Imagen -->
         <div>
             <label class="block text-sm font-medium text-gray-700">Imagen:</label>
             <div th:if="${producto.imagen != null}" class="mt-1">
-                <img th:src="@{/productos/imagen/{id}(id=${producto.id})}" alt="Imagen producto" class="w-64 h-64 object-cover rounded-md">
+                <img th:src="@{${producto.imagen}}" alt="Imagen producto" class="w-64 h-64 object-cover rounded-md">
             </div>
             <div th:if="${producto.imagen == null}" class="text-gray-500 mt-1">No hay imagen subida</div>
         </div>
 
-        <!-- Botón volver -->
         <div class="mt-4">
             <a th:href="@{/productos}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Volver al listado</a>
         </div>

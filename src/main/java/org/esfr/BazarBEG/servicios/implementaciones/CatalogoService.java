@@ -28,11 +28,6 @@ public class CatalogoService implements ICatalogoService {
     }
 
     @Override
-    public Optional<Catalogo> buscarPorId(Integer id) {
-        return catalogoRepository.findById(id);
-    }
-
-    @Override
     public Catalogo crearOEditar(Catalogo catalogo) {
         return catalogoRepository.save(catalogo);
     }
@@ -41,5 +36,15 @@ public class CatalogoService implements ICatalogoService {
     public void eliminarPorId(Integer id) {
         catalogoRepository.deleteById(id);
     }
-    
+
+    @Override
+    public Optional<Catalogo> buscarPorId(Integer id) {
+        // Usa la nueva consulta para asegurar que los productos se cargan
+        return catalogoRepository.findByIdWithProducts(id);
+    }
+
+    @Override
+    public Optional<Catalogo> buscarPorIdy(Integer id) {
+        return catalogoRepository.findByIdWithDetails(id);
+    }
 }

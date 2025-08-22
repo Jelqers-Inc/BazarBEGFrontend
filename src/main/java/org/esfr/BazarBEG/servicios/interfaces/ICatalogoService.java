@@ -17,4 +17,6 @@ public interface ICatalogoService {
     Catalogo crearOEditar(Catalogo catalogo);
 
     void eliminarPorId(Integer id);
+
+    Optional<Catalogo> buscarPorIdy(Integer id);
 }
