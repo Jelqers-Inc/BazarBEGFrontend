@@ -1,0 +1,45 @@
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/layouts/_mainLayoutAdmin.html">
+
+<div layout:fragment="content" class="p-6">
+
+    <html lang="es" xmlns:th="http://www.thymeleaf.org" layout:decorate="/layouts/_mainLayoutAdmin.html">
+
+    <div layout:fragment="content" class="p-6">
+
+        <h1 class="text-4xl font-bold mb-4">Pedido #<span th:text="${pedido.id}"></span></h1>
+        <p>Usuario: <span th:text="${pedido.usuario.nombre}"></span></p>
+        <p>Fecha: <span th:text="${#dates.format(pedido.fechaPedido,'dd/MM/yyyy')}"></span></p>
+        <p>Estado: <span th:text="${pedido.estado}"></span></p>
+        <p>Total: $<span th:text="${pedido.total}"></span></p>
+
+        <h2 class="text-2xl font-bold mt-6 mb-2">Detalles del Pedido</h2>
+        <table class="w-full text-left border-collapse">
+            <thead>
+            <tr>
+                <th class="border-b py-2">Producto</th>
+                <th class="border-b py-2">Cantidad</th>
+                <th class="border-b py-2">Precio Unitario</th>
+                <th class="border-b py-2">Subtotal</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="detalle : ${pedido.detalles}">
+                <td class="border-b py-2" th:text="${detalle.producto.nombre}"></td>
+                <td class="border-b py-2" th:text="${detalle.cantidad}"></td>
+                <td class="border-b py-2" th:text="${detalle.precioUnitario}"></td>
+                <td class="border-b py-2" th:text="${detalle.cantidad * detalle.precioUnitario}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <a th:href="@{/pedidos}" class="mt-4 inline-block px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">Volver</a>
+
+    </div>
+    </html>
+
+
+</div>
+</html>

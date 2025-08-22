@@ -1,0 +1,101 @@
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/layouts/_mainLayoutAdmin.html">
+
+<div layout:fragment="content" class="p-6">
+
+  <h1 class="text-2xl font-bold text-gray-800 mb-6">Crear Nuevo Catálogo</h1>
+
+  <!-- Mensajes -->
+  <div th:if="${error}" class="mb-4">
+    <script th:inline="javascript">
+      Swal.fire({ title: 'Error', text: [[${error}]], icon: 'error', timer: 2500, showConfirmButton: true });
+    </script>
+  </div>
+  <div th:if="${msg}" class="mb-4">
+    <script th:inline="javascript">
+      Swal.fire({ title: '¡Éxito!', text: [[${msg}]], icon: 'success', timer: 2000, showConfirmButton: false });
+    </script>
+  </div>
+
+  <form th:action="@{/catalogos/save}" th:object="${catalogo}" method="post" enctype="multipart/form-data" class="space-y-4">
+
+    <div>
+      <label class="block font-medium">Nombre:</label>
+      <input type="text" th:field="*{nombre}" class="mt-1 block w-full border-gray-300 rounded-md" required/>
+    </div>
+
+    <div>
+      <label class="block font-medium">Descripción:</label>
+      <textarea th:field="*{descripcion}" class="mt-1 block w-full border-gray-300 rounded-md"></textarea>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block font-medium">Fecha Inicio:</label>
+        <input type="date" th:field="*{fechaInicio}" class="mt-1 block w-full border-gray-300 rounded-md" required/>
+      </div>
+      <div>
+        <label class="block font-medium">Fecha Fin:</label>
+        <input type="date" th:field="*{fechaFin}" class="mt-1 block w-full border-gray-300 rounded-md" required/>
+      </div>
+    </div>
+
+    <div>
+      <label class="block font-medium">Categoría:</label>
+      <select th:field="*{categoria.id}" id="categoriaSelect" class="mt-1 block w-full border-gray-300 rounded-md" required>
+        <option value="" disabled selected>Seleccione una categoría</option>
+        <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}"></option>
+      </select>
+    </div>
+
+    <div>
+      <label class="block font-medium">Productos:</label>
+      <select multiple name="productosIds" id="productosSelect" class="mt-1 block w-full border-gray-300 rounded-md"></select>
+    </div>
+
+    <div>
+      <label class="block font-medium">Imagen de Portada:</label>
+      <input type="file" name="portadaFile" class="mt-1 block w-full" required/>
+    </div>
+
+    <div class="flex gap-4">
+      <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">Guardar</button>
+      <a href="/catalogos" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">Cancelar</a>
+
+    </div>
+
+  </form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const categoriaSelect = document.getElementById('categoriaSelect');
+      const productosSelect = document.getElementById('productosSelect');
+
+      // Cargar productos según la categoría seleccionada
+      categoriaSelect.addEventListener('change', function() {
+        fetch(`/catalogos/productosPorCategoria/${this.value}`)
+          .then(resp => resp.json())
+          .then(data => {
+            productosSelect.innerHTML = '';
+            if(data.length === 0){
+              const opt = document.createElement('option');
+              opt.text = 'No hay productos';
+              opt.disabled = true;
+              productosSelect.appendChild(opt);
+            } else {
+              data.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.text = `${p.nombre} ($${p.precio})`;
+                productosSelect.appendChild(opt);
+              });
+            }
+          });
+      });
+    });
+  </script>
+
+</div>
+</html>

@@ -1,0 +1,19 @@
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/layouts/_mainLayoutAdmin.html">
+
+<div layout:fragment="content" class="p-6">
+
+  <div class="flex items-center justify-center min-h-screen bg-gray-100 py-4">
+    <div class="w-full max-w-md bg-white rounded-xl shadow-2xl p-8 text-center">
+      <h2 class="text-2xl font-extrabold text-red-600 mb-4">Eliminar Catálogo</h2>
+      <p class="mb-6 text-gray-700">¿Estás seguro de que deseas eliminar el catálogo "<span th:text="${catalogo.nombre}"></span>"? Esta acción no se puede deshacer.</p>
+
+      <div class="flex justify-center gap-4">
+        <a th:href="@{/catalogos}" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-300">Cancelar</a>
+        <a th:href="@{/catalogos/delete/{id}(id=${catalogo.id})}" class="px-6 py-3 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700">Eliminar</a>
+      </div>
+    </div>
+  </div>
+</div>
+</html>

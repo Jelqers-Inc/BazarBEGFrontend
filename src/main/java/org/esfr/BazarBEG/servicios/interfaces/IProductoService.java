@@ -19,4 +19,7 @@ public interface IProductoService {
     void eliminarPorId(Integer id);
 
     Page<Producto> buscarTodosPaginados(Pageable pageable);
+
+    List<Producto> buscarPorIds(List<Integer> productosIds);
+    List<Producto> findByCategoriaId(Integer categoriaId);
 }

@@ -1,0 +1,55 @@
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/layouts/_mainLayoutAdmin.html">
+
+<div layout:fragment="content" class="p-6">
+
+  <div th:if="${msg}" class="mb-4">
+    <script th:inline="javascript">
+      Swal.fire({ title: '¡Éxito!', text: [[${msg}]], icon: 'success', timer: 2000, showConfirmButton: false });
+    </script>
+  </div>
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold text-gray-800">Catálogos</h1>
+    <a href="/catalogos/create" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Crear Nuevo Catálogo</a>
+  </div>
+
+  <table class="min-w-full border border-gray-200">
+    <thead>
+    <tr class="bg-gray-100">
+      <th class="p-2 border">Nombre</th>
+      <th class="p-2 border">Categoría</th>
+      <th class="p-2 border">Fecha Inicio</th>
+      <th class="p-2 border">Fecha Fin</th>
+      <th class="p-2 border">Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="cat : ${catalogos.content}">
+      <td class="p-2 border" th:text="${cat.nombre}"></td>
+      <td class="p-2 border" th:text="${cat.categoria != null ? cat.categoria.nombre : '-'}"></td>
+      <td class="p-2 border" th:text="${cat.fechaInicio}"></td>
+      <td class="p-2 border" th:text="${cat.fechaFin}"></td>
+      <td class="p-2 border flex flex-wrap gap-2">
+        <a th:href="@{'/catalogos/details/' + ${cat.id}}" class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Detalle</a>
+        <a th:href="@{'/catalogos/edit/' + ${cat.id}}" class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">Editar</a>
+        <a th:href="@{'/catalogos/delete/' + ${cat.id}}" class="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700">Eliminar</a>
+        <a th:href="@{'/catalogos/reporte/inline?id=' + ${cat.id}}" target="_blank" class="px-2 py-1 bg-gray-600 text-white rounded hover:bg-gray-700">Vista Previa PDF</a>
+        <a th:href="@{'/catalogos/reporte/attachment?id=' + ${cat.id}}" class="px-2 py-1 bg-purple-600 text-white rounded hover:bg-purple-700">Descargar PDF</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <!-- Paginación -->
+  <div class="mt-4" th:if="${pageNumbers != null}">
+    <ul class="flex gap-2">
+      <li th:each="i : ${pageNumbers}">
+        <a th:href="@{'/catalogos?page=' + ${i}}" class="px-2 py-1 border rounded hover:bg-gray-100" th:text="${i}"></a>
+      </li>
+    </ul>
+  </div>
+
+</div>
+</html>
