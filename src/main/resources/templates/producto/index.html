@@ -42,15 +42,14 @@
             </svg>
         </a>
     </div>
-
-<<<<<<< HEAD
+    
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         <div th:each="producto : ${productos}" class="bg-white rounded-xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 overflow-hidden">
             <div class="h-48 overflow-hidden">
-                <img th:if="${producto.imagen != null}"
-                     th:src="@{/productos/imagen/{id}(id=${producto.id})}"
-                     alt="Imagen del producto"
-                     class="w-full h-full object-cover">
+               <img th:if="${producto.imagen != null}"
+     th:src="@{${producto.imagen}}"
+     alt="Imagen del producto"
+     class="w-full h-full object-cover">
                 <div th:if="${producto.imagen == null}" class="w-full h-full bg-gray-200 flex items-center justify-center">
                     <span class="text-gray-500 font-semibold text-sm">Sin Imagen</span>
                 </div>
@@ -83,41 +82,7 @@
                 </div>
             </div>
         </div>
-=======
-    <div class="overflow-x-auto bg-white rounded-lg shadow">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-            <tr>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Nombre</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Precio</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Stock</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Imagen</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Acciones</th>
-            </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-            <tr th:each="producto : ${productos}">
-                <td th:text="${producto.id}" class="px-6 py-4 whitespace-nowrap"></td>
-                <td th:text="${producto.nombre}" class="px-6 py-4 whitespace-nowrap"></td>
-                <td th:text="${producto.precio}" class="px-6 py-4 whitespace-nowrap"></td>
-                <td th:text="${producto.stock}" class="px-6 py-4 whitespace-nowrap"></td>
-                <td class="px-6 py-4">
-                    <img th:if="${producto.imagen != null}"
-                         th:src="@{${producto.imagen}}"
-                         alt="Imagen producto"
-                         class="object-cover w-16 h-16 rounded-md">
-                    <span th:if="${producto.imagen == null}" class="text-gray-500 text-sm">Sin imagen</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a th:href="@{/productos/details/{id}(id=${producto.id})}" class="text-blue-600 hover:text-blue-900 mr-2">Detalles</a>
-                    <a th:href="@{/productos/edit/{id}(id=${producto.id})}" class="text-green-600 hover:text-green-900 mr-2">Editar</a>
-                    <a th:href="@{/productos/remove/{id}(id=${producto.id})}" class="text-red-600 hover:text-red-900">Eliminar</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
->>>>>>> ac9d9dc42fc94343d7fd5aa65cee9bab1f21b128
+
     </div>
 </div>
 

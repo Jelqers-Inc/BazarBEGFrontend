@@ -1,11 +1,7 @@
 <html lang="es"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-<<<<<<< HEAD
       layout:decorate="/layouts/_mainLayoutAdmin.html">
-=======
-      layout:decorate="/layouts/_mainLayout.html">
->>>>>>> ac9d9dc42fc94343d7fd5aa65cee9bab1f21b128
 
 <div layout:fragment="content" class="p-6">
 
@@ -43,7 +39,6 @@
                 </div>
             </div>
 
-<<<<<<< HEAD
             <form th:action="@{/productos/delete}" method="post" class="mt-8 flex justify-center space-x-6">
                 <input type="hidden" name="id" th:value="${producto.id}">
                 <a th:href="@{/productos}"
@@ -57,10 +52,6 @@
                     Eliminar
                 </button>
             </form>
-=======
-        <div th:if="${producto.imagen != null}">
-            <img th:src="@{${producto.imagen}}" alt="Imagen producto" class="w-48 h-48 object-cover rounded-md mt-2">
->>>>>>> ac9d9dc42fc94343d7fd5aa65cee9bab1f21b128
         </div>
     </div>
 </div>

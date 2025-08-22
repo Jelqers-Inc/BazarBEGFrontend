@@ -4,42 +4,78 @@
       layout:decorate="/layouts/_mainLayoutAdmin.html">
 
 <div layout:fragment="content" class="p-6">
+<div class="flex items-center justify-center min-h-screen bg-gray-100 p-8">
+    <div class="w-full max-w-4xl bg-white rounded-xl shadow-2xl p-8">
+        
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-extrabold text-purple-800" th:text="${catalogo.nombre}">Nombre del catálogo</h2>
+            <p class="mt-2 text-sm text-gray-500">
+                Información detallada y productos asociados al catálogo.
+            </p>
+        </div>
 
-  <h1 class="text-2xl font-bold text-gray-800 mb-4" th:text="${catalogo.nombre}">Nombre del catálogo</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div>
+                <img th:src="@{/catalogos/portada/{id}(id=${catalogo.id})}"
+                     alt="Portada del catálogo"
+                     class="w-full h-auto object-cover rounded-lg shadow-md border border-gray-300">
+            </div>
+            
+            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 shadow-sm">
+                <dl class="space-y-4">
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Descripción</dt>
+                        <dd class="mt-1 text-base text-gray-900" th:text="${catalogo.descripcion}"></dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Fecha de Inicio</dt>
+                        <dd class="mt-1 text-base font-semibold text-gray-900" th:text="${#temporals.format(catalogo.fechaInicio, 'dd-MM-yyyy')}"></dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Fecha de Fin</dt>
+                        <dd class="mt-1 text-base font-semibold text-gray-900" th:text="${#temporals.format(catalogo.fechaFin, 'dd-MM-yyyy')}"></dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Categoría</dt>
+                        <dd class="mt-1 text-base font-semibold text-gray-900" th:text="${catalogo.categoria.nombre}"></dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
 
-  <div class="grid grid-cols-2 gap-4">
-    <div>
-      <img th:src="@{${catalogo.portadaImagen}}" alt="Portada" class="w-full h-auto rounded-md">
+        <div class="mb-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Productos en este Catálogo</h3>
+            <div th:if="${#lists.isEmpty(catalogo.productos)}" class="bg-gray-100 p-6 text-center text-gray-500 rounded-lg">
+                <p>Este catálogo no contiene productos.</p>
+            </div>
+            <div th:if="${not #lists.isEmpty(catalogo.productos)}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div th:each="prod : ${catalogo.productos}" class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex items-center space-x-4">
+                    <img th:src="@{/productos/imagen/{id}(id=${prod.id})}"
+                         alt="Imagen del producto"
+                         class="w-16 h-16 object-cover rounded-md flex-shrink-0">
+                    <div>
+                        <h4 class="font-semibold text-gray-900" th:text="${prod.nombre}"></h4>
+                        <p class="text-sm text-purple-600 font-bold" th:text="'$' + ${#numbers.formatDecimal(prod.precio, 1, 'POINT', 2, 'COMMA')}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end space-x-4">
+            <a th:if="${catalogo.pdfPath != null}"
+               th:href="@{/catalogos/reporte/inline(id=${catalogo.id})}"
+               class="px-6 py-3 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700
+                      transform hover:scale-105 transition duration-300" target="_blank">
+                Ver PDF
+            </a>
+            <a th:href="@{/catalogos}"
+               class="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-300
+                      transform hover:scale-105 transition duration-300">
+                Volver
+            </a>
+        </div>
     </div>
-    <div>
-      <p><strong>Descripción:</strong> <span th:text="${catalogo.descripcion}"></span></p>
-      <p><strong>Fecha de inicio:</strong> <span th:text="${catalogo.fechaInicio.format(T(java.time.format.DateTimeFormatter).ofPattern('dd-MM-yyyy'))}"></span></p>
-      <p><strong>Fecha de fin:</strong> <span th:text="${catalogo.fechaFin.format(T(java.time.format.DateTimeFormatter).ofPattern('dd-MM-yyyy'))}"></span></p>
-      <p><strong>Categoría:</strong> <span th:text="${catalogo.categoria.nombre}"></span></p>
-    </div>
-  </div>
-
-  <h2 class="text-xl font-bold text-gray-800 mt-6 mb-4">Productos</h2>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
-    <div th:each="prod : ${catalogo.productos}" class="border p-3 rounded-lg shadow-sm flex items-center gap-4">
-      <img th:src="@{${prod.imagen}}" alt="Producto" class="w-16 h-16 object-cover rounded-md">
-      <div>
-        <h4 class="font-bold" th:text="${prod.nombre}"></h4>
-        <p class="text-sm text-gray-600" th:text="'$' + ${prod.precio}"></p>
-      </div>
-    </div>
-  </div>
-
-  <div th:if="${catalogo.pdfPath != null}" class="mt-4">
-    <a th:href="@{${catalogo.pdfPath}}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300" target="_blank">
-      Ver PDF
-    </a>
-  </div>
-
-  <div class="mt-4">
-    <a th:href="@{/catalogos}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Volver</a>
-  </div>
+</div>
 
 </div>
 </html>
