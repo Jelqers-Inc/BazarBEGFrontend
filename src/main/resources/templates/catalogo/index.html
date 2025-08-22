@@ -34,7 +34,8 @@
       <td class="p-2 border flex flex-wrap gap-2">
         <a th:href="@{'/catalogos/details/' + ${cat.id}}" class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Detalle</a>
         <a th:href="@{'/catalogos/edit/' + ${cat.id}}" class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">Editar</a>
-        <a th:href="@{'/catalogos/delete/' + ${cat.id}}" class="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700">Eliminar</a>
+        <a th:href="@{'/catalogos/delete-confirm/' + ${cat.id}}" class="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700">Eliminar</a>
+        
         <a th:href="@{'/catalogos/reporte/inline?id=' + ${cat.id}}" target="_blank" class="px-2 py-1 bg-gray-600 text-white rounded hover:bg-gray-700">Vista Previa PDF</a>
         <a th:href="@{'/catalogos/reporte/attachment?id=' + ${cat.id}}" class="px-2 py-1 bg-purple-600 text-white rounded hover:bg-purple-700">Descargar PDF</a>
       </td>

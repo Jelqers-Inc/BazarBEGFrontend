@@ -2,7 +2,11 @@ package org.esfr.BazarBEG.controladores;
 
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.canvas.draw.ILineDrawer;
+import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.SolidBorder;
+import com.itextpdf.layout.element.LineSeparator;
 import com.itextpdf.layout.element.Paragraph;
 import jakarta.servlet.http.HttpServletResponse;
 import org.esfr.BazarBEG.modelos.Catalogo;
@@ -28,6 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -89,6 +94,7 @@ public class CatalogoController {
                     map.put("id", p.getId());
                     map.put("nombre", p.getNombre());
                     map.put("precio", p.getPrecio());
+                    map.put("imagen", p.getImagen());
                     return map;
                 })
                 .collect(Collectors.toList());
@@ -102,31 +108,26 @@ public class CatalogoController {
                        RedirectAttributes redirect) {
 
         try {
-            // Resolver categoría seleccionada
             if (catalogo.getCategoria() != null && catalogo.getCategoria().getId() != null) {
                 catalogo.setCategoria(categoriaService.buscarPorId(catalogo.getCategoria().getId()).orElse(null));
             }
 
-            // Guardar portada
             if (portadaFile != null && !portadaFile.isEmpty()) {
-                Path uploadPath = Paths.get("C:/bazar/uploads/catalogos/"); // ruta absoluta segura
+                Path uploadPath = Paths.get(UPLOAD_DIR);
                 if (!Files.exists(uploadPath)) {
                     Files.createDirectories(uploadPath);
                 }
-
                 String fileName = "portada_" + System.currentTimeMillis() + "_" + portadaFile.getOriginalFilename();
                 Files.copy(portadaFile.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
                 catalogo.setPortadaImagen("/uploads/catalogos/" + fileName);
             }
 
-            // Guardar productos seleccionados
             if (productosIds != null && !productosIds.isEmpty()) {
                 catalogo.setProductos(productoService.buscarPorIds(productosIds));
             } else {
                 catalogo.setProductos(new ArrayList<>());
             }
 
-            // Guardar catálogo en BD
             catalogoService.crearOEditar(catalogo);
 
             redirect.addFlashAttribute("msg", "Catálogo guardado correctamente");
@@ -155,10 +156,23 @@ public class CatalogoController {
     public String edit(@PathVariable("id") int id, Model model) {
         Catalogo catalogo = catalogoService.buscarPorId(id)
                 .orElseThrow(() -> new IllegalArgumentException("Catálogo no encontrado"));
+
+        // Obtener la lista de productos de la categoría del catálogo.
+        List<Producto> productosDeCategoria = new ArrayList<>();
+        if (catalogo.getCategoria() != null) {
+            productosDeCategoria = productoService.findByCategoriaId(catalogo.getCategoria().getId());
+        }
+
+        // Convertir la lista de objetos Producto a una lista de enteros (IDs).
+        List<Integer> productosIdsSeleccionados = catalogo.getProductos().stream()
+                .map(Producto::getId)
+                .collect(Collectors.toList());
+
         model.addAttribute("catalogo", catalogo);
         model.addAttribute("categorias", categoriaService.obtenerTodos());
-        model.addAttribute("productos", catalogo.getCategoria() != null ?
-                productoService.findByCategoriaId(catalogo.getCategoria().getId()) : new ArrayList<>());
+        model.addAttribute("productosDeCategoria", productosDeCategoria); // Se envía al modelo
+        model.addAttribute("productosIdsSeleccionados", productosIdsSeleccionados); // <--- ¡Esto es nuevo y crucial!
+
         return "catalogo/edit";
     }
 
@@ -166,14 +180,16 @@ public class CatalogoController {
     public String update(@PathVariable("id") int id,
                          @Valid @ModelAttribute Catalogo catalogo,
                          BindingResult result,
-                         @RequestParam("portadaFile") MultipartFile portadaFile,
-                         @RequestParam("productosIds") List<Integer> productosIds,
+                         @RequestParam(value = "portadaFile", required = false) MultipartFile portadaFile,
+                         @RequestParam(value = "productosIds", required = false) List<Integer> productosIds,
                          RedirectAttributes redirect) throws IOException {
 
-        if (result.hasErrors()) return "catalogo/edit";
+        if (result.hasErrors()) {
+            return "catalogo/edit";
+        }
 
         Catalogo catalogoExistente = catalogoService.buscarPorId(id)
-                .orElseThrow(() -> new IllegalArgumentException("Catálogo no encontrado"));
+                .orElseThrow(() -> new IllegalArgumentException("Catálogo no encontrado con ID: " + id));
 
         catalogoExistente.setNombre(catalogo.getNombre());
         catalogoExistente.setDescripcion(catalogo.getDescripcion());
@@ -181,10 +197,24 @@ public class CatalogoController {
         catalogoExistente.setFechaFin(catalogo.getFechaFin());
         catalogoExistente.setCategoria(catalogo.getCategoria());
 
-        if (!portadaFile.isEmpty()) {
+        if (portadaFile != null && !portadaFile.isEmpty()) {
             String portadaName = "portada_" + System.currentTimeMillis() + "_" + portadaFile.getOriginalFilename();
-            portadaFile.transferTo(new File(UPLOAD_DIR + portadaName));
+            Path uploadPath = Paths.get(UPLOAD_DIR);
+
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            if (catalogoExistente.getPortadaImagen() != null && !catalogoExistente.getPortadaImagen().isEmpty()) {
+                Path oldImagePath = Paths.get(UPLOAD_DIR, Paths.get(catalogoExistente.getPortadaImagen()).getFileName().toString());
+                Files.deleteIfExists(oldImagePath);
+            }
+
+            Files.copy(portadaFile.getInputStream(), uploadPath.resolve(portadaName), StandardCopyOption.REPLACE_EXISTING);
             catalogoExistente.setPortadaImagen("/uploads/catalogos/" + portadaName);
+        } else if (catalogo.getPortadaImagen() != null) {
+            // Mantener la imagen si no se subió una nueva
+            catalogoExistente.setPortadaImagen(catalogo.getPortadaImagen());
         }
 
         catalogoExistente.setProductos(productoService.buscarPorIds(productosIds));
@@ -196,17 +226,80 @@ public class CatalogoController {
     }
 
 
-
-
     // -------------------- ELIMINAR --------------------
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String delete(@PathVariable("id") int id, RedirectAttributes redirect) {
         catalogoService.eliminarPorId(id);
         redirect.addFlashAttribute("success", "Catálogo eliminado correctamente");
         return "redirect:/catalogos";
     }
 
-    // -------------------- MÉTODO GENERAR PDF --------------------
+    // -------------------- CONFIRMAR ELIMINAR --------------------
+    @GetMapping("/delete-confirm/{id}")
+    public String showDeleteConfirmation(@PathVariable("id") int id, Model model) {
+        Catalogo catalogo = catalogoService.buscarPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("Catálogo no encontrado"));
+        model.addAttribute("catalogo", catalogo);
+        return "catalogo/delete";
+    }
+
+    // --------------- METODO PARA DISEÑO DEL PDF -----------
+    private void buildCatalogoPDF(Document document, Catalogo catalogo, byte[] portadaBytes) throws IOException {
+        document.setMargins(50, 50, 50, 50);
+
+        if (portadaBytes != null) {
+            com.itextpdf.layout.element.Image portada = new com.itextpdf.layout.element.Image(
+                    com.itextpdf.io.image.ImageDataFactory.create(portadaBytes)
+            ).setAutoScale(true).setMarginBottom(30);
+            document.add(portada);
+        }
+
+        document.add(new Paragraph("CATÁLOGO")
+                .setFontSize(28).setBold().setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(10));
+
+        document.add(new Paragraph(catalogo.getNombre())
+                .setFontSize(20).setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(20));
+
+        document.add(new Paragraph("Productos de " + (catalogo.getCategoria() != null ? catalogo.getCategoria().getNombre() : "varias categorías"))
+                .setFontSize(16).setBold().setUnderline().setMarginBottom(15));
+
+        com.itextpdf.layout.element.Table table = new com.itextpdf.layout.element.Table(2).useAllAvailableWidth();
+        table.setMarginBottom(20);
+
+        for (Producto p : catalogo.getProductos()) {
+            com.itextpdf.layout.element.Cell cell = new com.itextpdf.layout.element.Cell().add(new Paragraph(p.getNombre()).setBold().setFontSize(14));
+
+            if (p.getImagen() != null && !p.getImagen().isEmpty()) {
+                File imgFile = new File("src/main/resources/static" + p.getImagen());
+                if (imgFile.exists()) {
+                    byte[] imgBytes = Files.readAllBytes(imgFile.toPath());
+                    com.itextpdf.layout.element.Image img = new com.itextpdf.layout.element.Image(
+                            com.itextpdf.io.image.ImageDataFactory.create(imgBytes)
+                    ).setWidth(150);
+                    cell.add(img);
+                }
+            }
+
+            cell.add(new Paragraph("Precio: $" + p.getPrecio()).setFontSize(12));
+            cell.add(new Paragraph("Descripción: " + p.getDescripcion()).setFontSize(10));
+            cell.setBorder(new SolidBorder(1));
+            table.addCell(cell);
+        }
+
+        document.add(table);
+
+        document.showTextAligned(new Paragraph("Catálogo válido del " +
+                        catalogo.getFechaInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
+                        " al " + catalogo.getFechaFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))),
+                300, 30, com.itextpdf.layout.properties.TextAlignment.CENTER);
+
+        document.close();
+    }
+
+
+    // -------------------- METODO PARA GENERAR PDF --------------------
     private String generarPDF(Catalogo catalogo) throws IOException {
         String pdfFileName = "catalogo_" + System.currentTimeMillis() + ".pdf";
         String pdfPath = UPLOAD_DIR + pdfFileName;
@@ -215,18 +308,15 @@ public class CatalogoController {
         PdfDocument pdfDoc = new PdfDocument(writer);
         Document document = new Document(pdfDoc);
 
-        document.add(new Paragraph("Catálogo: " + catalogo.getNombre()));
-        document.add(new Paragraph("Descripción: " + catalogo.getDescripcion()));
-        document.add(new Paragraph("Fecha inicio: " + catalogo.getFechaInicio()));
-        document.add(new Paragraph("Fecha fin: " + catalogo.getFechaFin()));
-        if (catalogo.getCategoria() != null)
-            document.add(new Paragraph("Categoría: " + catalogo.getCategoria().getNombre()));
-
-        document.add(new Paragraph("Productos:"));
-        for (Producto p : catalogo.getProductos()) {
-            document.add(new Paragraph("- " + p.getNombre() + " $" + p.getPrecio()));
+        byte[] portadaBytes = null;
+        if (catalogo.getPortadaImagen() != null && !catalogo.getPortadaImagen().isEmpty()) {
+            File portadaFile = new File("src/main/resources/static" + catalogo.getPortadaImagen());
+            if (portadaFile.exists()) {
+                portadaBytes = Files.readAllBytes(portadaFile.toPath());
+            }
         }
 
+        buildCatalogoPDF(document, catalogo, portadaBytes);
         document.close();
         return "/uploads/catalogos/" + pdfFileName;
     }
@@ -238,19 +328,12 @@ public class CatalogoController {
                            @RequestParam(value = "productosIds", required = false) List<Integer> productosIds,
                            HttpServletResponse response) throws IOException {
 
-        // Resolver categoría
         if (catalogo.getCategoria() != null && catalogo.getCategoria().getId() != null) {
-            catalogo.setCategoria(
-                    categoriaService.buscarPorId(catalogo.getCategoria().getId()).orElse(null)
-            );
+            catalogo.setCategoria(categoriaService.buscarPorId(catalogo.getCategoria().getId()).orElse(null));
         }
+        catalogo.setProductos(productosIds != null && !productosIds.isEmpty() ?
+                productoService.buscarPorIds(productosIds) : new ArrayList<>());
 
-        // Resolver productos seleccionados
-        if (productosIds != null && !productosIds.isEmpty()) {
-            catalogo.setProductos(productoService.buscarPorIds(productosIds));
-        } else catalogo.setProductos(new ArrayList<>());
-
-        // Preparar PDF
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "inline; filename=catalogo_preview.pdf");
 
@@ -258,31 +341,17 @@ public class CatalogoController {
         PdfDocument pdfDoc = new PdfDocument(writer);
         Document document = new Document(pdfDoc);
 
-        // Título y detalles
-        document.add(new Paragraph("Catálogo: " + catalogo.getNombre()));
-        document.add(new Paragraph("Descripción: " + catalogo.getDescripcion()));
-        document.add(new Paragraph("Fecha inicio: " + catalogo.getFechaInicio()));
-        document.add(new Paragraph("Fecha fin: " + catalogo.getFechaFin()));
-
-        if (catalogo.getCategoria() != null)
-            document.add(new Paragraph("Categoría: " + catalogo.getCategoria().getNombre()));
-
-        // Imagen de portada desde el archivo recibido
+        byte[] portadaBytes;
         if (portadaFile != null && !portadaFile.isEmpty()) {
-            byte[] bytes = portadaFile.getBytes();
-            com.itextpdf.layout.element.Image img = new com.itextpdf.layout.element.Image(
-                    com.itextpdf.io.image.ImageDataFactory.create(bytes)
-            );
-            img.setAutoScale(true);
-            document.add(img);
+            portadaBytes = portadaFile.getBytes();
+        } else if (catalogo.getPortadaImagen() != null && !catalogo.getPortadaImagen().isEmpty()) {
+            File file = new File("src/main/resources/static" + catalogo.getPortadaImagen());
+            portadaBytes = file.exists() ? Files.readAllBytes(file.toPath()) : null;
+        } else {
+            portadaBytes = null;
         }
 
-        // Productos
-        document.add(new Paragraph("Productos:"));
-        for (Producto p : catalogo.getProductos()) {
-            document.add(new Paragraph("- " + p.getNombre() + " ($" + p.getPrecio() + ")"));
-        }
-
+        buildCatalogoPDF(document, catalogo, portadaBytes);
         document.close();
     }
 
@@ -307,18 +376,15 @@ public class CatalogoController {
         PdfDocument pdfDoc = new PdfDocument(writer);
         Document document = new Document(pdfDoc);
 
-        document.add(new Paragraph("Catálogo: " + catalogo.getNombre()));
-        document.add(new Paragraph("Descripción: " + catalogo.getDescripcion()));
-        document.add(new Paragraph("Fecha inicio: " + catalogo.getFechaInicio()));
-        document.add(new Paragraph("Fecha fin: " + catalogo.getFechaFin()));
-        if (catalogo.getCategoria() != null)
-            document.add(new Paragraph("Categoría: " + catalogo.getCategoria().getNombre()));
-
-        document.add(new Paragraph("Productos:"));
-        for (Producto p : catalogo.getProductos()) {
-            document.add(new Paragraph("- " + p.getNombre() + " $" + p.getPrecio()));
+        byte[] portadaBytes = null;
+        if (catalogo.getPortadaImagen() != null && !catalogo.getPortadaImagen().isEmpty()) {
+            File portadaFile = new File("src/main/resources/static" + catalogo.getPortadaImagen());
+            if (portadaFile.exists()) {
+                portadaBytes = Files.readAllBytes(portadaFile.toPath());
+            }
         }
 
+        buildCatalogoPDF(document, catalogo, portadaBytes);
         document.close();
     }
 

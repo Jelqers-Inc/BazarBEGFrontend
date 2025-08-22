@@ -29,7 +29,7 @@ public class PedidoService implements IPedidoService {
 
     @Override
     public Optional<Pedido> buscarPorId(Integer id) {
-        return pedidoRepository.findById(id);
+        return pedidoRepository.findByIdWithDetailsAndUser(id);
     }
 
     @Override

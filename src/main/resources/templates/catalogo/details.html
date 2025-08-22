@@ -13,13 +13,21 @@
     </div>
     <div>
       <p><strong>Descripción:</strong> <span th:text="${catalogo.descripcion}"></span></p>
-      <p><strong>Fecha de inicio:</strong> <span th:text="${catalogo.fechaInicio}"></span></p>
-      <p><strong>Fecha de fin:</strong> <span th:text="${catalogo.fechaFin}"></span></p>
+      <p><strong>Fecha de inicio:</strong> <span th:text="${catalogo.fechaInicio.format(T(java.time.format.DateTimeFormatter).ofPattern('dd-MM-yyyy'))}"></span></p>
+      <p><strong>Fecha de fin:</strong> <span th:text="${catalogo.fechaFin.format(T(java.time.format.DateTimeFormatter).ofPattern('dd-MM-yyyy'))}"></span></p>
       <p><strong>Categoría:</strong> <span th:text="${catalogo.categoria.nombre}"></span></p>
-      <p><strong>Productos:</strong></p>
-      <ul>
-        <li th:each="prod : ${catalogo.productos}" th:text="${prod.nombre}"></li>
-      </ul>
+    </div>
+  </div>
+
+  <h2 class="text-xl font-bold text-gray-800 mt-6 mb-4">Productos</h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
+    <div th:each="prod : ${catalogo.productos}" class="border p-3 rounded-lg shadow-sm flex items-center gap-4">
+      <img th:src="@{${prod.imagen}}" alt="Producto" class="w-16 h-16 object-cover rounded-md">
+      <div>
+        <h4 class="font-bold" th:text="${prod.nombre}"></h4>
+        <p class="text-sm text-gray-600" th:text="'$' + ${prod.precio}"></p>
+      </div>
     </div>
   </div>
 

@@ -7,7 +7,6 @@
 
   <h1 class="text-2xl font-bold text-gray-800 mb-4">Editar Catálogo</h1>
 
-  <!-- Formulario -->
   <form th:action="@{/catalogos/update/{id}(id=${catalogo.id})}" th:object="${catalogo}" method="post" enctype="multipart/form-data" class="space-y-4">
 
     <div>
@@ -35,35 +34,25 @@
       </div>
     </div>
 
-    <!-- Select de Categoría -->
     <div>
       <label for="categoria" class="block text-sm font-medium text-gray-700">Categoría</label>
-      <select id="categoria" name="categoriaId" required
+      <select id="categoria" th:field="*{categoria.id}" required
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
         <option value="" disabled>Selecciona una categoría</option>
         <option th:each="cat : ${categorias}"
                 th:value="${cat.id}"
                 th:text="${cat.nombre}"
-                th:selected="${catalogo.categoria != null and cat.id == catalogo.categoria.id}">
+                th:selected="${catalogo.categoria != null and catalogo.categoria.id == cat.id}">
         </option>
       </select>
     </div>
 
-    <!-- Select de Productos -->
     <div>
-      <label for="productos" class="block text-sm font-medium text-gray-700">Productos</label>
-      <select th:name="productosIds" id="productos" multiple
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-        <option th:each="prod : ${productos}"
-                th:value="${prod.id}"
-                th:text="${prod.nombre}"
-                th:selected="${catalogo.productos.contains(prod)}">
-        </option>
-      </select>
-      <p class="text-gray-500 text-sm mt-1">Se mostrarán solo los productos de la categoría seleccionada.</p>
+      <label class="block font-medium">Productos:</label>
+      <div id="productos-container" class="mt-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 border p-4 rounded-md">
+      </div>
     </div>
 
-    <!-- Portada -->
     <div>
       <label for="portadaFile" class="block text-sm font-medium text-gray-700">Portada</label>
       <input type="file" name="portadaFile" id="portadaFile" class="mt-1 block w-full text-sm text-gray-500">
@@ -72,7 +61,6 @@
       </div>
     </div>
 
-    <!-- Vista previa PDF -->
     <div th:if="${catalogo.pdfPath != null}" class="mt-2">
       <a th:href="@{${catalogo.pdfPath}}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300" target="_blank">
         Vista Previa PDF
@@ -86,24 +74,75 @@
 
   </form>
 </div>
+<script th:inline="javascript">
+  document.addEventListener('DOMContentLoaded', function() {
+      const categoriaSelect = document.getElementById('categoria');
+      const productosContainer = document.getElementById('productos-container');
 
-<!-- Script AJAX para actualizar productos -->
-<script>
-  document.getElementById("categoria").addEventListener("change", function() {
-      let categoriaId = this.value;
-      let productosSelect = document.getElementById("productos");
+      // Obtener los IDs de los productos ya seleccionados del modelo del controlador.
+      // Esta lista ya está en el formato correcto para JavaScript.
+      const productosIdsSeleccionados = [[${productosIdsSeleccionados}]];
 
-      fetch('/catalogos/productosPorCategoria/' + categoriaId)
-          .then(response => response.json())
-          .then(productos => {
-              productosSelect.innerHTML = "";
-              productos.forEach(prod => {
-                  let option = document.createElement("option");
-                  option.value = prod.id;
-                  option.text = prod.nombre;
-                  productosSelect.add(option);
-              });
+      // Función para renderizar los productos y preseleccionar los checkboxes
+      const renderProductos = function(productos) {
+          productosContainer.innerHTML = '';
+          if (productos.length === 0) {
+              productosContainer.innerHTML = '<p class="text-gray-500">No hay productos disponibles para esta categoría.</p>';
+              return;
+          }
+
+          productos.forEach(p => {
+              const itemDiv = document.createElement('div');
+              itemDiv.className = 'border p-3 rounded-lg shadow-sm flex items-center gap-4';
+
+              const img = document.createElement('img');
+              img.src = p.imagen;
+              img.alt = p.nombre;
+              img.className = 'w-16 h-16 object-cover rounded-md';
+
+              const infoDiv = document.createElement('div');
+              infoDiv.innerHTML = `<h4 class="font-bold">${p.nombre}</h4><p class="text-sm text-gray-600">$${p.precio}</p>`;
+
+              const checkbox = document.createElement('input');
+              checkbox.type = 'checkbox';
+              checkbox.name = 'productosIds';
+              checkbox.value = p.id;
+              checkbox.className = 'form-checkbox h-5 w-5 text-purple-600';
+
+              if (productosIdsSeleccionados.includes(p.id)) {
+                  checkbox.checked = true;
+              }
+
+              itemDiv.appendChild(img);
+              itemDiv.appendChild(infoDiv);
+              itemDiv.appendChild(checkbox);
+              productosContainer.appendChild(itemDiv);
           });
+      };
+
+      // Si la categoría tiene un valor inicial, carga los productos
+      if (categoriaSelect.value) {
+          fetch(`/catalogos/productosPorCategoria/${categoriaSelect.value}`)
+              .then(resp => resp.json())
+              .then(data => {
+                  renderProductos(data);
+              });
+      }
+
+      // Si la categoría cambia, hacemos una llamada AJAX para cargar los nuevos productos
+      categoriaSelect.addEventListener('change', function() {
+          const categoriaId = this.value;
+          if (categoriaId) {
+              fetch(`/catalogos/productosPorCategoria/${categoriaId}`)
+                  .then(resp => resp.json())
+                  .then(data => {
+                      // Se renderizan los nuevos productos
+                      renderProductos(data);
+                  });
+          } else {
+              productosContainer.innerHTML = '<p class="text-gray-500">Selecciona una categoría para ver los productos.</p>';
+          }
+      });
   });
 </script>
 
