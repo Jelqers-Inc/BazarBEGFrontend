@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/_mainLayoutAdmin.html}">
+<head>
+    <title>Editar Usuario</title>
+</head>
+<div layout:fragment="content" class="p-6">
+    <div class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl font-bold text-gray-800">Editar Usuario</h1>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <form th:action="@{/usuarios/update/{id}(id=${usuario.id})}" th:object="${usuario}" method="post">
+            <input type="hidden" th:field="*{id}">
+
+            <div class="mb-4">
+                <label for="nombre" class="block text-gray-700 text-sm font-bold mb-2">Nombre:</label>
+                <input type="text" id="nombre" th:field="*{nombre}"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       th:classappend="${#fields.hasErrors('nombre')} ? 'border-red-500' : ''">
+                <p th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}" class="text-red-500 text-xs italic mt-1"></p>
+            </div>
+
+            <div class="mb-4">
+                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+                <input type="email" id="email" th:field="*{email}"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       th:classappend="${#fields.hasErrors('email')} ? 'border-red-500' : ''">
+                <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-red-500 text-xs italic mt-1"></p>
+            </div>
+
+            <div class="mb-4">
+                <label for="rol" class="block text-gray-700 text-sm font-bold mb-2">Rol:</label>
+                <select id="rol" th:field="*{rol.id}"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option th:each="rol : ${roles}" th:value="${rol.id}" th:text="${rol.nombre}"></option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="status" class="block text-gray-700 text-sm font-bold mb-2">Activar usuario:</label>
+                <input type="checkbox" id="status" th:field="*{status}" value="1" class="form-checkbox h-5 w-5 text-purple-600">
+            </div>
+
+
+            <div class="flex items-center justify-between mt-6">
+                <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Actualizar
+                </button>
+                <a th:href="@{/usuarios}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+</html>

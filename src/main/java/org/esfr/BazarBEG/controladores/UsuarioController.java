@@ -1,7 +1,8 @@
 package org.esfr.BazarBEG.controladores;
 
-import org.esfr.BazarBEG.modelos.Usuario;
 import org.esfr.BazarBEG.modelos.Rol;
+import org.esfr.BazarBEG.modelos.Usuario;
+import org.esfr.BazarBEG.servicios.interfaces.IRolService;
 import org.esfr.BazarBEG.servicios.interfaces.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,10 +26,8 @@ public class UsuarioController {
 
     @Autowired
     private IUsuarioService usuarioService;
-
-    // Se necesita un servicio para gestionar los roles.
-    // Asumiremos que ya tienes esta interfaz y su implementación.
-    // Ejemplo: @Autowired private IRolService rolService;
+    @Autowired
+    private IRolService rolService;
 
     // -------------------- LISTADO CON PAGINACIÓN Y BÚSQUEDA --------------------
     @GetMapping
@@ -66,20 +65,35 @@ public class UsuarioController {
     // -------------------- MOSTRAR FORMULARIO DE CREACIÓN --------------------
     @GetMapping("/create")
     public String create(Model model) {
-        model.addAttribute("usuario", new Usuario());
-        // Aquí debes pasar la lista de roles para el dropdown
-        // model.addAttribute("roles", rolService.obtenerTodos());
+        Usuario usuario = new Usuario();
+        usuario.setRol(new Rol());
+        usuario.setStatus(1);
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("roles", rolService.obtenerTodos());
         return "usuario/create";
     }
 
+
     // -------------------- GUARDAR NUEVO USUARIO --------------------
     @PostMapping("/save")
-    public String save(@Valid @ModelAttribute Usuario usuario, BindingResult result, RedirectAttributes redirect) {
+    public String save(@Valid @ModelAttribute Usuario usuario, BindingResult result, RedirectAttributes redirect, Model model) {
         if (result.hasErrors()) {
-            return "usuario/create"; // Redirige de nuevo al formulario con errores
+            model.addAttribute("roles", rolService.obtenerTodos());
+            return "usuario/create";
         }
 
-        // Se asume que el modelo ya tiene el rol seleccionado desde el formulario
+        // Verificar rol seleccionado, si no asignar por defecto
+        if (usuario.getRol() != null && usuario.getRol().getId() != 0) {
+            Rol rolSeleccionado = rolService.buscarPorId(usuario.getRol().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado con ID: " + usuario.getRol().getId()));
+            usuario.setRol(rolSeleccionado);
+        } else {
+            // Rol por defecto = CLIENTE (ID = 2)
+            Rol rolPorDefecto = rolService.buscarPorId(2)
+                    .orElseThrow(() -> new IllegalArgumentException("Rol por defecto no encontrado"));
+            usuario.setRol(rolPorDefecto);
+        }
+
         usuarioService.crearOEditar(usuario);
         redirect.addFlashAttribute("msg", "Usuario guardado exitosamente");
         return "redirect:/usuarios";
@@ -100,24 +114,45 @@ public class UsuarioController {
         Usuario usuario = usuarioService.buscarPorId(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
         model.addAttribute("usuario", usuario);
-        // De nuevo, necesitas pasar la lista de roles para el dropdown
-        // model.addAttribute("roles", rolService.obtenerTodos());
+        model.addAttribute("roles", rolService.obtenerTodos());
         return "usuario/edit";
     }
 
     // -------------------- ACTUALIZAR USUARIO --------------------
     @PostMapping("/update/{id}")
-    public String update(@PathVariable("id") Integer id, @Valid @ModelAttribute Usuario usuario, BindingResult result, RedirectAttributes redirect) {
+    public String update(@PathVariable("id") Integer id, @ModelAttribute Usuario usuario,
+                         BindingResult result, RedirectAttributes redirect, Model model) {
+
         if (result.hasErrors()) {
+            model.addAttribute("roles", rolService.obtenerTodos());
             return "usuario/edit";
         }
 
-        // Se asume que el ID ya está en el objeto 'usuario' o que se maneja la lógica de actualización
-        usuario.setId(id);
-        usuarioService.crearOEditar(usuario);
+        Usuario usuarioExistente = usuarioService.buscarPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
+
+        usuarioExistente.setNombre(usuario.getNombre());
+        usuarioExistente.setEmail(usuario.getEmail());
+
+        if (usuario.getRol() != null && usuario.getRol().getId() != null) {
+            Rol rolSeleccionado = rolService.buscarPorId(usuario.getRol().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado con ID: " + usuario.getRol().getId()));
+            usuarioExistente.setRol(rolSeleccionado);
+        }
+
+        // Esta es la lógica clave: establecer el estado explícitamente a 1 o 0
+        if (usuario.getStatus() != null && usuario.getStatus() == 1) {
+            usuarioExistente.setStatus(1);
+        } else {
+            usuarioExistente.setStatus(0);
+        }
+
+        usuarioService.crearOEditar(usuarioExistente);
+
         redirect.addFlashAttribute("msg", "Usuario actualizado exitosamente");
         return "redirect:/usuarios";
     }
+
 
     // -------------------- ELIMINAR USUARIO --------------------
     @PostMapping("/delete/{id}")

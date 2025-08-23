@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/_mainLayoutAdmin.html}">
+<head>
+  <title>Listado de Roles</title>
+</head>
+<div layout:fragment="content" class="p-6">
+
+  <div th:if="${msg}">
+    <script th:inline="javascript">
+      Swal.fire({
+        title: '¡Éxito!',
+        text: [[${msg}]],
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    </script>
+  </div>
+
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-bold text-gray-800">Listado de Roles</h1>
+    <a th:href="@{/roles/create}" class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-100 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+      Nuevo Rol
+    </a>
+  </div>
+
+  <div class="overflow-x-auto bg-white rounded-lg shadow">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+      <tr>
+        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
+        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Nombre</th>
+        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Acciones</th>
+      </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+      <tr th:each="rol : ${roles.content}">
+        <td th:text="${rol.id}" class="px-6 py-4 whitespace-nowrap"></td>
+        <td th:text="${rol.nombre}" class="px-6 py-4 whitespace-nowrap"></td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+          <a th:href="@{/roles/details/{id}(id=${rol.id})}" class="text-blue-600 hover:text-blue-900 mr-2">Detalles</a>
+          <a th:href="@{/roles/edit/{id}(id=${rol.id})}" class="text-green-600 hover:text-green-900 mr-2">Editar</a>
+          <a th:href="@{/roles/delete-confirm/{id}(id=${rol.id})}" class="text-red-600 hover:text-red-900">Eliminar</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <nav aria-label="Page navigation" class="mt-4">
+    <ul class="flex justify-center">
+      <li th:each="pageNumber : ${pageNumbers}" class="mx-1">
+        <a th:href="@{|/roles?page=${pageNumber}|}" th:text="${pageNumber}" class="block px-3 py-1 text-sm rounded-lg"
+           th:classappend="${roles.number + 1 == pageNumber} ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'">
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+</html>

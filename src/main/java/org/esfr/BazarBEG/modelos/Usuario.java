@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @NotBlank(message = "El nombre no puede estar vacío")
     private String nombre;
@@ -27,25 +28,27 @@ public class Usuario {
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     private String contraseña;
 
-    @Temporal(TemporalType.DATE)
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "fecha_registro")
     private Date fechaRegistro;
+
+    @Column(name = "status")
+    private Integer status;
 
     @ManyToOne
     @JoinColumn(name = "rol_id")
     private Rol rol;
 
-
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<Pedido> pedidos;
 
-
     // Getters y Setters
-
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -90,20 +93,19 @@ public class Usuario {
         this.pedidos = pedidos;
     }
 
-    @Column(name = "status")
-    private int status;
-
-    public int getStatus() {
-        return status;
+    public Rol getRol() {
+        return rol;
     }
 
-    public void setStatus(int status) {
+    public void setRol(Rol rol) {
+        this.rol = rol;
+    }
+
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
-
-    public void setRol(Rol rol) {
+    public Integer getStatus() {
+        return status;
     }
-
-
 }
