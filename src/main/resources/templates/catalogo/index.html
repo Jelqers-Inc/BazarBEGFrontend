@@ -10,6 +10,7 @@
       Swal.fire({ title: '¡Éxito!', text: [[${msg}]], icon: 'success', timer: 2000, showConfirmButton: false });
     </script>
   </div>
+  
 <div class="container mx-auto p-8 bg-gray-100 min-h-screen">
     <div class="flex items-center justify-between mb-8">
         <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">Gestión de Catálogos</h1>
@@ -24,16 +25,16 @@
             <thead class="bg-gray-50">
                 <tr>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        Portada
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Nombre
                     </th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Categoría
                     </th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Fecha Inicio
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Fecha Fin
+                        Fechas
                     </th>
                     <th scope="col" class="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Acciones
@@ -45,11 +46,25 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                 <tr th:each="cat : ${catalogos.content}" class="hover:bg-gray-50 transition-colors duration-200">
+                    <td class="p-4 whitespace-nowrap">
+                        <div class="flex-shrink-0 w-16 h-16">
+                            <img th:if="${cat.portadaImagen != null}"
+     th:src="@{${cat.portadaImagen}}"
+     alt="Portada"
+     class="w-full h-full object-cover rounded-md shadow">
+
+                            <div th:if="${cat.portadaImagen == null}"
+                                 class="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center text-xs text-gray-500 font-semibold text-center">
+                                Sin img
+                            </div>
+                        </div>
+                    </td>
                     <td th:text="${cat.nombre}" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"></td>
                     <td th:text="${cat.categoria != null ? cat.categoria.nombre : '-'}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
-                    <td th:text="${#temporals.format(cat.fechaInicio, 'dd-MM-yyyy')}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
-                    <td th:text="${#temporals.format(cat.fechaFin, 'dd-MM-yyyy')}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
-                    
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <p>Del <span th:text="${#temporals.format(cat.fechaInicio, 'dd-MM-yyyy')}"></span></p>
+                        <p>Al <span th:text="${#temporals.format(cat.fechaFin, 'dd-MM-yyyy')}"></span></p>
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                         <div class="flex items-center justify-center space-x-2">
                             <a th:href="@{'/catalogos/details/' + ${cat.id}}"
@@ -73,7 +88,6 @@
                             </a>
                         </div>
                     </td>
-                    
                     <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                         <div class="flex items-center justify-center space-x-2">
                             <a th:href="@{'/catalogos/reporte/inline?id=' + ${cat.id}}" target="_blank"
