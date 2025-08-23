@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/_mainLayoutAdmin.html}">
+<head>
+  <title>Editar Rol</title>
+</head>
+<div layout:fragment="content" class="p-6">
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-bold text-gray-800">Editar Rol</h1>
+  </div>
+
+  <div class="bg-white p-6 rounded-lg shadow-md">
+    <form th:action="@{/roles/update/{id}(id=${rol.id})}" th:object="${rol}" method="post">
+      <input type="hidden" th:field="*{id}">
+
+      <div class="mb-4">
+        <label for="nombre" class="block text-gray-700 text-sm font-bold mb-2">Nombre del Rol:</label>
+        <input type="text" id="nombre" th:field="*{nombre}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" th:classappend="${#fields.hasErrors('nombre')} ? 'border-red-500' : ''">
+        <p th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}" class="text-red-500 text-xs italic mt-1"></p>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+          Actualizar
+        </button>
+        <a th:href="@{/roles}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+          Cancelar
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+</html>

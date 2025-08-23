@@ -1,46 +1,68 @@
 <html lang="es"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="/layouts/_mainLayout">
+      layout:decorate="~{layouts/_mainLayoutAdmin.html}">
+<head>
+    <title>Listado de Usuarios</title>
+</head>
+<div layout:fragment="content" class="p-6">
 
-<div layout:fragment="content">
-    <h2 class="mt-4">Listado de Usuarios</h2>
+    <div th:if="${msg}">
+        <script th:inline="javascript">
+            Swal.fire({
+              title: '¡Éxito!',
+              text: [[${msg}]],
+              icon: 'success',
+              timer: 2000,
+              showConfirmButton: false
+            });
+        </script>
+    </div>
 
-    <a class="btn btn-primary mb-3" th:href="@{/usuarios/create}">
-        <i class="fas fa-plus"></i> Nuevo Usuario
-    </a>
+    <div class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl font-bold text-gray-800">Listado de Usuarios</h1>
+        <a th:href="@{/usuarios/create}" class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-100 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+            Nuevo Usuario
+        </a>
+    </div>
 
-    <table class="table table-bordered">
-        <thead class="table-dark">
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Rol</th>
-            <th>Fecha de Registro</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="usuario : ${usuarios.content}">
-            <td th:text="${usuario.id}">1</td>
-            <td th:text="${usuario.nombre}">Nombre</td>
-            <td th:text="${usuario.email}">correo@ejemplo.com</td>
-            <td th:text="${usuario.rol != null ? usuario.rol.nombre : 'Sin Rol'}">Rol</td>
-            <td th:text="${#dates.format(usuario.fechaRegistro, 'dd/MM/yyyy')}">01/01/2025</td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="overflow-x-auto bg-white rounded-lg shadow">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
+                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Nombre</th>
+                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Email</th>
+                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Rol</th>
+                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Estatus</th>
+                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Acciones</th>
+            </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+            <tr th:each="usuario : ${usuarios.content}">
+                <td th:text="${usuario.id}" class="px-6 py-4 whitespace-nowrap"></td>
+                <td th:text="${usuario.nombre}" class="px-6 py-4 whitespace-nowrap"></td>
+                <td th:text="${usuario.email}" class="px-6 py-4 whitespace-nowrap"></td>
+                <td th:text="${usuario.rol.nombre}" class="px-6 py-4 whitespace-nowrap"></td>
+                <td th:text="${usuario.status == 1 ? 'Activo' : 'Inactivo'}" class="px-6 py-4 whitespace-nowrap"></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <a th:href="@{/usuarios/details/{id}(id=${usuario.id})}" class="text-blue-600 hover:text-blue-900 mr-2">Detalles</a>
+                    <a th:href="@{/usuarios/edit/{id}(id=${usuario.id})}" class="text-green-600 hover:text-green-900 mr-2">Editar</a>
+                    <a th:href="@{/usuarios/delete-confirm/{id}(id=${usuario.id})}" class="text-red-600 hover:text-red-900">Eliminar</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
-    <!-- PAGINACIÓN -->
-    <nav th:if="${pageNumbers != null}">
-        <ul class="pagination justify-content-center">
-            <li th:each="pageNum : ${pageNumbers}"
-                th:classappend="${usuarios.number + 1} == ${pageNum} ? 'active'">
-                <a class="page-link"
-                   th:href="@{'/usuarios'(page=${pageNum}, size=${usuarios.size})}"
-                   th:text="${pageNum}">1</a>
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="flex justify-center">
+            <li th:each="pageNumber : ${pageNumbers}" class="mx-1">
+                <a th:href="@{|/usuarios?page=${pageNumber}|}" th:text="${pageNumber}" class="block px-3 py-1 text-sm rounded-lg"
+                   th:classappend="${usuarios.number + 1 == pageNumber} ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'">
+                </a>
             </li>
         </ul>
     </nav>
-
 </div>
+</html>
