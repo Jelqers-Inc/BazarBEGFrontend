@@ -19,7 +19,13 @@ public class ProductoService implements IProductoService {
     private IProductoRepository productoRepository;
 
 
-    public Page<Producto> buscarTodosPaginados(String nombre, String categoriaNombre, Pageable pageable) {
+    @Override
+    public Page<Producto> buscarTodosPaginados(Pageable pageable) {
+        return productoRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Producto> buscarPorFiltroPaginado(String nombre, String categoriaNombre, Pageable pageable) {
         return productoRepository.findByNombreContainingIgnoreCaseOrCategoria_NombreContainingIgnoreCase(
                 nombre, categoriaNombre, pageable
         );
@@ -45,10 +51,7 @@ public class ProductoService implements IProductoService {
         productoRepository.deleteById(id);
     }
 
-    @Override
-    public Page<Producto> buscarTodosPaginados(Pageable pageable) {
-        return productoRepository.findAll(pageable);
-    }
+
 
     @Override
     public List<Producto> buscarPorIds(List<Integer> ids) {

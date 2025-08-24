@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IProductoService {
-    Page<Producto> buscarTodosPaginados(String nombre, String categoriaNombre,Pageable pageable);
+    Page<Producto> buscarTodosPaginados(Pageable pageable);
 
     List<Producto> obtenerTodos();
 
@@ -18,8 +18,7 @@ public interface IProductoService {
 
     void eliminarPorId(Integer id);
 
-    Page<Producto> buscarTodosPaginados(Pageable pageable);
-
+    Page<Producto> buscarPorFiltroPaginado(String nombre, String categoriaNombre, Pageable pageable);
     List<Producto> buscarPorIds(List<Integer> productosIds);
     List<Producto> findByCategoriaId(Integer categoriaId);
 }

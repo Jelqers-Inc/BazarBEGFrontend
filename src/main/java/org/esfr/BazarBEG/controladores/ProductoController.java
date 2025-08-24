@@ -41,12 +41,21 @@ public class ProductoController {
     @GetMapping
     public String index(Model model,
                         @RequestParam("page") Optional<Integer> page,
-                        @RequestParam("size") Optional<Integer> size) {
+                        @RequestParam("size") Optional<Integer> size,
+                        @RequestParam("q") Optional<String> query) { // Añade el parámetro de búsqueda
         int currentPage = page.orElse(1) - 1;
         int pageSize = size.orElse(20);
         Pageable pageable = PageRequest.of(currentPage, pageSize);
 
-        Page<Producto> productos = productoService.buscarTodosPaginados(pageable);
+        Page<Producto> productos;
+        if (query.isPresent() && !query.get().isBlank()) {
+            productos = productoService.buscarPorFiltroPaginado(query.get(), null, pageable);
+            model.addAttribute("query", query.get()); // Pasa el término a la vista
+        } else {
+            // Si no hay búsqueda, muestra todos los productos paginados
+            productos = productoService.buscarTodosPaginados(pageable);
+        }
+
         model.addAttribute("productos", productos);
 
         int totalPages = productos.getTotalPages();

@@ -29,69 +29,86 @@
         </script>
     </div>
 
-   <div class="container mx-auto p-8">
-    <div class="flex flex-col sm:flex-row items-center justify-between mb-8">
-        <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
-            Gestión de Productos
-        </h1>
-        <a th:href="@{/productos/create}" class="flex items-center gap-2 px-6 py-3 mt-4 sm:mt-0 bg-purple-600 text-white font-medium rounded-xl 
+    <div class="container mx-auto p-8">
+        <div class="flex flex-col sm:flex-row items-center justify-between mb-8">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
+                Gestión de Productos
+            </h1>
+            <a th:href="@{/productos/create}" class="flex items-center gap-2 px-6 py-3 mt-4 sm:mt-0 bg-purple-600 text-white font-medium rounded-xl
             shadow-lg hover:bg-purple-700 transform hover:scale-105 transition duration-300">
-            Nuevo Producto
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-        </a>
-    </div>
-    
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        <div th:each="producto : ${productos}" class="bg-white rounded-xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 overflow-hidden">
-            <div class="h-48 overflow-hidden">
-                <img th:if="${producto.imagen != null}" th:src="@{/productos/imagen/{id}(id=${producto.id})}" alt="Imagen del producto" class="w-full h-full object-cover">
-                <div th:if="${producto.imagen == null}" class="w-full h-full bg-gray-200 flex items-center justify-center">
-                    <span class="text-gray-500 font-semibold text-sm">Sin Imagen</span>
-                </div>
-            </div>
+                Nuevo Producto
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+            </a>
+        </div>
 
-            <div class="p-6">
-                <div class="flex items-baseline justify-between mb-2">
-                    <h2 th:text="${producto.nombre}" class="text-xl font-bold text-gray-900 truncate"></h2>
-                    <span th:text="'$' + ${#numbers.formatDecimal(producto.precio, 1, 'POINT', 2, 'COMMA')}" class="text-lg font-extrabold text-purple-600"></span>
+        <div th:if="${productos.isEmpty()}" class="text-center text-gray-500">
+            <p>No se encontraron productos.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div th:each="producto : ${productos}" class="bg-white rounded-xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 overflow-hidden">
+                <div class="h-48 overflow-hidden">
+                    <img th:if="${producto.imagen != null}" th:src="@{/productos/imagen/{id}(id=${producto.id})}" alt="Imagen del producto" class="w-full h-full object-cover">
+                    <div th:if="${producto.imagen == null}" class="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <span class="text-gray-500 font-semibold text-sm">Sin Imagen</span>
+                    </div>
                 </div>
 
-                <div class="flex items-baseline justify-between text-sm text-gray-500 mb-4">
-                    <p>ID: <span th:text="${producto.id}" class="font-medium"></span></p>
-                    <p>Stock: <span th:text="${producto.stock}" class="font-medium"></span></p>
-                </div>
+                <div class="p-6">
+                    <div class="flex items-baseline justify-between mb-2">
+                        <h2 th:text="${producto.nombre}" class="text-xl font-bold text-gray-900 truncate"></h2>
+                        <span th:text="'$' + ${#numbers.formatDecimal(producto.precio, 1, 'POINT', 2, 'COMMA')}" class="text-lg font-extrabold text-purple-600"></span>
+                    </div>
 
-                <div class="flex items-center gap-3">
-                    <a th:href="@{/productos/details/{id}(id=${producto.id})}"
-                       class="flex-1 text-center py-2 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700 transition duration-300 text-sm font-medium">
-                        Detalles
-                    </a>
-                    <a th:href="@{/productos/edit/{id}(id=${producto.id})}"
-                       class="flex-1 text-center py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition duration-300 text-sm font-medium">
-                        Editar
-                    </a>
-                    <a th:href="@{/productos/remove/{id}(id=${producto.id})}"
-                       class="flex-1 text-center py-2 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-300 text-sm font-medium">
-                        Eliminar
-                    </a>
+                    <div class="flex items-baseline justify-between text-sm text-gray-500 mb-4">
+                        <p>ID: <span th:text="${producto.id}" class="font-medium"></span></p>
+                        <p>Stock: <span th:text="${producto.stock}" class="font-medium"></span></p>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <a th:href="@{/productos/details/{id}(id=${producto.id})}"
+                           class="flex-1 text-center py-2 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700 transition duration-300 text-sm font-medium">
+                            Detalles
+                        </a>
+                        <a th:href="@{/productos/edit/{id}(id=${producto.id})}"
+                           class="flex-1 text-center py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition duration-300 text-sm font-medium">
+                            Editar
+                        </a>
+                        <a th:href="@{/productos/remove/{id}(id=${producto.id})}"
+                           class="flex-1 text-center py-2 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-300 text-sm font-medium">
+                            Eliminar
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-
     </div>
-</div>
 
-    <nav aria-label="Page navigation" class="mt-4">
+    <nav aria-label="Page navigation" class="mt-4" th:if="${!productos.isEmpty()}">
         <ul class="flex justify-center">
             <li th:each="pageNumber : ${pageNumbers}" class="mx-1">
-                <a th:href="@{|/productos?page=${pageNumber}|}" th:text="${pageNumber}" class="block px-3 py-1 text-sm rounded-lg"
+                <a th:href="@{/productos(page=${pageNumber}, size=${productos.size}, q=${query})}"
+                   th:text="${pageNumber}" class="block px-3 py-1 text-sm rounded-lg"
                    th:classappend="${productos.number + 1 == pageNumber} ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'">
                 </a>
             </li>
         </ul>
     </nav>
 
-</div>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchForm = document.getElementById('searchForm');
+            const searchInput = document.getElementById('searchInput');
+
+            if (searchForm) {
+                searchForm.action = "[[@{/productos}]]";
+                const currentQuery = "[[${query}]]";
+                if (currentQuery) {
+                    searchInput.value = currentQuery;
+                }
+            }
+        });
+    </script>
 </html>
