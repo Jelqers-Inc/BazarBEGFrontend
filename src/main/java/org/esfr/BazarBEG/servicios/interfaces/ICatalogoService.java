@@ -8,6 +8,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ICatalogoService {
+
+    Page<Catalogo> buscarPorNombrePaginado(String nombre, Pageable pageable);
+
     Page<Catalogo> buscarTodosPaginados(Pageable pageable);
 
     List<Catalogo> obtenerTodos();

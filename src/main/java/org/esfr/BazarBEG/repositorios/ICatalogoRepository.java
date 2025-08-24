@@ -41,4 +41,5 @@ public interface ICatalogoRepository extends JpaRepository<Catalogo, Integer> {
     Optional<Catalogo> findByIdWithDetails(@Param("id") Integer id);
 
 
+
 }

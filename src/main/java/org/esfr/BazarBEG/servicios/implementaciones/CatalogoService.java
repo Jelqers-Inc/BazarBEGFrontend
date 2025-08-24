@@ -47,4 +47,9 @@ public class CatalogoService implements ICatalogoService {
     public Optional<Catalogo> buscarPorIdy(Integer id) {
         return catalogoRepository.findByIdWithDetails(id);
     }
+
+    @Override
+    public Page<Catalogo> buscarPorNombrePaginado(String nombre, Pageable pageable) {
+        return catalogoRepository.findByNombreContainingIgnoreCase(nombre, pageable);
+    }
 }

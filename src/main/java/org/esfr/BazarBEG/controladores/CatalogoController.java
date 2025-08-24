@@ -61,12 +61,18 @@ public class CatalogoController {
 
     // -------------------- LISTADO --------------------
     @GetMapping
-    public String index(Model model,@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
-
-        int currentPage = page.orElse(1) - 1;  // Pageable es 0-based
-        int pageSize = size.orElse(5);
+    public String index(Model model, @RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size,@RequestParam("q") Optional<String> query) {
+        int currentPage = page.orElse(1) - 1;
+        int pageSize = size.orElse(5); // Ajusta el tamaño de página según tu necesidad
         Pageable pageable = PageRequest.of(currentPage, pageSize);
-        Page<Catalogo> catalogos = catalogoService.buscarTodosPaginados(pageable);
+
+        Page<Catalogo> catalogos;
+        if (query.isPresent() && !query.get().isBlank()) {
+            catalogos = catalogoService.buscarPorNombrePaginado(query.get(), pageable);
+            model.addAttribute("query", query.get());
+        } else {
+            catalogos = catalogoService.buscarTodosPaginados(pageable);
+        }
 
         model.addAttribute("catalogos", catalogos);
 

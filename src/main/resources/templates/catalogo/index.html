@@ -5,24 +5,40 @@
 
 <div layout:fragment="content" class="p-6">
 
-  <div th:if="${msg}" class="mb-4">
-    <script th:inline="javascript">
-      Swal.fire({ title: '¡Éxito!', text: [[${msg}]], icon: 'success', timer: 2000, showConfirmButton: false });
-    </script>
-  </div>
-  
-<div class="container mx-auto p-8 bg-gray-100 min-h-screen">
-    <div class="flex items-center justify-between mb-8">
-        <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">Gestión de Catálogos</h1>
-        <a th:href="@{/catalogos/create}"
-           class="px-6 py-3 bg-purple-600 text-white font-medium rounded-full shadow-lg hover:bg-purple-700 transition duration-300 transform hover:scale-105">
-            Crear Nuevo Catálogo
-        </a>
+    <div th:if="${msg}" class="mb-4">
+        <script th:inline="javascript">
+            Swal.fire({ title: '¡Éxito!', text: [[${msg}]], icon: 'success', timer: 2000, showConfirmButton: false });
+        </script>
     </div>
 
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+    <div th:if="${error}">
+        <script th:inline="javascript">
+            Swal.fire({
+              title: 'Error',
+              text: [[${error}]],
+              icon: 'error',
+              timer: 2500,
+              showConfirmButton: true
+            });
+        </script>
+    </div>
+
+    <div class="container mx-auto p-8 bg-gray-100 min-h-screen">
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">Gestión de Catálogos</h1>
+            <a th:href="@{/catalogos/create}"
+               class="px-6 py-3 bg-purple-600 text-white font-medium rounded-full shadow-lg hover:bg-purple-700 transition duration-300 transform hover:scale-105">
+                Crear Nuevo Catálogo
+            </a>
+        </div>
+
+        <div th:if="${catalogos.content.isEmpty()}" class="text-center text-gray-500 py-8">
+            <p>No se encontraron catálogos.</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden" th:if="${!catalogos.content.isEmpty()}">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
                 <tr>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Portada
@@ -43,8 +59,8 @@
                         PDF
                     </th>
                 </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
                 <tr th:each="cat : ${catalogos.content}" class="hover:bg-gray-50 transition-colors duration-200">
                     <td class="p-4 whitespace-nowrap">
                         <div class="flex-shrink-0 w-16 h-16">
@@ -97,26 +113,43 @@
                             </a>
                             <a th:href="@{'/catalogos/reporte/attachment?id=' + ${cat.id}}"
                                class="text-gray-600 hover:text-gray-900 transition-colors duration-200" title="Descargar PDF">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <svg xmlns="http://www.w3.org/2d00/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 13.586V8z" clip-rule="evenodd" />
                                 </svg>
                             </a>
                         </div>
                     </td>
                 </tr>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
 
-  <!-- Paginación -->
-  <div class="mt-4" th:if="${pageNumbers != null}">
-    <ul class="flex gap-2">
-      <li th:each="i : ${pageNumbers}">
-        <a th:href="@{'/catalogos?page=' + ${i}}" class="px-2 py-1 border rounded hover:bg-gray-100" th:text="${i}"></a>
-      </li>
-    </ul>
-  </div>
+    <div class="mt-4" th:if="${pageNumbers != null}">
+        <ul class="flex gap-2">
+            <li th:each="pageNumber : ${pageNumbers}">
+                <a th:href="@{/catalogos(page=${pageNumber}, size=${catalogos.size}, q=${query})}"
+                   th:text="${pageNumber}" class="block px-3 py-1 text-sm rounded-lg"
+                   th:classappend="${catalogos.number + 1 == pageNumber} ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'">
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchForm = document.getElementById('searchForm');
+            const searchInput = document.getElementById('searchInput');
+
+            if (searchForm) {
+                searchForm.action = "[[@{/catalogos}]]";
+                const currentQuery = "[[${query}]]";
+                if (currentQuery) {
+                    searchInput.value = currentQuery;
+                }
+            }
+        });
+    </script>
 
 </div>
 </html>
