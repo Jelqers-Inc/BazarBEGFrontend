@@ -1,41 +1,68 @@
+<!DOCTYPE html>
 <html lang="es"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="/layouts/_mainLayoutAdmin.html">
-
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/_mainLayoutAdmin.html}">
+<head>
+    <title>Lista de Pedidos</title>
+</head>
 <div layout:fragment="content" class="p-6">
-
-    <div th:if="${msg}">
-        <script th:inline="javascript">
-            Swal.fire({title:'¡Éxito!', text:[[${msg}]], icon:'success', timer:2000, showConfirmButton:false});
-        </script>
+    <div class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl font-bold text-gray-800">Gestión de Pedidos</h1>
     </div>
 
-    <div th:if="${error}">
-        <script th:inline="javascript">
-            Swal.fire({title:'Error', text:[[${error}]], icon:'error', timer:2500, showConfirmButton:true});
-        </script>
+    <div th:if="${msg}" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+        <p th:text="${msg}"></p>
     </div>
 
-    <div class="container mx-auto p-8">
-        <div class="flex flex-col sm:flex-row items-center justify-between mb-8">
-            <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">Gestión de Pedidos</h1>
-            <a th:href="@{/pedidos/create}" class="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700">Nuevo Pedido</a>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div th:each="pedido : ${pedidos}" class="bg-white rounded-xl shadow-lg p-6">
-                <h2 class="text-xl font-bold">Pedido #<span th:text="${pedido.id}"></span></h2>
-                <p>Usuario: <span th:text="${pedido.usuario.nombre}"></span></p>
-                <p>Fecha: <span th:text="${#dates.format(pedido.fechaPedido,'dd/MM/yyyy')}"></span></p>
-                <p>Total: $<span th:text="${pedido.total}"></span></p>
-                <div class="flex gap-2 mt-4">
-                    <a th:href="@{/pedidos/details/{id}(id=${pedido.id})}" class="bg-blue-600 text-white px-3 py-1 rounded">Detalles</a>
-                    <a th:href="@{/pedidos/edit/{id}(id=${pedido.id})}" class="bg-green-600 text-white px-3 py-1 rounded">Editar</a>
-                    <a th:href="@{/pedidos/remove/{id}(id=${pedido.id})}" class="bg-red-600 text-white px-3 py-1 rounded">Eliminar</a>
-                </div>
-            </div>
-        </div>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+            <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+            <tr th:each="pedido : ${pedidos.content}">
+                <td th:text="${pedido.id}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                <td th:text="${pedido.usuario.nombre}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                <td th:text="${#dates.format(pedido.fechaPedido, 'dd-MM-yyyy')}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                <td th:text="${pedido.estado}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                <td th:text="${#numbers.formatCurrency(pedido.total)}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <a th:href="@{'/pedidos/details/' + ${pedido.id}}" class="text-indigo-600 hover:text-indigo-900 mx-1">Ver</a>
+                    <a th:href="@{'/pedidos/factura/' + ${pedido.id}}" class="text-purple-600 hover:text-purple-900 mx-1">Factura</a>
+                    <a th:href="@{'/pedidos/delete-confirm/' + ${pedido.id}}" class="text-red-600 hover:text-red-900 mx-1">Eliminar</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
+    <nav th:if="${pedidos.totalPages > 0}" class="mt-6 flex justify-center" aria-label="Paginación">
+        <ul class="flex items-center space-x-2">
+            <li>
+                <a th:href="@{/pedidos(page=${pedidos.number}, size=${pedidos.size})}"
+                   th:classappend="${pedidos.first} ? 'pointer-events-none opacity-50' : ''"
+                   class="px-3 py-1 bg-gray-200 rounded-md text-gray-700 hover:bg-gray-300">Anterior</a>
+            </li>
+            <li th:each="pageNumber : ${pageNumbers}">
+                <a th:href="@{/pedidos(page=${pageNumber}, size=${pedidos.size})}"
+                   th:text="${pageNumber}"
+                   th:classappend="${pageNumber == pedidos.number + 1} ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700'"
+                   class="px-3 py-1 rounded-md hover:bg-purple-700 hover:text-white"></a>
+            </li>
+            <li>
+                <a th:href="@{/pedidos(page=${pedidos.number + 2}, size=${pedidos.size})}"
+                   th:classappend="${pedidos.last} ? 'pointer-events-none opacity-50' : ''"
+                   class="px-3 py-1 bg-gray-200 rounded-md text-gray-700 hover:bg-gray-300">Siguiente</a>
+            </li>
+        </ul>
+    </nav>
 </div>
 </html>

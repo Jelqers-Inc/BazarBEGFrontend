@@ -1,45 +1,73 @@
+<!DOCTYPE html>
 <html lang="es"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="/layouts/_mainLayoutAdmin.html">
-
+      layout:decorate="~{layouts/_mainLayoutAdmin.html}">
+<head>
+    <title>Detalles del Pedido</title>
+</head>
 <div layout:fragment="content" class="p-6">
-
-    <html lang="es" xmlns:th="http://www.thymeleaf.org" layout:decorate="/layouts/_mainLayoutAdmin.html">
-
-    <div layout:fragment="content" class="p-6">
-
-        <h1 class="text-4xl font-bold mb-4">Pedido #<span th:text="${pedido.id}"></span></h1>
-        <p>Usuario: <span th:text="${pedido.usuario.nombre}"></span></p>
-        <p>Fecha: <span th:text="${#dates.format(pedido.fechaPedido,'dd/MM/yyyy')}"></span></p>
-        <p>Estado: <span th:text="${pedido.estado}"></span></p>
-        <p>Total: $<span th:text="${pedido.total}"></span></p>
-
-        <h2 class="text-2xl font-bold mt-6 mb-2">Detalles del Pedido</h2>
-        <table class="w-full text-left border-collapse">
-            <thead>
-            <tr>
-                <th class="border-b py-2">Producto</th>
-                <th class="border-b py-2">Cantidad</th>
-                <th class="border-b py-2">Precio Unitario</th>
-                <th class="border-b py-2">Subtotal</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="detalle : ${pedido.detalles}">
-                <td class="border-b py-2" th:text="${detalle.producto.nombre}"></td>
-                <td class="border-b py-2" th:text="${detalle.cantidad}"></td>
-                <td class="border-b py-2" th:text="${detalle.precioUnitario}"></td>
-                <td class="border-b py-2" th:text="${detalle.cantidad * detalle.precioUnitario}"></td>
-            </tr>
-            </tbody>
-        </table>
-
-        <a th:href="@{/pedidos}" class="mt-4 inline-block px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">Volver</a>
-
+    <div class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl font-bold text-gray-800">Detalles del Pedido</h1>
     </div>
-    </html>
 
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="mb-4">
+            <h2 class="text-xl font-bold mb-2">Información General</h2>
+            <p><strong>Número de Pedido:</strong> <span th:text="${pedido.id}"></span></p>
+            <p><strong>Cliente:</strong> <span th:text="${pedido.usuario.nombre}"></span></p>
+            <p><strong>Fecha del Pedido:</strong> <span th:text="${#dates.format(pedido.fechaPedido, 'dd-MM-yyyy HH:mm')}"></span></p>
+        </div>
 
+        <div class="mb-4 p-4 border rounded-md bg-gray-50">
+            <h3 class="text-lg font-bold mb-2">Actualizar Estado del Pedido</h3>
+            <form th:action="@{/pedidos/update-status/{id}(id=${pedido.id})}" method="post" class="flex items-end space-x-2">
+                <div class="flex-grow">
+                    <label for="estado" class="block text-gray-700 text-sm font-bold mb-1">Estado:</label>
+                    <select id="estado" name="estado" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="En revisión" th:selected="${pedido.estado == 'En revisión'}">En revisión</option>
+                        <option value="Procesando" th:selected="${pedido.estado == 'Procesando'}">Procesando</option>
+                        <option value="Enviado" th:selected="${pedido.estado == 'Enviado'}">Enviado</option>
+                        <option value="Entregado" th:selected="${pedido.estado == 'Entregado'}">Entregado</option>
+                        <option value="Cancelado" th:selected="${pedido.estado == 'Cancelado'}">Cancelado</option>
+                    </select>
+                </div>
+                <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Actualizar</button>
+            </form>
+        </div>
+
+        <div class="mb-4">
+            <h2 class="text-xl font-bold mb-2">Productos del Pedido</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio U.</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
+                    </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tr th:each="detalle : ${pedido.detalles}">
+                        <td th:text="${detalle.producto.nombre}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                        <td th:text="${detalle.cantidad}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                        <td th:text="${#numbers.formatCurrency(detalle.precioUnitario)}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                        <td th:text="${#numbers.formatCurrency(detalle.cantidad * detalle.precioUnitario)}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="text-right font-bold text-lg">
+            Total del Pedido: <span th:text="${#numbers.formatCurrency(pedido.total)}"></span>
+        </div>
+
+        <div class="mt-6 flex justify-end space-x-3">
+            <a th:href="@{'/pedidos/factura/' + ${pedido.id}}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">Generar Factura</a>
+            <a th:href="@{/pedidos}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">Volver</a>
+        </div>
+    </div>
 </div>
 </html>

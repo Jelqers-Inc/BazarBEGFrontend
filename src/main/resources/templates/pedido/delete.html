@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/_mainLayoutAdmin.html}">
+<head>
+    <title>Confirmar Eliminación</title>
+</head>
+<div layout:fragment="content" class="p-6">
+    <div class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl font-bold text-gray-800">Confirmar Eliminación de Pedido</h1>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto text-center">
+        <p class="text-lg mb-4">¿Estás seguro de que quieres eliminar el siguiente pedido?</p>
+        <div class="text-left bg-gray-100 p-4 rounded-md mb-6">
+            <p><strong>ID del Pedido:</strong> <span th:text="${pedido.id}"></span></p>
+            <p><strong>Cliente:</strong> <span th:text="${pedido.usuario.nombre}"></span></p>
+            <p><strong>Fecha:</strong> <span th:text="${#dates.format(pedido.fechaPedido, 'dd-MM-yyyy')}"></span></p>
+            <p><strong>Total:</strong> <span th:text="${#numbers.formatCurrency(pedido.total)}"></span></p>
+        </div>
+
+        <form th:action="@{'/pedidos/delete/' + ${pedido.id}}" method="post" class="flex justify-center space-x-4">
+            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">Eliminar</button>
+            <a th:href="@{/pedidos}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">Cancelar</a>
+        </form>
+    </div>
+</div>
+</html>
