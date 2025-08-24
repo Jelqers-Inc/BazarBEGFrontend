@@ -37,12 +37,22 @@ public class CategoriaController {
     @GetMapping
     public String index(Model model,
                         @RequestParam("page") Optional<Integer> page,
-                        @RequestParam("size") Optional<Integer> size) {
+                        @RequestParam("size") Optional<Integer> size,
+                        @RequestParam("q") Optional<String> query) {
         int currentPage = page.orElse(1) - 1;
         int pageSize = size.orElse(5);
         Pageable pageable = PageRequest.of(currentPage, pageSize);
 
-        Page<Categoria> categorias = categoriaService.buscarTodosPaginados(pageable);
+        Page<Categoria> categorias;
+        if (query.isPresent() && !query.get().isBlank()) {
+            // Si el parámetro de búsqueda 'q' existe, busca por nombre
+            categorias = categoriaService.buscarPorNombrePaginado(query.get(), pageable);
+            model.addAttribute("query", query.get()); // Pasa el término de búsqueda a la vista
+        } else {
+            // Si no hay parámetro de búsqueda, muestra todas las categorías
+            categorias = categoriaService.buscarTodosPaginados(pageable);
+        }
+
         model.addAttribute("categorias", categorias);
 
         int totalPages = categorias.getTotalPages();

@@ -18,4 +18,7 @@ public interface ICategoriaService {
     Categoria crearOEditar(Categoria categoria);
 
     void eliminarPorId(Integer id);
+
+    // Nuevo metodo para buscar por nombre
+    Page<Categoria> buscarPorNombrePaginado(String nombre, Pageable pageable);
 }

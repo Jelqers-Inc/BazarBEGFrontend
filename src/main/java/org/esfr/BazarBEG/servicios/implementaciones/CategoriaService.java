@@ -41,4 +41,10 @@ public class CategoriaService implements ICategoriaService {
     public void eliminarPorId(Integer id) {
         categoriaRepository.deleteById(id);
     }
+
+    // Implementación del metodo de búsqueda por nombre
+    @Override
+    public Page<Categoria> buscarPorNombrePaginado(String nombre, Pageable pageable) {
+        return categoriaRepository.findByNombreContainingIgnoreCase(nombre, pageable);
+    }
 }
