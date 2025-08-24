@@ -1,5 +1,7 @@
 package org.esfr.BazarBEG.controladores;
 
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.draw.ILineDrawer;
@@ -15,9 +17,14 @@ import org.esfr.BazarBEG.servicios.interfaces.ICatalogoService;
 import org.esfr.BazarBEG.servicios.interfaces.ICategoriaService;
 import org.esfr.BazarBEG.servicios.interfaces.IProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -247,6 +254,7 @@ public class CatalogoController {
     private void buildCatalogoPDF(Document document, Catalogo catalogo, byte[] portadaBytes) throws IOException {
         document.setMargins(50, 50, 50, 50);
 
+        // Encabezado del Catálogo
         if (portadaBytes != null) {
             com.itextpdf.layout.element.Image portada = new com.itextpdf.layout.element.Image(
                     com.itextpdf.io.image.ImageDataFactory.create(portadaBytes)
@@ -257,47 +265,54 @@ public class CatalogoController {
         document.add(new Paragraph("CATÁLOGO")
                 .setFontSize(28).setBold().setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
                 .setMarginBottom(10));
-
         document.add(new Paragraph(catalogo.getNombre())
                 .setFontSize(20).setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
                 .setMarginBottom(20));
 
+        // Información del catálogo
         document.add(new Paragraph("Productos de " + (catalogo.getCategoria() != null ? catalogo.getCategoria().getNombre() : "varias categorías"))
                 .setFontSize(16).setBold().setUnderline().setMarginBottom(15));
+        document.add(new Paragraph("Válido del " + catalogo.getFechaInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " al " + catalogo.getFechaFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                .setFontSize(12).setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER));
+        document.add(new LineSeparator(new SolidLine()).setMarginTop(10).setMarginBottom(30));
 
-        com.itextpdf.layout.element.Table table = new com.itextpdf.layout.element.Table(2).useAllAvailableWidth();
-        table.setMarginBottom(20);
+        // Cuadrícula de Productos usando una tabla
+        com.itextpdf.layout.element.Table productTable = new com.itextpdf.layout.element.Table(3).useAllAvailableWidth();
+        productTable.setMarginBottom(20);
 
         for (Producto p : catalogo.getProductos()) {
-            com.itextpdf.layout.element.Cell cell = new com.itextpdf.layout.element.Cell().add(new Paragraph(p.getNombre()).setBold().setFontSize(14));
+            com.itextpdf.layout.element.Cell productCell = new com.itextpdf.layout.element.Cell();
+            productCell.setBorder(new SolidBorder(1));
+            productCell.setPadding(10);
+            productCell.setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER);
 
+            // Imagen del producto
             if (p.getImagen() != null && !p.getImagen().isEmpty()) {
                 File imgFile = new File("src/main/resources/static" + p.getImagen());
                 if (imgFile.exists()) {
                     byte[] imgBytes = Files.readAllBytes(imgFile.toPath());
                     com.itextpdf.layout.element.Image img = new com.itextpdf.layout.element.Image(
                             com.itextpdf.io.image.ImageDataFactory.create(imgBytes)
-                    ).setWidth(150);
-                    cell.add(img);
+                    ).setAutoScale(true).setWidth(120).setMarginBottom(5);
+                    productCell.add(img);
                 }
             }
 
-            cell.add(new Paragraph("Precio: $" + p.getPrecio()).setFontSize(12));
-            cell.add(new Paragraph("Descripción: " + p.getDescripcion()).setFontSize(10));
-            cell.setBorder(new SolidBorder(1));
-            table.addCell(cell);
+            // Nombre del producto
+            productCell.add(new Paragraph(p.getNombre())
+                    .setBold().setFontSize(14).setMarginBottom(5));
+
+            // Precio
+            productCell.add(new Paragraph("$" + p.getPrecio())
+                    .setBold().setFontSize(16).setFontColor(new DeviceRgb(128, 0, 128)));
+
+            // Agregar la celda a la tabla
+            productTable.addCell(productCell);
         }
 
-        document.add(table);
-
-        document.showTextAligned(new Paragraph("Catálogo válido del " +
-                        catalogo.getFechaInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
-                        " al " + catalogo.getFechaFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))),
-                300, 30, com.itextpdf.layout.properties.TextAlignment.CENTER);
-
+        document.add(productTable);
         document.close();
     }
-
 
     // -------------------- METODO PARA GENERAR PDF --------------------
     private String generarPDF(Catalogo catalogo) throws IOException {
@@ -387,5 +402,36 @@ public class CatalogoController {
         buildCatalogoPDF(document, catalogo, portadaBytes);
         document.close();
     }
+
+    @GetMapping("/imagen/{id}")
+    public ResponseEntity<Resource> obtenerPortada(@PathVariable("id") Integer id) {
+        Optional<Catalogo> catalogoOpt = catalogoService.buscarPorId(id);
+        if (catalogoOpt.isPresent() && catalogoOpt.get().getPortadaImagen() != null) {
+            try {
+                String rutaImagen = catalogoOpt.get().getPortadaImagen();
+                String nombreArchivo = Paths.get(rutaImagen).getFileName().toString();
+                Path filePath = Paths.get(UPLOAD_DIR).resolve(nombreArchivo).normalize();
+
+                Resource resource = new UrlResource(filePath.toUri());
+
+                if (resource.exists() && resource.isReadable()) {
+                    String contentType = Files.probeContentType(filePath);
+                    if (contentType == null) {
+                        contentType = "image/jpeg";
+                    }
+                    return ResponseEntity.ok()
+                            .contentType(MediaType.parseMediaType(contentType))
+                            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                            .body(resource);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return ResponseEntity.notFound().build();
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+
 
 }

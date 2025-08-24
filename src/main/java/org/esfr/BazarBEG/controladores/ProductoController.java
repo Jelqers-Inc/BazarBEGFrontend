@@ -43,7 +43,7 @@ public class ProductoController {
                         @RequestParam("page") Optional<Integer> page,
                         @RequestParam("size") Optional<Integer> size) {
         int currentPage = page.orElse(1) - 1;
-        int pageSize = size.orElse(5);
+        int pageSize = size.orElse(20);
         Pageable pageable = PageRequest.of(currentPage, pageSize);
 
         Page<Producto> productos = productoService.buscarTodosPaginados(pageable);
@@ -172,5 +172,32 @@ public class ProductoController {
 
         return "redirect:/productos";
     }
+    @GetMapping("/imagen/{id}")
+    public ResponseEntity<Resource> obtenerImagen(@PathVariable("id") Integer id) {
+        Optional<Producto> productoOpt = productoService.buscarPorId(id);
 
+        if (productoOpt.isPresent() && productoOpt.get().getImagen() != null) {
+            try {
+                String rutaImagen = productoOpt.get().getImagen();
+                String nombreArchivo = Paths.get(rutaImagen).getFileName().toString();
+                Path filePath = Paths.get(UPLOAD_DIR).resolve(nombreArchivo).normalize();
+
+                Resource resource = new UrlResource(filePath.toUri());
+
+                if (resource.exists() || resource.isReadable()) {
+                    String contentType = Files.probeContentType(filePath);
+                    if (contentType == null) {
+                        contentType = "application/octet-stream";
+                    }
+                    return ResponseEntity.ok()
+                            .contentType(MediaType.parseMediaType(contentType))
+                            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                            .body(resource);
+                }
+            } catch (IOException e) {
+                return ResponseEntity.notFound().build();
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
 }

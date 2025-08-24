@@ -7,7 +7,7 @@
 
 <div class="flex items-center justify-center min-h-screen bg-gray-100 p-8">
     <div class="w-full max-w-2xl bg-white rounded-xl shadow-2xl p-8">
-        
+
         <div class="text-center mb-8">
             <h2 class="text-3xl font-extrabold text-purple-800">Editar Catálogo</h2>
             <p class="mt-2 text-sm text-gray-500">
@@ -17,7 +17,7 @@
 
         <form th:action="@{/catalogos/update/{id}(id=${catalogo.id})}" th:object="${catalogo}"
               method="post" class="space-y-6" enctype="multipart/form-data">
-            
+
             <input type="hidden" th:field="*{id}"/>
 
             <div>

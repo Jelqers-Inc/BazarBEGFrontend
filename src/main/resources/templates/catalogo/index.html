@@ -49,10 +49,9 @@
                     <td class="p-4 whitespace-nowrap">
                         <div class="flex-shrink-0 w-16 h-16">
                             <img th:if="${cat.portadaImagen != null}"
-     th:src="@{${cat.portadaImagen}}"
-     alt="Portada"
-     class="w-full h-full object-cover rounded-md shadow">
-
+                                 th:src="@{/catalogos/imagen/{id}(id=${cat.id})}"
+                                 alt="Portada"
+                                 class="w-full h-full object-cover rounded-md shadow">
                             <div th:if="${cat.portadaImagen == null}"
                                  class="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center text-xs text-gray-500 font-semibold text-center">
                                 Sin img
