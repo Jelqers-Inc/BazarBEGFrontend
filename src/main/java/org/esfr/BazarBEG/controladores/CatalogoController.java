@@ -414,16 +414,19 @@ public class CatalogoController {
         Optional<Catalogo> catalogoOpt = catalogoService.buscarPorId(id);
         if (catalogoOpt.isPresent() && catalogoOpt.get().getPortadaImagen() != null) {
             try {
+                // Obtiene la ruta de la imagen desde la base de datos
                 String rutaImagen = catalogoOpt.get().getPortadaImagen();
+                // Extrae el nombre del archivo de la ruta
                 String nombreArchivo = Paths.get(rutaImagen).getFileName().toString();
+                // Construye la ruta completa y segura al archivo en el sistema de archivos
                 Path filePath = Paths.get(UPLOAD_DIR).resolve(nombreArchivo).normalize();
-
                 Resource resource = new UrlResource(filePath.toUri());
 
                 if (resource.exists() && resource.isReadable()) {
+                    // Detecta el tipo de contenido del archivo para servirlo correctamente
                     String contentType = Files.probeContentType(filePath);
                     if (contentType == null) {
-                        contentType = "image/jpeg";
+                        contentType = "application/octet-stream";
                     }
                     return ResponseEntity.ok()
                             .contentType(MediaType.parseMediaType(contentType))
@@ -431,10 +434,11 @@ public class CatalogoController {
                             .body(resource);
                 }
             } catch (IOException e) {
+                // En caso de error, muestra un mensaje en la consola y devuelve un 404
                 e.printStackTrace();
-                return ResponseEntity.notFound().build();
             }
         }
+        // Devuelve 404 si el catálogo o la imagen no existen
         return ResponseEntity.notFound().build();
     }
 
