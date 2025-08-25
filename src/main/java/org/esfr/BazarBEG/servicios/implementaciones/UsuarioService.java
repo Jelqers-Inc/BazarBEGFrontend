@@ -60,4 +60,9 @@ public class UsuarioService implements IUsuarioService {
         usuarioRepository.deleteById(id);
     }
 
+    @Override
+    public Optional<Usuario> obtenerPorEmail(String email) {
+        return usuarioRepository.findByEmail(email);
+    }
+
 }

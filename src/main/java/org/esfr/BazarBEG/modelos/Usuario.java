@@ -26,7 +26,7 @@ public class Usuario {
 
     @NotBlank(message = "La contraseña no puede estar vacía")
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
-    private String contraseña;
+    private String password;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -68,14 +68,13 @@ public class Usuario {
         this.email = email;
     }
 
-    public String getContraseña() {
-        return contraseña;
+    public String getPassword() {
+        return password;
     }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+    public void setPassword(String password) {
+        this.password = password;
     }
-
 
     public Date getFechaRegistro() {
         return fechaRegistro;

@@ -23,4 +23,5 @@ public interface IUsuarioService {
 
     void eliminarPorId(Integer id);
 
+    Optional<Usuario> obtenerPorEmail(String email);
 }
