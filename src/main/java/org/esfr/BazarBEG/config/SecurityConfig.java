@@ -1,13 +1,19 @@
 package org.esfr.BazarBEG.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 public class SecurityConfig {
+
+    // 1. Inyecta la nueva clase de redirección
+    @Autowired
+    private AuthenticationSuccessHandler roleBasedRedirectHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -17,14 +23,14 @@ public class SecurityConfig {
 
                         // Rutas protegidas que requieren roles específicos
                         .requestMatchers("/admin/**", "/usuarios/**", "/roles/**", "/categorias/**", "/productos/**", "/pedidos/**").hasAnyRole("ADMINISTRADOR")
-                        .requestMatchers("/catalogo/**").hasAnyRole("CLIENTE", "ADMINISTRADOR")
-
+                        .requestMatchers("/catalogo", "/catalogo-cliente").hasAnyRole("CLIENTE", "ADMINISTRADOR")
                         // Cualquier otra solicitud requiere autenticación
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/")
+                        // 2. Utiliza el successHandler para la redirección condicional
+                        .successHandler(roleBasedRedirectHandler)
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
