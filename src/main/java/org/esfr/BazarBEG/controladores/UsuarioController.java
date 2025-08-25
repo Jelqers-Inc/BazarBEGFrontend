@@ -34,18 +34,23 @@ public class UsuarioController {
     public String index(Model model,
                         @RequestParam("page") Optional<Integer> page,
                         @RequestParam("size") Optional<Integer> size,
-                        @RequestParam("nombre") Optional<String> nombre,
-                        @RequestParam("rolNombre") Optional<String> rolNombre) {
+                        @RequestParam("q") Optional<String> query) {
 
         int currentPage = page.orElse(1) - 1;
         int pageSize = size.orElse(5);
         Pageable pageable = PageRequest.of(currentPage, pageSize);
 
-        String searchNombre = nombre.orElse("");
-        String searchRolNombre = rolNombre.orElse("");
+        String searchQuery = query.orElse("").trim();
 
-        Page<Usuario> usuarios = usuarioService.buscarTodosPaginados(searchNombre, searchRolNombre, pageable);
+        Page<Usuario> usuarios;
+        if (searchQuery.isBlank()) {
+            usuarios = usuarioService.obtenerTodosPaginados(pageable);
+        } else {
+            usuarios = usuarioService.buscarPorTermino(searchQuery, pageable);
+        }
+
         model.addAttribute("usuarios", usuarios);
+        model.addAttribute("query", searchQuery);
 
         int totalPages = usuarios.getTotalPages();
         if (totalPages > 0) {
@@ -55,12 +60,9 @@ public class UsuarioController {
             model.addAttribute("pageNumbers", pageNumbers);
         }
 
-        // Se añaden los parámetros de búsqueda al modelo para que persistan en la paginación
-        model.addAttribute("searchNombre", searchNombre);
-        model.addAttribute("searchRolNombre", searchRolNombre);
-
         return "usuario/index";
     }
+
 
     // -------------------- MOSTRAR FORMULARIO DE CREACIÓN --------------------
     @GetMapping("/create")

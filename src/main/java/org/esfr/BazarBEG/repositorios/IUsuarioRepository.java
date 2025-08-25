@@ -11,6 +11,8 @@ import java.util.Optional;
 
 public interface IUsuarioRepository extends JpaRepository<Usuario, Integer> {
 
+    Page<Usuario> findByNombreContainingIgnoreCase(String nombre, Pageable pageable);
+
     // Buscar por nombre exacto
     List<Usuario> findByNombre(String nombre);
 

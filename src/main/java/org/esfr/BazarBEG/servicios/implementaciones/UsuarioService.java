@@ -17,9 +17,27 @@ public class UsuarioService implements IUsuarioService {
     @Autowired
     private IUsuarioRepository usuarioRepository;
 
+    @Override
     public Page<Usuario> buscarTodosPaginados(String nombre, String rolNombre, Pageable pageable) {
+        if (nombre.isBlank() && rolNombre.isBlank()) {
+            return usuarioRepository.findAll(pageable);
+        } else if (rolNombre.isBlank()) {
+            return usuarioRepository.findByNombreContainingIgnoreCase(nombre, pageable);
+        } else {
+            return usuarioRepository.findByNombreContainingIgnoreCaseOrRol_NombreContainingIgnoreCase(
+                    nombre, rolNombre, pageable);
+        }
+    }
+
+    @Override
+    public Page<Usuario> obtenerTodosPaginados(Pageable pageable) {
+        return usuarioRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Usuario> buscarPorTermino(String termino, Pageable pageable) {
         return usuarioRepository.findByNombreContainingIgnoreCaseOrRol_NombreContainingIgnoreCase(
-            nombre, rolNombre, pageable);
+                termino, termino, pageable);
     }
 
     @Override

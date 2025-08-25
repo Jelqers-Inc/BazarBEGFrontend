@@ -58,7 +58,9 @@
     <nav aria-label="Page navigation" class="mt-4">
         <ul class="flex justify-center">
             <li th:each="pageNumber : ${pageNumbers}" class="mx-1">
-                <a th:href="@{|/usuarios?page=${pageNumber}|}" th:text="${pageNumber}" class="block px-3 py-1 text-sm rounded-lg"
+                <a th:href="@{/usuarios(page=${pageNumber}, size=${usuarios.size}, q=${query})}"
+                   th:text="${pageNumber}"
+                   class="block px-3 py-1 text-sm rounded-lg"
                    th:classappend="${usuarios.number + 1 == pageNumber} ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'">
                 </a>
             </li>

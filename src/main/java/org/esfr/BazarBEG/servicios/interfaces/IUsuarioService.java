@@ -8,6 +8,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 
 public interface IUsuarioService {
+
+    Page<Usuario> obtenerTodosPaginados(Pageable pageable);
+
+    Page<Usuario> buscarPorTermino(String termino, Pageable pageable);
+
     Page<Usuario> buscarTodosPaginados(String nombre, String rolNombre, Pageable pageable);
 
     List<Usuario> obtenerTodos();
@@ -17,4 +22,5 @@ public interface IUsuarioService {
     Usuario crearOEditar(Usuario usuario);
 
     void eliminarPorId(Integer id);
+
 }
