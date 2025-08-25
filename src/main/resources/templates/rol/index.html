@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
@@ -27,6 +26,10 @@
     </a>
   </div>
 
+  <div th:if="${roles.isEmpty()}" class="text-center text-gray-500">
+    <p>No se encontraron roles.</p>
+  </div>
+
   <div class="overflow-x-auto bg-white rounded-lg shadow">
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">
@@ -53,7 +56,8 @@
   <nav aria-label="Page navigation" class="mt-4">
     <ul class="flex justify-center">
       <li th:each="pageNumber : ${pageNumbers}" class="mx-1">
-        <a th:href="@{|/roles?page=${pageNumber}|}" th:text="${pageNumber}" class="block px-3 py-1 text-sm rounded-lg"
+        <a th:href="@{/roles(page=${pageNumber}, size=${roles.size}, q=${query})}"
+           th:text="${pageNumber}" class="block px-3 py-1 text-sm rounded-lg"
            th:classappend="${roles.number + 1 == pageNumber} ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'">
         </a>
       </li>

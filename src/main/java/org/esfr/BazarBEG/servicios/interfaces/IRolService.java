@@ -17,4 +17,8 @@ Page<Rol> buscarTodosPaginados(Pageable pageable);
     Rol crearOEditar(Rol rol);
 
     void eliminarPorId(Integer id);
+
+    Page<Rol> obtenerTodosPaginados(Pageable pageable);
+
+    Page<Rol> buscarPorTermino(String termino, Pageable pageable);
 }

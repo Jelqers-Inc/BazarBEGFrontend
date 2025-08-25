@@ -41,4 +41,14 @@ public class RolService implements IRolService{
     public void eliminarPorId(Integer id) {
         rolRepository.deleteById(id);
     }
+
+    @Override
+    public Page<Rol> obtenerTodosPaginados(Pageable pageable) {
+        return rolRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Rol> buscarPorTermino(String termino, Pageable pageable) {
+        return rolRepository.findByNombreContainingIgnoreCase(termino, pageable);
+    }
 }

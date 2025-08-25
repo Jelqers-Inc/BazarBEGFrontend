@@ -27,15 +27,22 @@ public class RolController {
 
     // -------------------- LISTADO DE ROLES --------------------
     @GetMapping
-    public String index(Model model,
-                        @RequestParam("page") Optional<Integer> page,
-                        @RequestParam("size") Optional<Integer> size) {
+    public String index(Model model, @RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size, @RequestParam("q") Optional<String> query) {
         int currentPage = page.orElse(1) - 1;
         int pageSize = size.orElse(5);
         Pageable pageable = PageRequest.of(currentPage, pageSize);
 
-        Page<Rol> roles = rolService.buscarTodosPaginados(pageable);
+        String searchQuery = query.orElse("").trim();
+
+        Page<Rol> roles;
+        if (searchQuery.isBlank()) {
+            roles = rolService.obtenerTodosPaginados(pageable);
+        } else {
+            roles = rolService.buscarPorTermino(searchQuery, pageable);
+        }
+
         model.addAttribute("roles", roles);
+        model.addAttribute("query", searchQuery); // Mantiene el término de búsqueda
 
         int totalPages = roles.getTotalPages();
         if (totalPages > 0) {
