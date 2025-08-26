@@ -1,0 +1,39 @@
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/layouts/_mainLayoutCliente.html">
+<div layout:fragment="content" class="container mx-auto p-8">
+  <div class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row">
+
+    <div class="md:w-1/2 p-6">
+      <img th:src="@{/productos/imagen/{id}(id=${producto.id})}" alt="Imagen del producto" class="w-full h-auto object-cover rounded-lg">
+    </div>
+
+    <div class="md:w-1/2 p-6">
+      <a th:href="@{/catalogo}" class="text-sm font-semibold text-purple-600 hover:underline mb-4 inline-block">
+        ← Volver al catálogo
+      </a>
+      <h1 th:text="${producto.nombre}" class="text-4xl font-bold text-gray-900 mt-2"></h1>
+      <p class="mt-2 text-xl font-semibold text-gray-700">Categoría: <span th:text="${producto.categoria != null ? producto.categoria.nombre : ''}"></span></p>
+      <p th:text="${producto.descripcion}" class="mt-4 text-gray-600 leading-relaxed"></p>
+
+      <div class="mt-6">
+        <span class="text-4xl font-extrabold text-gray-900" th:text="${#numbers.formatCurrency(producto.precio)}"></span>
+        <span class="ml-2 text-sm text-gray-500">Impuestos incluidos</span>
+      </div>
+
+      <div class="mt-8 flex items-center space-x-4">
+        <input type="number" value="1" min="1" class="form-input w-20 text-center rounded-lg border-gray-300">
+        <button class="px-6 py-3 bg-purple-600 text-white font-bold rounded-full shadow-lg hover:bg-purple-700 transition duration-300 transform hover:scale-105">
+          Añadir al carrito
+        </button>
+      </div>
+
+      <div class="mt-6 text-gray-500">
+        <p th:if="${producto.stock > 0}" class="text-green-600 font-semibold">En stock</p>
+        <p th:if="${producto.stock <= 0}" class="text-red-600 font-semibold">Sin stock</p>
+      </div>
+    </div>
+  </div>
+</div>
+</html>

@@ -1,58 +1,52 @@
-<html lang="es" 
-      xmlns:th="http://www.thymeleaf.org" 
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
-      layout:decorate="/layouts/_mainLayoutAdmin.html">
-
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/layouts/_mainLayoutCliente.html">
 <div layout:fragment="content">
-    
+
     <div class="px-40 flex flex-1 justify-center py-5">
-          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+        <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
             <div class="@container">
-              <div class="@[480px]:p-4">
-                <div
-                  class="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-lg items-start justify-end px-4 pb-10 @[480px]:px-10"
-                  style='background-image: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuA2L5nYqtDFU1174IPOdOQkHNR2UqhewHK8PAdUQA0PHZgUMVTpilTFYsEcRx8CyVbPemenAEPj8gmPqBhfbhWNX8eutWg5i4FQQDXb5OkgvTyPS6QCjlN0NZJqAEcw6KV5Cv5QA96iK2mPj7iV4XYxa9ysMpxEkkwKvCOD0y4eITMPFI_GVCxqzS080BkEn6utLfoWT1uGX48Q10FL3ModHnXFZoFUQYJo8w8P4A0li929QzN1JPXJd-7UwXZ3OQKo_rYYt8otFO8");'
-                >
-                  <div class="flex flex-col gap-2 text-left">
-                    <h1
-                      class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]"
+                <div class="@[480px]:p-4">
+                    <div
+                            class="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-lg items-start justify-end px-4 pb-10 @[480px]:px-10"
+                            style='background-image: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuA2L5nYqtDFU1174IPOdOQkHNR2UqhewHK8PAdUQA0PHZgUMVTpilTFYsEcRx8CyVbPemenAEPj8gmPqBhfbhWNX8eutWg5i4FQQDXb5OkgvTyPS6QCjlN0NZJqAEcw6KV5Cv5QA96iK2mPj7iV4XYxa9ysMpxEkkwKvCOD0y4eITMPFI_GVCxqzS080BkEn6utLfoWT1uGX48Q10FL3ModHnXFZoFUQYJo8w8P4A0li929QzN1JPXJd-7UwXZ3OQKo_rYYt8otFO8");'
                     >
-                      BAZAR  B.E.G
-                    </h1>
-                    <h2 class="text-white text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
-                     Brilla. Encanta. Gobierna.
-                    </h2>
-                    <h2 class="text-white text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
-                      El brillo suplica por ti y encuentralo aquí
-                    </h2>
-                  </div>
-                  <button
-                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#672aea] text-[#f9f8fc] text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em]"
-                  >
-                    <span class="truncate">Shop Now</span>
-                  </button>
+                        <div class="flex flex-col gap-2 text-left">
+                            <h1
+                                    class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]"
+                            >
+                                BAZAR B.E.G
+                            </h1>
+                            <h2 class="text-white text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
+                                Brilla. Encanta. Gobierna.
+                            </h2>
+                            <h2 class="text-white text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
+                                El brillo suplica por ti y encuéntralo aquí
+                            </h2>
+                        </div>
+                        <a th:href="@{/catalogo}"
+                           class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#672aea] text-[#f9f8fc] text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em]"
+                        >
+                            <span class="truncate">Shop Now</span>
+                        </a>
+                    </div>
                 </div>
-              </div>
             </div>
-           
-           <h2 class="text-[#120e1b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Comprar por Categorías</h2>
-<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 p-4">
-    <div th:each="categoria : ${categorias}" class="flex flex-col gap-3 pb-3">
-        <a th:href="@{'/categorias/' + ${categoria.id}}"> <div
-              class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
-              th:style="'background-image: url(/uploads/categorias/' + ${categoria.imagen} + ');'"
-            ></div>
-        </a>
-        <p th:text="${categoria.nombre}" class="text-[#120e1b] text-base font-medium leading-normal"></p>
+
+            <h2 class="text-[#120e1b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Comprar por Categorías</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 p-4">
+                <div th:each="categoria : ${categorias}" class="flex flex-col gap-3 pb-3">
+                    <a th:href="@{'/catalogo/categoria/' + ${categoria.id}}">
+                        <div
+                                class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
+                                th:style="'background-image: url(/categorias/imagen/' + ${categoria.id} + ');'"
+                        ></div>
+                    </a>
+                    <p th:text="${categoria.nombre}" class="text-[#120e1b] text-base font-medium leading-normal"></p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-            
-
-          </div>
-        </div>
-
-</div>
-
-
-
-
+</html>

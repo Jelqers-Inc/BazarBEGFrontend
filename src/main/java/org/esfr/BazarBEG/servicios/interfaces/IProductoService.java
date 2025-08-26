@@ -19,6 +19,15 @@ public interface IProductoService {
     void eliminarPorId(Integer id);
 
     Page<Producto> buscarPorFiltroPaginado(String nombre, String categoriaNombre, Pageable pageable);
+
     List<Producto> buscarPorIds(List<Integer> productosIds);
+
     List<Producto> findByCategoriaId(Integer categoriaId);
+
+    List<Producto> obtenerProductosActivos();
+
+    List<Producto> obtenerProductosPorCategoriaActivos(Long categoriaId);
+
+    Optional<Producto> obtenerProductoActivoPorId(Long id);
+
 }

@@ -1,0 +1,48 @@
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/layouts/_mainLayoutCliente.html">
+<div layout:fragment="content" class="container mx-auto p-8">
+
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold mb-4">Comprar por Categorías</h2>
+        <div class="flex flex-wrap gap-4">
+            <a th:each="categoria : ${categorias}"
+               th:href="@{'/catalogo/categoria/' + ${categoria.id}}"
+               class="px-4 py-2 bg-purple-200 text-purple-800 rounded-full font-semibold hover:bg-purple-300 transition-colors duration-200">
+                <span th:text="${categoria.nombre}"></span>
+            </a>
+        </div>
+    </div>
+
+    <h1 class="text-3xl font-bold mb-6">Nuestros Productos</h1>
+
+    <div th:if="${productos.isEmpty()}" class="text-center text-gray-500 py-8">
+        <p>No se encontraron productos en esta categoría.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" th:if="${!productos.isEmpty()}">
+        <div th:each="producto : ${productos}"
+             class="bg-white rounded-lg shadow-md overflow-hidden transition-transform transform hover:scale-105">
+
+            <a th:href="@{'/catalogo/producto/' + ${producto.id}}">
+                <img th:src="@{/productos/imagen/{id}(id=${producto.id})}" alt="Imagen del producto" class="w-full h-48 object-cover">
+            </a>
+
+            <div class="p-4">
+                <a th:href="@{'/catalogo/producto/' + ${producto.id}}" class="block">
+                    <h3 th:text="${producto.nombre}" class="text-lg font-semibold text-gray-900 truncate"></h3>
+                </a>
+                <p class="mt-1 text-sm text-gray-500" th:text="${producto.categoria != null ? producto.categoria.nombre : ''}"></p>
+                <div class="flex items-center justify-between mt-2">
+                    <span th:text="${#numbers.formatCurrency(producto.precio)}" class="text-xl font-bold text-gray-900"></span>
+                    <a th:href="@{'/catalogo/producto/' + ${producto.id}}"
+                       class="px-4 py-2 bg-purple-600 text-white text-sm rounded-full hover:bg-purple-700 transition-colors duration-200">
+                        Ver Detalles
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

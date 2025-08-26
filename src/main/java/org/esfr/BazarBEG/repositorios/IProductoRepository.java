@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IProductoRepository extends JpaRepository<Producto, Integer> {
 
@@ -23,4 +24,10 @@ public interface IProductoRepository extends JpaRepository<Producto, Integer> {
     List<Producto> findByCategoriaId(Integer categoriaId);
 
     List<Producto> findByStatus(int status);
+
+    // Encuentra productos por el ID de la categoría y que estén activos (status = 1)
+    List<Producto> findByCategoriaIdAndStatus(Long categoriaId, int status);
+
+    // Encuentra un producto por su ID y que esté activo (status = 1)
+    Optional<Producto> findByIdAndStatus(Long id, int status);
 }

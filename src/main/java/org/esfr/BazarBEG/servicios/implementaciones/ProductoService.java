@@ -1,12 +1,10 @@
 package org.esfr.BazarBEG.servicios.implementaciones;
-
 import org.esfr.BazarBEG.modelos.Producto;
 import org.esfr.BazarBEG.repositorios.IProductoRepository;
 import org.esfr.BazarBEG.servicios.interfaces.IProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-
 
 import java.util.List;
 import java.util.Optional;
@@ -51,8 +49,6 @@ public class ProductoService implements IProductoService {
         productoRepository.deleteById(id);
     }
 
-
-
     @Override
     public List<Producto> buscarPorIds(List<Integer> ids) {
         return productoRepository.findByIdIn(ids);
@@ -65,5 +61,13 @@ public class ProductoService implements IProductoService {
 
     public List<Producto> obtenerProductosActivos() {
         return productoRepository.findByStatus(1);
+    }
+
+    public List<Producto> obtenerProductosPorCategoriaActivos(Long categoriaId) {
+        return productoRepository.findByCategoriaIdAndStatus(categoriaId, 1);
+    }
+
+    public Optional<Producto> obtenerProductoActivoPorId(Long id) {
+        return productoRepository.findByIdAndStatus(id, 1);
     }
 }
