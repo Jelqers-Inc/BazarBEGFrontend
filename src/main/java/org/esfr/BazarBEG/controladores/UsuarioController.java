@@ -5,16 +5,28 @@ import org.esfr.BazarBEG.modelos.Usuario;
 import org.esfr.BazarBEG.servicios.interfaces.IRolService;
 import org.esfr.BazarBEG.servicios.interfaces.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,6 +40,93 @@ public class UsuarioController {
     private IUsuarioService usuarioService;
     @Autowired
     private IRolService rolService;
+
+    private final Path directorioSubidas = Paths.get("src/main/resources/static/uploads/perfiles");
+
+    // -------------------- PÁGINA DE PERFIL DEL ADMINISTRADOR --------------------
+    @GetMapping("/perfil")
+    public String verPerfilAdmin(Model model, Principal principal) {
+        if (principal != null) {
+            Optional<Usuario> usuarioOptional = usuarioService.obtenerPorEmail(principal.getName());
+            if (usuarioOptional.isPresent()) {
+                model.addAttribute("usuario", usuarioOptional.get());
+                return "usuario/perfilAdmin"; // VISTA DEL PERFIL DEL ADMIN
+            }
+        }
+        return "redirect:/login"; // Redirigir si no está logueado
+    }
+
+    // -------------------- SUBIR FOTO DE PERFIL DEL ADMIN --------------------
+    @PostMapping("/perfil/subirFoto")
+    public String subirFotoAdmin(@RequestParam("foto") MultipartFile foto, Principal principal, RedirectAttributes redirectAttributes) {
+        if (principal == null || foto.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorSubida", "No se seleccionó una foto.");
+            return "redirect:/usuarios/perfil";
+        }
+        try {
+            Optional<Usuario> usuarioOptional = usuarioService.obtenerPorEmail(principal.getName());
+            if (usuarioOptional.isPresent()) {
+                Usuario usuario = usuarioOptional.get();
+                if (!Files.exists(directorioSubidas)) {
+                    Files.createDirectories(directorioSubidas);
+                }
+                if (usuario.getFoto() != null && !usuario.getFoto().isEmpty()) {
+                    Files.deleteIfExists(directorioSubidas.resolve(usuario.getFoto()));
+                }
+                String nombreArchivo = usuario.getId() + "-" + foto.getOriginalFilename();
+                Path rutaCompleta = this.directorioSubidas.resolve(nombreArchivo);
+                Files.write(rutaCompleta, foto.getBytes());
+                usuario.setFoto(nombreArchivo);
+                usuarioService.crearOEditar(usuario);
+                redirectAttributes.addFlashAttribute("fotoSubidaExitosamente", true);
+            }
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("errorSubida", "Hubo un error al subir la foto.");
+        }
+        return "redirect:/usuarios/perfil";
+    }
+
+    // -------------------- SERVIR IMAGEN DE PERFIL DEL ADMIN --------------------
+    @GetMapping("/perfil/imagen/{id}")
+    @ResponseBody
+    public ResponseEntity<Resource> getImagenAdmin(@PathVariable Integer id) {
+        Optional<Usuario> usuarioOptional = usuarioService.buscarPorId(id);
+        Path archivo;
+        if (usuarioOptional.isPresent() && usuarioOptional.get().getFoto() != null) {
+            archivo = directorioSubidas.resolve(usuarioOptional.get().getFoto()).normalize();
+        } else {
+            archivo = Paths.get("src/main/resources/static/images/perfil_placeholder_admin.png").normalize(); // Asegúrate de tener esta imagen
+        }
+        try {
+            Resource recurso = new UrlResource(archivo.toUri());
+            if (recurso.exists() && recurso.isReadable()) {
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(archivo))
+                        .body(recurso);
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    // -------------------- ACTUALIZAR PERFIL DEL ADMIN --------------------
+    @PostMapping("/perfil/editar")
+    public String editarPerfilAdmin(@ModelAttribute("usuario") Usuario usuarioActualizado, RedirectAttributes redirectAttributes) {
+        Optional<Usuario> usuarioOptional = usuarioService.buscarPorId(usuarioActualizado.getId());
+        if (usuarioOptional.isPresent()) {
+            Usuario usuario = usuarioOptional.get();
+            usuario.setNombre(usuarioActualizado.getNombre());
+            usuario.setApellido(usuarioActualizado.getApellido());
+            usuario.setEmail(usuarioActualizado.getEmail());
+            usuarioService.crearOEditar(usuario);
+            redirectAttributes.addFlashAttribute("exitoEdicion", "Perfil actualizado correctamente.");
+        }
+        return "redirect:/usuarios/perfil";
+    }
+
 
     // -------------------- LISTADO CON PAGINACIÓN Y BÚSQUEDA --------------------
     @GetMapping

@@ -77,10 +77,16 @@
             </div>
           </a>
         </div>
-        <div
-                class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDtGu5qvXtW6vYGjwOujpAdu5IHHIFzcAbSgMO_ki82zu-iWcN3sCi2Oy-1Djur3we-NnTp_-XIEI3UAsgPwrwN-m7l-7lJ9BI_cmX3NJnVOV9KpR5IG0vSg8M_TAL4bhPTuF2ASb-PmU8QbxweDEZzQGONh8lTH0M2EQi8Am_dQcbKA5skVMMFGVgJevNb9_XZpVZto10sUj2LmArw03m_6HZKNvLoBEJ6c0uvZfA6Vb7HHeONxXKUS_Zc16tuS_adZkqxd431DTA");'
-        ></div>
+        <div th:if="${usuario}">
+          <a th:href="@{/perfil}" class="block">
+            <img th:src="@{/perfil/imagen/{id}(id=${usuario.id})}"
+                 alt="Foto de perfil"
+                 class="w-10 h-10 rounded-full object-cover border-2 border-transparent hover:border-purple-500 transition-colors">
+          </a>
+        </div>
+        <div th:unless="${usuario}">
+          <a th:href="@{/login}" class="text-[#120e1b] text-sm font-medium leading-normal">Iniciar Sesión</a>
+        </div>
       </div>
     </header>
 
