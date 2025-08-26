@@ -20,6 +20,9 @@ public class Usuario {
     @NotBlank(message = "El nombre no puede estar vacío")
     private String nombre;
 
+    @NotBlank(message = "El apellido no puede estar vacío")
+    private String apellido;
+
     @Email(message = "El correo no es válido")
     @NotBlank(message = "El correo no puede estar vacío")
     private String email;
@@ -35,6 +38,8 @@ public class Usuario {
 
     @Column(name = "status")
     private Integer status;
+
+    private String foto;
 
     @ManyToOne
     @JoinColumn(name = "rol_id")
@@ -58,6 +63,14 @@ public class Usuario {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getApellido() {
+        return apellido;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
     }
 
     public String getEmail() {
@@ -91,6 +104,15 @@ public class Usuario {
     public void setPedidos(List<Pedido> pedidos) {
         this.pedidos = pedidos;
     }
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
+
 
     public Rol getRol() {
         return rol;
