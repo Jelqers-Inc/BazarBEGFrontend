@@ -28,6 +28,9 @@ public class Producto {
 
     private String imagen;
 
+    @Column(name = "status")
+    private int status;
+
     @ManyToOne
     @JoinColumn(name = "categoriaid")
     private Categoria categoria;
@@ -88,6 +91,14 @@ public class Producto {
 
     public void setImagen(String imagen) {
         this.imagen = imagen;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }
 

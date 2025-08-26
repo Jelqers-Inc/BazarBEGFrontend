@@ -10,22 +10,6 @@ import java.util.List;
 
 public interface IProductoRepository extends JpaRepository<Producto, Integer> {
 
-    // Buscar por nombre exacto
-    List<Producto> findByNombre(String nombre);
-
-    // Buscar por nombre ignorando mayúsculas y minúsculas
-    List<Producto> findByNombreIgnoreCase(String nombre);
-
-    // Buscar por nombre que contenga texto
-    List<Producto> findByNombreContainingIgnoreCase(String nombre);
-
-    // Buscar por categoría
-    List<Producto> findByCategoria(Categoria categoria);
-
-    // Buscar por nombre y categoría
-    List<Producto> findByNombreAndCategoria(String nombre, Categoria categoria);
-
-
     // Búsqueda combinada con paginación
     Page<Producto> findByNombreContainingIgnoreCaseOrCategoria_NombreContainingIgnoreCase(
             String nombre, String categoriaNombre, Pageable pageable
@@ -37,4 +21,6 @@ public interface IProductoRepository extends JpaRepository<Producto, Integer> {
     List<Producto> findByIdIn(List<Integer> ids);
 
     List<Producto> findByCategoriaId(Integer categoriaId);
+
+    List<Producto> findByStatus(int status);
 }

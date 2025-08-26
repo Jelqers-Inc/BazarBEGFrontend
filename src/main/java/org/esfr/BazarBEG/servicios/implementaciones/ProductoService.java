@@ -63,4 +63,7 @@ public class ProductoService implements IProductoService {
         return productoRepository.findByCategoriaId(categoriaId);
     }
 
+    public List<Producto> obtenerProductosActivos() {
+        return productoRepository.findByStatus(1);
+    }
 }
