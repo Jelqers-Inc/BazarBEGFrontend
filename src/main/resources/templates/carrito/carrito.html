@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/layouts/_mainLayoutCliente.html">
+<div layout:fragment="content" class="container mx-auto p-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6 text-gray-900">Tu Carrito de Compras</h1>
+
+    <div th:if="${productos.isEmpty()}" class="text-center text-gray-500 py-12">
+      <p>Tu carrito está vacío. ¡Explora nuestros productos y añade algunos!</p>
+      <a th:href="@{/catalogo}" class="mt-4 inline-block px-6 py-3 bg-purple-600 text-white font-bold rounded-full shadow-lg hover:bg-purple-700 transition duration-300">
+        Ir al Catálogo
+      </a>
+    </div>
+
+    <div th:unless="${productos.isEmpty()}" class="bg-white rounded-lg shadow-xl overflow-hidden">
+      <div th:each="producto : ${productos}" class="flex items-center p-4 border-b border-gray-200 last:border-b-0">
+        <a th:href="@{'/catalogo/producto/' + ${producto.id}}">
+          <img th:src="@{/productos/imagen/{id}(id=${producto.id})}" alt="Imagen del producto" class="w-24 h-24 object-cover rounded-lg mr-4">
+        </a>
+        <div class="flex-1">
+          <h3 class="text-lg font-semibold text-gray-800" th:text="${producto.nombre}"></h3>
+          <p class="text-sm text-gray-500" th:text="${producto.categoria != null ? producto.categoria.nombre : ''}"></p>
+          <p class="mt-1 text-md font-bold text-gray-700" th:text="${#numbers.formatCurrency(producto.precio)}"></p>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <form th:action="@{/carrito/actualizar/__${producto.id}__}" method="post" class="flex items-center">
+            <input type="number" name="cantidad" th:value="${items.get(producto.id)}" min="1" class="form-input w-16 text-center rounded-lg border-gray-300">
+            <button type="submit" class="ml-2 p-2 rounded-full bg-purple-200 text-purple-600 hover:bg-purple-300 transition duration-200" title="Actualizar cantidad">
+              <i class="fa-solid fa-arrows-rotate"></i>
+            </button>
+          </form>
+
+          <form th:action="@{/carrito/eliminar/__${producto.id}__}" method="post">
+            <button type="submit" class="p-2 rounded-full bg-red-200 text-red-600 hover:bg-red-300 transition duration-200" title="Eliminar producto">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="p-6 bg-gray-50 flex flex-col sm:flex-row justify-between items-center">
+        <div class="mb-4 sm:mb-0">
+          <p class="text-lg font-bold text-gray-900">Total del Carrito:</p>
+          <p class="text-2xl font-extrabold text-purple-600" th:text="${#numbers.formatCurrency(total)}"></p>
+        </div>
+        <a th:href="@{/checkout}" class="w-full sm:w-auto px-8 py-3 bg-purple-600 text-white font-bold rounded-full shadow-lg hover:bg-purple-700 transition duration-300 text-center">
+          Proceder al Pago
+        </a>
+      </div>
+    </div>
+  </div>
+  <script th:if="${eliminadoExitosamente}">
+    Swal.fire({
+        icon: 'info',
+        title: '¡Producto eliminado!',
+        text: 'El producto se ha eliminado del carrito.',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+    });
+  </script>
+
+  <script th:if="${actualizadoExitosamente}">
+    Swal.fire({
+        icon: 'success',
+        title: '¡Carrito actualizado!',
+        text: 'La cantidad del producto se ha actualizado.',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+    });
+  </script>
+
+</div>
+</html>

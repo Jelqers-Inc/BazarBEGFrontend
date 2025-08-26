@@ -22,12 +22,28 @@
         <span class="ml-2 text-sm text-gray-500">Impuestos incluidos</span>
       </div>
 
-      <div class="mt-8 flex items-center space-x-4">
-        <input type="number" value="1" min="1" class="form-input w-20 text-center rounded-lg border-gray-300">
-        <button class="px-6 py-3 bg-purple-600 text-white font-bold rounded-full shadow-lg hover:bg-purple-700 transition duration-300 transform hover:scale-105">
-          Añadir al carrito
-        </button>
+      <div class="flex flex-col md:flex-row gap-8">
+        <form th:action="@{/carrito/agregar/{id}(id=${producto.id})}" method="post">
+          <input type="number" name="cantidad" value="1" min="1" class="form-input w-20 text-center rounded-lg border-gray-300">
+          <button type="submit" class="px-6 py-3 bg-purple-600 text-white font-bold rounded-full shadow-lg hover:bg-purple-700 transition duration-300 transform hover:scale-105">
+            Añadir al carrito
+          </button>
+        </form>
+
+        <script th:if="${agregadoExitosamente}">
+          Swal.fire({
+              icon: 'success',
+              title: '¡Producto agregado!',
+              text: 'Tu producto se ha añadido al carrito.',
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 3000,
+              timerProgressBar: true
+          });
+        </script>
       </div>
+
 
       <div class="mt-6 text-gray-500">
         <p th:if="${producto.stock > 0}" class="text-green-600 font-semibold">En stock</p>

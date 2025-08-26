@@ -30,6 +30,9 @@ public class SecurityConfig {
                         // Rutas protegidas para CLIENTES
                         .requestMatchers("/perfil", "/carrito/**", "/pedidos-cliente/**").hasAnyRole("CLIENTE", "ADMINISTRADOR")
 
+                        // Carrito de compras protegido
+                        .requestMatchers("/carrito/**", "/perfil/**").authenticated()
+
                         // Cualquier otra solicitud requiere autenticación
                         .anyRequest().authenticated()
                 )
