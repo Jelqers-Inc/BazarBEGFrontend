@@ -23,19 +23,12 @@
   <div class="layout-container flex h-full grow flex-col">
 
     <header class="flex bg-purple-200 text-purple-900 items-center justify-between whitespace-nowrap border-b border-solid border-b-[#ebe7f3] px-10 py-3">
-      <div class="flex bg-purple-200 text-purple-900 items-center gap-8">
-        <div class="flex items-center gap-4 text-[#120e1b]">
-          <div class="size-4">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z" fill="currentColor"></path></svg>
-          </div>
-          <a class="text-[#120e1b] text-lg font-bold leading-tight tracking-[-0.015em]" th:href="@{/catalogo}">Bazar B.E.G.</a>
-        </div>
+      <div class="flex items-center gap-8">
+        <a class="text-[#120e1b] text-lg font-bold leading-tight tracking-[-0.015em]" th:href="@{/}">Bazar B.E.G.</a>
         <div class="flex items-center gap-9">
-          <a th:each="cat : ${categorias}"
-             th:href="@{'/catalogo/categoria/' + ${cat.id}}"
-             class="text-[#120e1b] text-sm font-medium leading-normal"
-             th:text="${cat.nombre}">
-          </a>
+          <a th:href="@{/catalogo}" class="text-[#120e1b] text-sm font-medium leading-normal">CATEGORÍAS</a>
+          <a th:href="@{/carrito}" class="text-[#120e1b] text-sm font-medium leading-normal">CARRITO DE COMPRAS</a>
+          <a th:href="@{/perfil}" class="text-[#120e1b] text-sm font-medium leading-normal">PERFIL</a>
         </div>
       </div>
       <div class="flex flex-1 justify-end gap-8">
