@@ -30,8 +30,30 @@
                     <span th:text="${#numbers.formatCurrency(pedido.total)}"></span>
                 </div>
                 <div class="mt-4 text-right">
-                    <a th:href="@{'/pedidos-cliente/factura/' + ${pedido.id}}" target="_blank" class="text-purple-600 hover:text-purple-800 font-bold text-sm">Ver Factura</a>
+                    <a th:if="${pedido.estado == 'Entregado'}"
+                       th:href="@{'/pedidos-cliente/factura/' + ${pedido.id}}"
+                       target="_blank"
+                       class="text-purple-600 hover:text-purple-800 font-bold text-sm">
+                        Ver Factura
+                    </a>
+
+                    <a th:unless="${pedido.estado == 'Entregado'}"
+                       href="javascript:void(0);"
+                       onclick="Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'info',
+                            title: 'Pedido en estado de revisión',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        })"
+                       class="text-gray-400 font-bold text-sm cursor-not-allowed">
+                        Ver Factura
+                    </a>
+
                 </div>
+
             </div>
         </div>
     </div>

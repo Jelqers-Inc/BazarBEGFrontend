@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import jakarta.transaction.Transactional;
 import org.esfr.BazarBEG.modelos.DetallePedido;
@@ -73,7 +72,7 @@ public class PedidoService implements IPedidoService {
         pedido.setUsuario(usuario);
         pedido.setFechaPedido(new Date());
         pedido.setTotal((float) total);
-        pedido.setEstado("Pagado");
+        pedido.setEstado("EN REVISIÓN");
 
         // Guardar el pedido primero para generar ID
         pedido = pedidoRepository.saveAndFlush(pedido);

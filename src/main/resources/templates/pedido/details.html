@@ -7,7 +7,37 @@
     <title>Detalles del Pedido</title>
 </head>
 <div layout:fragment="content" class="p-6">
-    <div class="flex items-center justify-between mb-4">
+    <!-- Toast para mensajes de éxito -->
+        <div th:if="${msg}">
+            <script th:inline="javascript">
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: [[${msg}]],
+                    showConfirmButton: false,
+                    timer: 2500,
+                    timerProgressBar: true
+                });
+            </script>
+        </div>
+
+        <!-- Toast para mensajes de error -->
+        <div th:if="${error}">
+            <script th:inline="javascript">
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    title: [[${error}]],
+                    showConfirmButton: true,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            </script>
+        </div>
+
+        <div class="flex items-center justify-between mb-4">
         <h1 class="text-2xl font-bold text-gray-800">Detalles del Pedido</h1>
     </div>
 

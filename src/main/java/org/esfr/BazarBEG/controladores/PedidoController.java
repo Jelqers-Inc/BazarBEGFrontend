@@ -76,7 +76,7 @@ public class PedidoController {
     public String delete(@PathVariable("id") Integer id, RedirectAttributes redirect) {
         pedidoService.eliminarPorId(id);
         redirect.addFlashAttribute("msg", "Pedido eliminado exitosamente");
-        return "redirect:/pedidos";
+        return "redirect:/pedidos-cliente";
     }
 
     // -------------------- CONFIRMACIÓN DE ELIMINACIÓN --------------------
@@ -177,6 +177,6 @@ public class PedidoController {
             redirect.addFlashAttribute("error", "Pedido no encontrado para la actualización.");
         }
 
-        return "redirect:/pedidos/details/" + id;
+        return "redirect:/pedidos-cliente/details/" + id;
     }
 }
