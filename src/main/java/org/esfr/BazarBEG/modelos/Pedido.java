@@ -3,6 +3,7 @@ package org.esfr.BazarBEG.modelos;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -29,9 +30,8 @@ public class Pedido {
     @JoinColumn(name = "usuarioid")
     private Usuario usuario;
 
-    @NotEmpty(message = "Debe haber al menos un detalle en el pedido")
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
-    private List<DetallePedido> detalles;
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DetallePedido> detalles = new ArrayList<>();
 
     // Getters y Setters
 
@@ -81,6 +81,11 @@ public class Pedido {
 
     public void setDetalles(List<DetallePedido> detalles) {
         this.detalles = detalles;
+    }
+
+    public void addDetalle(DetallePedido detalle) {
+        this.detalles.add(detalle);
+        detalle.setPedido(this);
     }
 }
 

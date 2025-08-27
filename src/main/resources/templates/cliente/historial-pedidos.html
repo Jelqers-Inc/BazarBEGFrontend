@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/layouts/_mainLayoutCliente.html">
+<head>
+    <title>Mi Historial de Pedidos</title>
+</head>
+<div layout:fragment="content" class="container mx-auto p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">Mis Pedidos</h1>
+
+        <div th:if="${pedidos.isEmpty()}" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
+            <p>No tienes pedidos en tu historial.</p>
+        </div>
+
+        <div th:unless="${pedidos.isEmpty()}" class="bg-white rounded-lg shadow-xl p-6">
+            <div th:each="pedido : ${pedidos}" class="border-b last:border-b-0 py-4">
+                <div class="flex justify-between items-center mb-2">
+                    <div>
+                        <span class="text-gray-600">Pedido #<span th:text="${pedido.id}"></span></span>
+                        <span class="ml-4 text-gray-400 text-sm" th:text="${#dates.format(pedido.fechaPedido, 'dd/MM/yyyy')}"></span>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-medium"
+                          th:classappend="${pedido.estado == 'Pagado' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}"
+                          th:text="${pedido.estado}"></span>
+                </div>
+                <div class="flex justify-between items-center text-lg font-semibold">
+                    <span>Total:</span>
+                    <span th:text="${#numbers.formatCurrency(pedido.total)}"></span>
+                </div>
+                <div class="mt-4 text-right">
+                    <a th:href="@{'/pedidos-cliente/factura/' + ${pedido.id}}" target="_blank" class="text-purple-600 hover:text-purple-800 font-bold text-sm">Ver Factura</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

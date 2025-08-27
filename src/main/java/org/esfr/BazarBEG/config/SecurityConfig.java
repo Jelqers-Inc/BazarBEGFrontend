@@ -17,18 +17,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
-                        // Rutas públicas para la página de bienvenida y el catálogo
+                        // Rutas públicas para todos
                         .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/login", "/registro").permitAll()
                         .requestMatchers("/catalogo/**").permitAll()
-
-                        // Permite el acceso a los endpoints de imágenes sin autenticación
                         .requestMatchers("/categorias/imagen/**", "/productos/imagen/**").permitAll()
 
-                        // Rutas protegidas para el rol de ADMINISTRADOR
-                        .requestMatchers("/admin/**", "/usuarios/**", "/roles/**", "/categorias/**", "/productos/**", "/pedidos/**").hasRole("ADMINISTRADOR")
-
                         // Rutas protegidas para CLIENTES
-                        .requestMatchers("/perfil", "/carrito/**", "/pedidos-cliente/**").hasAnyRole("CLIENTE", "ADMINISTRADOR")
+                        .requestMatchers("/pedidos-cliente/historial", "/perfil/**", "/carrito/**", "/checkout/**").hasAnyRole("CLIENTE", "ADMINISTRADOR")
+
+                        // Rutas protegidas para ADMINISTRADOR
+                        .requestMatchers("/admin/**", "/usuarios/**", "/roles/**", "/categorias/**", "/productos/**", "/pedidos-cliente/**").hasRole("ADMINISTRADOR")
+
 
                         // Carrito de compras protegido
                         .requestMatchers("/carrito/**", "/perfil/**").authenticated()

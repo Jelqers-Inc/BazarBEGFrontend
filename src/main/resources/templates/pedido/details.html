@@ -21,7 +21,7 @@
 
         <div class="mb-4 p-4 border rounded-md bg-gray-50">
             <h3 class="text-lg font-bold mb-2">Actualizar Estado del Pedido</h3>
-            <form th:action="@{/pedidos/update-status/{id}(id=${pedido.id})}" method="post" class="flex items-end space-x-2">
+            <form th:action="@{/pedidos-cliente/update-status/{id}(id=${pedido.id})}" method="post" class="flex items-end space-x-2">
                 <div class="flex-grow">
                     <label for="estado" class="block text-gray-700 text-sm font-bold mb-1">Estado:</label>
                     <select id="estado" name="estado" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
@@ -65,8 +65,8 @@
         </div>
 
         <div class="mt-6 flex justify-end space-x-3">
-            <a th:href="@{'/pedidos/factura/' + ${pedido.id}}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">Generar Factura</a>
-            <a th:href="@{/pedidos}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">Volver</a>
+            <a th:href="@{'/pedidos-cliente/factura/' + ${pedido.id}}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">Generar Factura</a>
+            <a th:href="@{/pedidos-cliente}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">Volver</a>
         </div>
     </div>
 </div>

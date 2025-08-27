@@ -28,7 +28,7 @@
         <div class="flex items-center gap-9">
           <a th:href="@{/catalogo}" class="text-[#120e1b] text-sm font-medium leading-normal">CATEGORÍAS</a>
           <a th:href="@{/carrito}" class="text-[#120e1b] text-sm font-medium leading-normal">CARRITO DE COMPRAS</a>
-          <a th:href="@{/perfil}" class="text-[#120e1b] text-sm font-medium leading-normal">PERFIL</a>
+          <a th:href="@{/pedidos-cliente/historial}" class="text-[#120e1b] text-sm font-medium leading-normal">HISTORIAL</a>
         </div>
       </div>
       <div class="flex flex-1 justify-end gap-8">
@@ -108,5 +108,7 @@
 
   </div>
 </div>
+
+<th:block layout:fragment="scripts"></th:block>
 </body>
 </html>

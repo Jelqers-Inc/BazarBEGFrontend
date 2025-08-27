@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 
 @Entity
-@Table(name = "detallePedido")
+@Table(name = "detalle_pedido")
 public class DetallePedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,6 +15,15 @@ public class DetallePedido {
 
     @Min(value = 0, message = "El precio unitario no puede ser negativo")
     private float precioUnitario;
+
+    // Coloca las anotaciones aquí, justo antes del campo.
+    @ManyToOne
+    @JoinColumn(name = "pedidoid", nullable = false)
+    private Pedido pedido;
+
+    @ManyToOne
+    @JoinColumn(name = "productoid")
+    private Producto producto;
 
     // Getters y Setters
     public int getId() {
@@ -56,13 +65,4 @@ public class DetallePedido {
     public void setProducto(Producto producto) {
         this.producto = producto;
     }
-
-    @ManyToOne
-    @JoinColumn(name = "pedidoid")
-    private Pedido pedido;
-
-    @ManyToOne
-    @JoinColumn(name = "productoid")
-    private Producto producto;
-
 }

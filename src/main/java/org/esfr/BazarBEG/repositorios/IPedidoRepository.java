@@ -1,6 +1,7 @@
 package org.esfr.BazarBEG.repositorios;
 
 import org.esfr.BazarBEG.modelos.Pedido;
+import org.esfr.BazarBEG.modelos.Usuario;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,4 +34,11 @@ public interface IPedidoRepository extends JpaRepository<Pedido, Integer> {
 
     @Query("SELECT p FROM Pedido p JOIN FETCH p.detalles JOIN FETCH p.usuario WHERE p.id = :id")
     Optional<Pedido> findByIdWithDetailsAndUser(@Param("id") Integer id);
+
+    // Método para cargar los pedidos paginados con el usuario
+    @Query(value = "SELECT p FROM Pedido p JOIN FETCH p.usuario ORDER BY p.fechaPedido DESC",
+            countQuery = "SELECT count(p) FROM Pedido p")
+    Page<Pedido> findAllWithUser(Pageable pageable);
+
+    List<Pedido> findByUsuario(Usuario usuario);
 }

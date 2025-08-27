@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/_mainLayoutCliente.html}">
+<head>
+    <title>Checkout</title>
+</head>
+
+<div layout:fragment="content" class="p-6">
+    <div class="flex flex-col md:flex-row justify-center items-start gap-8">
+
+        <div class="bg-white p-6 rounded-lg shadow-md w-full md:w-1/2">
+            <h2 class="text-xl font-bold mb-4">Resumen del Carrito</h2>
+
+            <div th:if="${productosEnCarrito.isEmpty()}">
+                <p class="text-gray-500">Tu carrito está vacío.</p>
+                <a th:href="@{/catalogo}"
+                   class="mt-4 inline-block px-6 py-3 bg-purple-600 text-white font-bold rounded-full shadow-lg hover:bg-purple-700 transition duration-300">
+                    Ir al Catálogo
+                </a>
+            </div>
+
+            <div th:unless="${productosEnCarrito.isEmpty()}">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                    <tr class="border-b">
+                        <th class="py-2">Producto</th>
+                        <th class="py-2">Cantidad</th>
+                        <th class="py-2">Precio</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="entry : ${productosEnCarrito}" class="border-b">
+                        <td class="py-2" th:text="${entry.key.nombre}"></td>
+                        <td class="py-2" th:text="${entry.value}"></td>
+                        <td class="py-2" th:text="${#numbers.formatCurrency(entry.key.precio * entry.value)}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <p class="mt-4 text-lg font-bold">Total:
+                    <span th:text="${#numbers.formatCurrency(totalCarrito)}"></span>
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md w-full md:w-1/2">
+            <h2 class="text-xl font-bold mb-4">Información de Pago</h2>
+
+            <form id="payment-form">
+                <div id="payment-element" class="mb-4"></div>
+
+                <button id="submit"
+                        class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline">
+                    <span id="button-text">Pagar Ahora</span>
+                </button>
+
+                <div id="payment-message" class="hidden text-red-500 text-sm mt-2"></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe('[[${publishableKey}]]');
+        const clientSecret = '[[${clientSecret}]]';
+
+        const elements = stripe.elements({ clientSecret });
+        const paymentElement = elements.create("payment");
+        paymentElement.mount("#payment-element");
+
+        const form = document.getElementById("payment-form");
+        const messageContainer = document.getElementById("payment-message");
+        const payBtn = document.getElementById("submit");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            payBtn.disabled = true;
+
+            const { error } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: window.location.origin + '/checkout/confirmacion-pago'
+                }
+            });
+
+            if (error) {
+                messageContainer.textContent = error.message;
+                messageContainer.classList.remove('hidden');
+                payBtn.disabled = false;
+            }
+        });
+    </script>
+</th:block>
+</html>
