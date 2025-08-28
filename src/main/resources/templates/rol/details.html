@@ -1,34 +1,55 @@
+<!DOCTYPE html>
 <html lang="es"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/_mainLayoutAdmin.html}">
 <head>
-  <title>Detalles del Rol</title>
+    <title>Detalles del Rol</title>
+    <style>
+        .btn-gradient {
+            background: linear-gradient(to right, #a78bfa, #818cf8);
+            transition: all 0.3s ease;
+        }
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-secondary {
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
-<div layout:fragment="content" class="p-6">
+<div layout:fragment="content" class="p-6 flex justify-center items-center h-screen">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg">
+        <div class="mb-6 text-center">
+            <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500 drop-shadow-md">
+                Detalles del Rol
+            </h1>
+        </div>
 
-  <div class="flex items-center justify-between mb-4">
-    <h1 class="text-2xl font-bold text-gray-800">Detalles del Rol</h1>
-  </div>
+        <div class="bg-gray-50 p-6 rounded-lg shadow-inner">
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold text-gray-800">ID:</h3>
+                <p th:text="${rol.id}" class="text-gray-600 font-medium text-base"></p>
+            </div>
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold text-gray-800">Nombre del Rol:</h3>
+                <p th:text="${rol.nombre}" class="text-gray-600 font-medium text-base"></p>
+            </div>
+        </div>
 
-  <div class="bg-white p-6 rounded-lg shadow-md">
-    <div class="mb-4">
-      <h3 class="text-lg font-semibold text-gray-800">ID:</h3>
-      <p th:text="${rol.id}" class="text-gray-600"></p>
+        <div class="mt-8 flex items-center justify-center gap-4">
+            <a th:href="@{/roles/edit/{id}(id=${rol.id})}" class="btn-gradient px-6 py-3 text-sm font-bold leading-5 text-white rounded-full shadow-lg">
+                <i class="fas fa-edit mr-2"></i> Editar
+            </a>
+            <a th:href="@{/roles}" class="btn-secondary px-6 py-3 text-sm font-bold leading-5 text-gray-700 rounded-full border border-gray-300 hover:bg-gray-100 shadow-lg">
+                Volver al listado
+            </a>
+        </div>
     </div>
-    <div class="mb-4">
-      <h3 class="text-lg font-semibold text-gray-800">Nombre del Rol:</h3>
-      <p th:text="${rol.nombre}" class="text-gray-600"></p>
-    </div>
-
-    <div class="mt-6 flex items-center justify-start">
-      <a th:href="@{/roles/edit/{id}(id=${rol.id})}" class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-100 bg-green-600 border border-transparent rounded-lg active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green mr-2">
-        Editar
-      </a>
-      <a th:href="@{/roles}" class="px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition-colors duration-100 border border-gray-300 rounded-lg active:bg-gray-200 hover:bg-gray-100 focus:outline-none focus:shadow-outline-gray">
-        Volver al listado
-      </a>
-    </div>
-  </div>
 </div>
 </html>

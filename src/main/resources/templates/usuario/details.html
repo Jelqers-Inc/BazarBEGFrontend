@@ -4,45 +4,74 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/_mainLayoutAdmin.html}">
 <head>
-  <title>Detalles del Usuario</title>
+    <title>Detalles del Usuario</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        .btn-gradient {
+            background: linear-gradient(to right, #a78bfa, #818cf8);
+            transition: all 0.3s ease;
+        }
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
-<div layout:fragment="content" class="p-6">
-
-  <div class="flex items-center justify-between mb-4">
-    <h1 class="text-2xl font-bold text-gray-800">Detalles del Usuario</h1>
-  </div>
-
-  <div class="bg-white p-6 rounded-lg shadow-md">
-    <div class="mb-4">
-      <h3 class="text-lg font-semibold text-gray-800">ID:</h3>
-      <p th:text="${usuario.id}" class="text-gray-600"></p>
+<div layout:fragment="content" class="p-6 bg-gray-100 flex justify-center items-center min-h-screen">
+    <div class="w-full max-w-xl">
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div class="px-8 py-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white flex items-center justify-between">
+                <h1 class="text-3xl font-bold">Detalles del Usuario</h1>
+                <i class="fas fa-user-circle text-3xl opacity-80"></i>
+            </div>
+            
+            <div class="p-8">
+                <div class="bg-gray-50 rounded-xl p-6 mb-6 shadow-inner">
+                    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6">
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <dt class="text-sm font-semibold text-gray-500 uppercase">ID</dt>
+                            <dd class="mt-1 text-lg font-medium text-gray-800" th:text="${usuario.id}"></dd>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <dt class="text-sm font-semibold text-gray-500 uppercase">Nombre</dt>
+                            <dd class="mt-1 text-lg font-medium text-gray-800" th:text="${usuario.nombre}"></dd>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <dt class="text-sm font-semibold text-gray-500 uppercase">Apellido</dt>
+                            <dd class="mt-1 text-lg font-medium text-gray-800" th:text="${usuario.apellido}"></dd>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <dt class="text-sm font-semibold text-gray-500 uppercase">Email</dt>
+                            <dd class="mt-1 text-lg font-medium text-gray-800" th:text="${usuario.email}"></dd>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <dt class="text-sm font-semibold text-gray-500 uppercase">Rol</dt>
+                            <dd class="mt-1 text-lg font-medium text-gray-800" th:text="${usuario.rol.nombre}"></dd>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <dt class="text-sm font-semibold text-gray-500 uppercase">Estatus</dt>
+                            <dd class="mt-1">
+                                <span th:if="${usuario.status == 1}" class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium bg-green-200 text-green-800">
+                                    <i class="fas fa-check-circle mr-2"></i> Activo
+                                </span>
+                                <span th:if="${usuario.status == 0}" class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium bg-red-200 text-red-800">
+                                    <i class="fas fa-times-circle mr-2"></i> Inactivo
+                                </span>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+                
+                <div class="mt-8 flex items-center justify-end space-x-4">
+                    <a th:href="@{/usuarios/edit/{id}(id=${usuario.id})}" class="flex items-center justify-center px-6 py-3 text-sm font-bold text-white rounded-lg shadow-md hover:scale-105 transition-transform btn-gradient">
+                        <i class="fas fa-edit mr-2"></i> Editar
+                    </a>
+                    <a th:href="@{/usuarios}" class="flex items-center justify-center px-6 py-3 text-sm font-bold text-gray-800 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors duration-200">
+                        <i class="fas fa-arrow-left mr-2"></i> Volver al listado
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="mb-4">
-      <h3 class="text-lg font-semibold text-gray-800">Nombre:</h3>
-      <p th:text="${usuario.nombre}" class="text-gray-600"></p>
-    </div>
-    <div class="mb-4">
-      <h3 class="text-lg font-semibold text-gray-800">Email:</h3>
-      <p th:text="${usuario.email}" class="text-gray-600"></p>
-    </div>
-    <div class="mb-4">
-      <h3 class="text-lg font-semibold text-gray-800">Rol:</h3>
-      <p th:text="${usuario.rol.nombre}" class="text-gray-600"></p>
-    </div>
-    <div class="mb-4">
-      <h3 class="text-lg font-semibold text-gray-800">Estatus:</h3>
-      <p th:text="${usuario.status == 1 ? 'Activo' : 'Inactivo'}" class="text-gray-600"></p>
-    </div>
-
-
-    <div class="mt-6 flex items-center justify-start">
-      <a th:href="@{/usuarios/edit/{id}(id=${usuario.id})}" class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-100 bg-green-600 border border-transparent rounded-lg active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green mr-2">
-        Editar
-      </a>
-      <a th:href="@{/usuarios}" class="px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition-colors duration-100 border border-gray-300 rounded-lg active:bg-gray-200 hover:bg-gray-100 focus:outline-none focus:shadow-outline-gray">
-        Volver al listado
-      </a>
-    </div>
-  </div>
 </div>
 </html>

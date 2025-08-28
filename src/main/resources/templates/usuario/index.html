@@ -4,64 +4,78 @@
       layout:decorate="~{layouts/_mainLayoutAdmin.html}">
 <head>
     <title>Listado de Usuarios</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
-<div layout:fragment="content" class="p-6">
+<div layout:fragment="content" class="p-6 bg-gray-100">
 
     <div th:if="${msg}">
         <script th:inline="javascript">
             Swal.fire({
-              title: '¡Éxito!',
-              text: [[${msg}]],
-              icon: 'success',
-              timer: 2000,
-              showConfirmButton: false
+                title: '¡Éxito!',
+                text: [[${msg}]],
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
             });
         </script>
     </div>
 
-    <div class="flex items-center justify-between mb-4">
-        <h1 class="text-2xl font-bold text-gray-800">Listado de Usuarios</h1>
-        <a th:href="@{/usuarios/create}" class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-100 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-3xl font-extrabold text-gray-900">Listado de Usuarios</h1>
+        <a th:href="@{/usuarios/create}" class="px-5 py-2.5 text-sm font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-500 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-300">
             Nuevo Usuario
         </a>
     </div>
 
-    <div class="overflow-x-auto bg-white rounded-lg shadow">
+    <div class="overflow-x-auto bg-white rounded-lg shadow-lg">
         <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+            <thead class="bg-purple-100">
             <tr>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Nombre</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Email</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Rol</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Estatus</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Acciones</th>
+                <th class="px-6 py-3 text-xs font-semibold tracking-wider text-left text-blue-800 uppercase">ID</th>
+                <th class="px-6 py-3 text-xs font-semibold tracking-wider text-left text-blue-800 uppercase">Nombre</th>
+                <th class="px-6 py-3 text-xs font-semibold tracking-wider text-left text-blue-800 uppercase">Email</th>
+                <th class="px-6 py-3 text-xs font-semibold tracking-wider text-left text-blue-800 uppercase">Rol</th>
+                <th class="px-6 py-3 text-xs font-semibold tracking-wider text-left text-blue-800 uppercase">Estatus</th>
+                <th class="px-6 py-3 text-xs font-semibold tracking-wider text-left text-blue-800 uppercase">Acciones</th>
             </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-            <tr th:each="usuario : ${usuarios.content}">
-                <td th:text="${usuario.id}" class="px-6 py-4 whitespace-nowrap"></td>
-                <td th:text="${usuario.nombre}" class="px-6 py-4 whitespace-nowrap"></td>
-                <td th:text="${usuario.email}" class="px-6 py-4 whitespace-nowrap"></td>
-                <td th:text="${usuario.rol.nombre}" class="px-6 py-4 whitespace-nowrap"></td>
-                <td th:text="${usuario.status == 1 ? 'Activo' : 'Inactivo'}" class="px-6 py-4 whitespace-nowrap"></td>
+            <tr th:each="usuario, rowStat : ${usuarios.content}" th:class="${rowStat.odd} ? 'bg-gray-50' : 'bg-white'">
+                <td th:text="${usuario.id}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"></td>
+                <td th:text="${usuario.nombre}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"></td>
+                <td th:text="${usuario.email}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"></td>
+                <td th:text="${usuario.rol.nombre}" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700"></td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span th:if="${usuario.status == 1}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-200 text-green-800">
+                        Activo
+                    </span>
+                    <span th:if="${usuario.status == 0}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-200 text-red-800">
+                        Inactivo
+                    </span>
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a th:href="@{/usuarios/details/{id}(id=${usuario.id})}" class="text-blue-600 hover:text-blue-900 mr-2">Detalles</a>
-                    <a th:href="@{/usuarios/edit/{id}(id=${usuario.id})}" class="text-green-600 hover:text-green-900 mr-2">Editar</a>
-                    <a th:href="@{/usuarios/delete-confirm/{id}(id=${usuario.id})}" class="text-red-600 hover:text-red-900">Eliminar</a>
+                    <a th:href="@{/usuarios/details/{id}(id=${usuario.id})}" class="text-gray-500 hover:text-blue-700 mr-3 transition-colors">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <a th:href="@{/usuarios/edit/{id}(id=${usuario.id})}" class="text-purple-500 hover:text-purple-700 mr-3 transition-colors">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a th:href="@{/usuarios/delete-confirm/{id}(id=${usuario.id})}" class="text-red-500 hover:text-red-700 transition-colors">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
                 </td>
             </tr>
             </tbody>
         </table>
     </div>
 
-    <nav aria-label="Page navigation" class="mt-4">
+    <nav aria-label="Page navigation" class="mt-8">
         <ul class="flex justify-center">
             <li th:each="pageNumber : ${pageNumbers}" class="mx-1">
                 <a th:href="@{/usuarios(page=${pageNumber}, size=${usuarios.size}, q=${query})}"
                    th:text="${pageNumber}"
-                   class="block px-3 py-1 text-sm rounded-lg"
-                   th:classappend="${usuarios.number + 1 == pageNumber} ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'">
+                   class="block px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-200 ease-in-out"
+                   th:classappend="${usuarios.number + 1 == pageNumber} ? 'bg-purple-400 text-white shadow-md' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:text-blue-600'">
                 </a>
             </li>
         </ul>

@@ -4,30 +4,35 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/_mainLayoutAdmin.html}">
 <head>
-  <title>Crear Rol</title>
+    <title>Crear Rol</title>
 </head>
-<div layout:fragment="content" class="p-6">
-  <div class="flex items-center justify-between mb-4">
-    <h1 class="text-2xl font-bold text-gray-800">Crear Nuevo Rol</h1>
-  </div>
+<div layout:fragment="content" class="p-6 flex justify-center items-center h-screen">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500 drop-shadow-md">
+                Crear Nuevo Rol
+            </h1>
+        </div>
+        
+        <form th:action="@{/roles/save}" th:object="${rol}" method="post">
+            <div class="mb-6">
+                <label for="nombre" class="block text-gray-800 text-lg font-semibold mb-2">Nombre del Rol:</label>
+                <input type="text" id="nombre" th:field="*{nombre}" 
+                       class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300 ease-in-out" 
+                       th:classappend="${#fields.hasErrors('nombre')} ? 'border-red-500' : ''"
+                       placeholder="Ej: Administrador, Editor, Lector">
+                <p th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}" class="text-red-500 text-sm italic mt-2"></p>
+            </div>
 
-  <div class="bg-white p-6 rounded-lg shadow-md">
-    <form th:action="@{/roles/save}" th:object="${rol}" method="post">
-      <div class="mb-4">
-        <label for="nombre" class="block text-gray-700 text-sm font-bold mb-2">Nombre del Rol:</label>
-        <input type="text" id="nombre" th:field="*{nombre}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" th:classappend="${#fields.hasErrors('nombre')} ? 'border-red-500' : ''">
-        <p th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}" class="text-red-500 text-xs italic mt-1"></p>
-      </div>
-
-      <div class="flex items-center justify-between">
-        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-          Guardar
-        </button>
-        <a th:href="@{/roles}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-          Cancelar
-        </a>
-      </div>
-    </form>
-  </div>
+            <div class="flex items-center justify-end gap-4">
+                <a th:href="@{/roles}" class="text-gray-600 font-bold py-3 px-6 rounded-lg border border-gray-300 hover:bg-gray-100 transition duration-300 ease-in-out">
+                    Cancelar
+                </a>
+                <button type="submit" class="bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 shadow-md">
+                    Guardar
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 </html>
