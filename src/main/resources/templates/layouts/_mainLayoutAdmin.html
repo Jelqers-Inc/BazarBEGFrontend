@@ -9,7 +9,7 @@
           rel="stylesheet"
           as="style"
           onload="this.rel='stylesheet'"
-          href="https://fonts.googleapis.com/css2?display=swap&family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&family=Plus+Jakarta+Sans%3Awght%40400%3B500%3B700%3B800"
+          href="https://fonts.googleapis.com/css2?display=swap&family=Noto+Sans%3Awght@400%3B500%3B700%3B900&family=Plus+Jakarta+Sans%3Awght@400%3B500%3B700%3B800"
   />
   <link href="/css/tailwind.css" rel="stylesheet">
   <title>Bazar de Cosmeticos</title>
@@ -83,14 +83,14 @@
             </div>
           </button>
         </div>
-        <div th:if="${usuario}">
+        <div th:if="${usuarioLogueado.isPresent()}">
           <a th:href="@{/usuarios/perfil}" class="block">
-            <img th:src="@{/usuarios/perfil/imagen/{id}(id=${usuario.id})}"
+            <img th:src="@{/usuarios/perfil/imagen/{id}(id=${usuarioLogueado.get().id})}"
                  alt="Foto de perfil"
                  class="w-10 h-10 rounded-full object-cover border-2 border-transparent hover:border-purple-500 transition-colors">
           </a>
         </div>
-        <div th:unless="${usuario}">
+        <div th:unless="${usuarioLogueado.isPresent()}">
           <a th:href="@{/login}" class="text-[#120e1b] text-sm font-medium leading-normal">Iniciar Sesión</a>
         </div>
       </div>

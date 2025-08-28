@@ -10,17 +10,16 @@ import java.security.Principal;
 import java.util.Optional;
 
 @ControllerAdvice
-public class UsuarioControllerAdvice {
+public class GlobalControllerAdvice {
 
     @Autowired
     private IUsuarioService usuarioService;
 
-    @ModelAttribute("usuario")
-    public Usuario getUsuario(Principal principal) {
+    @ModelAttribute("usuarioLogueado")
+    public Optional<Usuario> getUsuarioLogueado(Principal principal) {
         if (principal != null) {
-            Optional<Usuario> usuarioOptional = usuarioService.obtenerPorEmail(principal.getName());
-            return usuarioOptional.orElse(null);
+            return usuarioService.obtenerPorEmail(principal.getName());
         }
-        return null;
+        return Optional.empty();
     }
 }
