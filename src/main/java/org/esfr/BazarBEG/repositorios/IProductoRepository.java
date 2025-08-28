@@ -30,4 +30,9 @@ public interface IProductoRepository extends JpaRepository<Producto, Integer> {
 
     // Encuentra un producto por su ID y que esté activo (status = 1)
     Optional<Producto> findByIdAndStatus(Long id, int status);
+
+    List<Producto> findByNombreContainingIgnoreCaseAndStatus(String nombre, int status);
+
+    List<Producto> findByCategoriaIdAndNombreContainingIgnoreCaseAndStatus(Long categoriaId, String nombre, int status);
+
 }

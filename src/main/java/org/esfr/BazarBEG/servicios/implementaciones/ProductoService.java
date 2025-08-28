@@ -70,4 +70,14 @@ public class ProductoService implements IProductoService {
     public Optional<Producto> obtenerProductoActivoPorId(Long id) {
         return productoRepository.findByIdAndStatus(id, 1);
     }
+
+    @Override
+    public List<Producto> buscarProductosActivos(String q) {
+        return productoRepository.findByNombreContainingIgnoreCaseAndStatus(q, 1);
+    }
+
+    @Override
+    public List<Producto> buscarProductosPorCategoriaActivos(Long categoriaId, String q) {
+        return productoRepository.findByCategoriaIdAndNombreContainingIgnoreCaseAndStatus(categoriaId, q, 1);
+    }
 }

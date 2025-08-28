@@ -30,4 +30,7 @@ public interface IProductoService {
 
     Optional<Producto> obtenerProductoActivoPorId(Long id);
 
+    List<Producto> buscarProductosActivos(String q);
+    List<Producto> buscarProductosPorCategoriaActivos(Long categoriaId, String q);
+
 }

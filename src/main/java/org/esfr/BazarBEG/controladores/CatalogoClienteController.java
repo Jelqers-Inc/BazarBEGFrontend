@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,13 +26,26 @@ public class CatalogoClienteController {
     private ICategoriaService categoriaService;
 
     @GetMapping
-    public String mostrarCatalogo(Model model) {
-        List<Producto> productos = productoService.obtenerProductosActivos();
+    public String mostrarCatalogo(Model model,
+                                  @RequestParam(value = "q", required = false) String q) {
+
+        List<Producto> productos;
+        if (q != null && !q.isEmpty()) {
+            productos = productoService.buscarProductosActivos(q);
+        } else {
+            productos = productoService.obtenerProductosActivos();
+        }
+
         List<Categoria> categorias = categoriaService.obtenerTodos();
         model.addAttribute("productos", productos);
         model.addAttribute("categorias", categorias);
+        model.addAttribute("query", q);
+        model.addAttribute("searchAction", "/catalogo");
+
         return "catalogo/catalogoC";
     }
+
+
 
     @GetMapping("/categoria/{id}")
     public String mostrarProductosPorCategoria(@PathVariable("id") Long id, Model model) {
