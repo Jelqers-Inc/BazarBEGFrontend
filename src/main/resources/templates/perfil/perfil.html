@@ -87,6 +87,13 @@
                 <a th:href="@{/}" class="btn px-6 py-3 bg-gray-700 text-white font-bold rounded-full">
                     Regresar
                 </a>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit"
+                            class="btn px-6 py-3 bg-red-600 text-white font-bold rounded-full hover:bg-red-700 transition">
+                        Cerrar Sesión
+                    </button>
+                </form>
+
             </div>
         </div>
 

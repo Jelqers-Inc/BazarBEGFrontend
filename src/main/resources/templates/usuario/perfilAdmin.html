@@ -58,7 +58,7 @@
                 <div class="profile-border mb-4">
                     <img th:src="@{/usuarios/perfil/imagen/{id}(id=${usuario.id})}" alt="Foto de perfil">
                 </div>
-                
+
                 <p class="text-2xl font-bold text-gray-900 drop-shadow-sm" th:text="${usuario.nombre} + ' ' + ${usuario.apellido}"></p>
 
                 <form id="formFotoAdmin" th:action="@{/usuarios/perfil/subirFoto}" method="post" enctype="multipart/form-data" class="mt-4">
@@ -87,6 +87,12 @@
           <a th:href="@{/usuarios}" class="btn-anim px-6 py-3 bg-gray-700 text-white font-bold rounded-full">
                     Regresar
                 </a>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit"
+                        class="px-6 py-3 bg-red-600 text-white font-bold rounded-full shadow-lg hover:bg-red-700 transition">
+                    Cerrar Sesión
+                </button>
+            </form>
 
         </div>
       </div>

@@ -23,7 +23,7 @@ public class SecurityConfig {
                         .requestMatchers("/categorias/imagen/**", "/productos/imagen/**").permitAll()
 
                         // Rutas protegidas para CLIENTES
-                        .requestMatchers("/pedidos-cliente/historial", "/perfil/**", "/carrito/**", "/checkout/**").hasAnyRole("CLIENTE", "ADMINISTRADOR")
+                        .requestMatchers("/pedidos-cliente/historial","/pedidos-cliente/factura/**", "/perfil/**", "/carrito/**", "/checkout/**").hasAnyRole("CLIENTE", "ADMINISTRADOR")
 
                         // Rutas protegidas para ADMINISTRADOR
                         .requestMatchers("/admin/**", "/usuarios/**", "/roles/**", "/categorias/**", "/productos/**", "/pedidos-cliente/**").hasRole("ADMINISTRADOR")
@@ -43,9 +43,12 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout=true")
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
                         .permitAll()
                 )
+
                 .exceptionHandling(exceptions -> exceptions
                         .accessDeniedPage("/access-denied")
                 );
