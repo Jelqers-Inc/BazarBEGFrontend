@@ -29,8 +29,17 @@ public class UsuarioRepository {
 
     @Cacheable("usuarios")
     public List<User> obtenerTodosUsuarios() {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(false);
+        String token = (session != null) ? (String) session.getAttribute("JWT_TOKEN") : null;
+
+        if (token == null) {
+            throw new IllegalStateException("No se encontró JWT");
+        }
+
         return this.webClient.get()
                 .uri("/usuarios")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .bodyToFlux(User.class)
                 .collectList()
