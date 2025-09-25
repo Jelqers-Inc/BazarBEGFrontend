@@ -3,6 +3,8 @@ package org.esfr.BazarBEG.controladores;
 import org.esfr.BazarBEG.modelos.Rol;
 import org.esfr.BazarBEG.modelos.Usuario;
 import org.esfr.BazarBEG.modelos.dtos.usuarios.User;
+import org.esfr.BazarBEG.modelos.dtos.usuarios.UserCreate;
+import org.esfr.BazarBEG.modelos.dtos.usuarios.UserUpdate;
 import org.esfr.BazarBEG.servicios.interfaces.IRolService;
 import org.esfr.BazarBEG.servicios.interfaces.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -56,75 +59,68 @@ public class UsuarioController {
     }
 
     // -------------------- SUBIR FOTO DE PERFIL DEL ADMIN --------------------
-//    @PostMapping("/perfil/subirFoto")
-//    public String subirFotoAdmin(@RequestParam("foto") MultipartFile foto, Principal principal, RedirectAttributes redirectAttributes) {
-//        if (principal == null || foto.isEmpty()) {
-//            redirectAttributes.addFlashAttribute("errorSubida", "No se seleccionó una foto.");
-//            return "redirect:/usuarios/perfil";
-//        }
-//        try {
-//            Optional<Usuario> usuarioOptional = usuarioService.obtenerPorEmail(principal.getName());
-//            if (usuarioOptional.isPresent()) {
-//                Usuario usuario = usuarioOptional.get();
-//                if (!Files.exists(directorioSubidas)) {
-//                    Files.createDirectories(directorioSubidas);
-//                }
-//                if (usuario.getFoto() != null && !usuario.getFoto().isEmpty()) {
-//                    Files.deleteIfExists(directorioSubidas.resolve(usuario.getFoto()));
-//                }
-//                String nombreArchivo = usuario.getId() + "-" + foto.getOriginalFilename();
-//                Path rutaCompleta = this.directorioSubidas.resolve(nombreArchivo);
-//                Files.write(rutaCompleta, foto.getBytes());
-//                usuario.setFoto(nombreArchivo);
-//                usuarioService.crearOEditar(usuario);
-//                redirectAttributes.addFlashAttribute("fotoSubidaExitosamente", true);
-//            }
-//        } catch (IOException e) {
-//            redirectAttributes.addFlashAttribute("errorSubida", "Hubo un error al subir la foto.");
-//        }
-//        return "redirect:/usuarios/perfil";
-//    }
+    @PostMapping("/perfil/subirFoto")
+    public String subirFotoAdmin(@RequestParam("foto") MultipartFile foto,
+                                 Principal principal, RedirectAttributes redirectAttributes,
+                                 Model model) {
+        if (principal == null || foto.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorSubida", "No se seleccionó una foto.");
+            return "redirect:/usuarios/perfil";
+        }
+        try {
+            User user = (User) model.getAttribute("usuarioLogueado");
+            if (user.getEmail() != null) {
+                if(user.getApellido() == null){
+                    user.setApellido(user.getNombre());
+                }
+                UserUpdate update = new UserUpdate();
+                update.setId(user.getId());
+                update.setNombre(user.getNombre());
+                update.setApellido(user.getApellido());
+                update.setEmail(user.getEmail());
+                update.setRolId(user.getRolId());
+                update.setFoto(foto.getBytes());
+                usuarioService.editar(update);
+                redirectAttributes.addFlashAttribute("fotoSubidaExitosamente", true);
+            }
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("errorSubida", "Hubo un error al subir la foto.");
+        }
+        return "redirect:/usuarios/perfil";
+    }
 
     // -------------------- SERVIR IMAGEN DE PERFIL DEL ADMIN --------------------
-//    @GetMapping("/perfil/imagen/{id}")
-//    @ResponseBody
-//    public ResponseEntity<Resource> getImagenAdmin(@PathVariable Integer id) {
-//        Optional<Usuario> usuarioOptional = usuarioService.buscarPorId(id);
-//        Path archivo;
-//        if (usuarioOptional.isPresent() && usuarioOptional.get().getFoto() != null) {
-//            archivo = directorioSubidas.resolve(usuarioOptional.get().getFoto()).normalize();
-//        } else {
-//            archivo = Paths.get("src/main/resources/static/images/perfil_placeholder_admin.png").normalize(); // Asegúrate de tener esta imagen
-//        }
-//        try {
-//            Resource recurso = new UrlResource(archivo.toUri());
-//            if (recurso.exists() && recurso.isReadable()) {
-//                return ResponseEntity.ok()
-//                        .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(archivo))
-//                        .body(recurso);
-//            }
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return ResponseEntity.notFound().build();
-//    }
+    @GetMapping( value = "/perfil/imagen", produces = MediaType.IMAGE_PNG_VALUE)
+    @ResponseBody
+    public ResponseEntity<byte[]> getImagenAdmin(Model model) {
+        User user = (User) model.getAttribute("usuarioLogueado");
+        if (user != null && user.getFoto() != null && user.getFoto().getData().length > 0) {
+            return ResponseEntity.ok().body(user.getFoto().getData());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     // -------------------- ACTUALIZAR PERFIL DEL ADMIN --------------------
-//    @PostMapping("/perfil/editar")
-//    public String editarPerfilAdmin(@ModelAttribute("usuario") Usuario usuarioActualizado, RedirectAttributes redirectAttributes) {
-//        Optional<Usuario> usuarioOptional = usuarioService.buscarPorId(usuarioActualizado.getId());
-//        if (usuarioOptional.isPresent()) {
-//            Usuario usuario = usuarioOptional.get();
-//            usuario.setNombre(usuarioActualizado.getNombre());
-//            usuario.setApellido(usuarioActualizado.getApellido());
-//            usuario.setEmail(usuarioActualizado.getEmail());
-//            usuarioService.crearOEditar(usuario);
-//            redirectAttributes.addFlashAttribute("exitoEdicion", "Perfil actualizado correctamente.");
-//        }
-//        return "redirect:/usuarios/perfil";
-//    }
+    @PostMapping("/perfil/editar")
+    public String editarPerfilAdmin(@ModelAttribute("usuario") Usuario usuarioActualizado, Model model, RedirectAttributes redirectAttributes) {
+        User user = (User) model.getAttribute("usuarioLogueado");
+        if (user.getId() != null) {
+            if(user.getApellido() == null){
+                user.setApellido(user.getNombre());
+            }
+            UserUpdate update = new UserUpdate();
+            update.setId(user.getId());
+            update.setNombre(usuarioActualizado.getNombre());
+            update.setApellido(usuarioActualizado.getApellido());
+            update.setEmail(usuarioActualizado.getEmail());
+            update.setRolId(user.getRolId());
+            update.setFoto(user.getFoto().getData());
+            usuarioService.editar(update);
+            redirectAttributes.addFlashAttribute("exitoEdicion", "Perfil actualizado correctamente.");
+        }
+        return "redirect:/usuarios/perfil";
+    }
 
 
     // -------------------- LISTADO CON PAGINACIÓN Y BÚSQUEDA --------------------
@@ -182,8 +178,7 @@ public class UsuarioController {
     // -------------------- MOSTRAR FORMULARIO DE CREACIÓN --------------------
     @GetMapping("/create")
     public String create(Model model) {
-        Usuario usuario = new Usuario();
-        usuario.setStatus(1);
+        UserCreate usuario = new UserCreate();
         model.addAttribute("usuario", usuario);
         model.addAttribute("roles", rolService.obtenerTodos());
         return "usuario/create";
@@ -191,97 +186,86 @@ public class UsuarioController {
 
 
     // -------------------- GUARDAR NUEVO USUARIO --------------------
-//    @PostMapping("/save")
-//    public String save(@Valid @ModelAttribute Usuario usuario, BindingResult result, RedirectAttributes redirect, Model model) {
-//        if (result.hasErrors()) {
-//            model.addAttribute("roles", rolService.obtenerTodos());
-//            return "usuario/create";
-//        }
-//
-//        // Verificar rol seleccionado, si no asignar por defecto
-//        if (usuario.getRol() != null && usuario.getRol() != 0) {
-//            Integer rolSeleccionado = rolService.buscarPorId(usuario.getRol()).get().getId();
-//            usuario.setRol(rolSeleccionado);
-//        } else {
-//            // Rol por defecto = CLIENTE (ID = 2)
-//            Integer rolPorDefecto = 2;
-//            usuario.setRol(rolPorDefecto);
-//        }
-//
-//        usuarioService.crearOEditar(usuario);
-//        redirect.addFlashAttribute("msg", "Usuario guardado exitosamente");
-//        return "redirect:/usuarios";
-//    }
+    @PostMapping("/save")
+    public String save(@ModelAttribute UserCreate usuario, BindingResult result, RedirectAttributes redirect, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("roles", rolService.obtenerTodos());
+            return "usuario/create";
+        }
+
+        if(usuario.getApellido() == null){
+            usuario.setApellido(usuario.getNombre());
+        }
+
+        usuarioService.crear(usuario);
+        redirect.addFlashAttribute("msg", "Usuario guardado exitosamente");
+        return "redirect:/usuarios";
+    }
 
     // -------------------- DETALLES DE UN USUARIO --------------------
-//    @GetMapping("/details/{email}")
-//    public String details(@PathVariable("id") Integer id, Model model) {
-//        Usuario usuario = usuarioService.buscarPorId(id)
-//                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
-//        model.addAttribute("usuario", usuario);
-//        return "usuario/details";
-//    }
+    @GetMapping("/details/{id}")
+    public String details(@PathVariable("id") Integer id, Model model) {
+        User usuario = usuarioService.obtenerPorId(id);
+        model.addAttribute("usuario", usuario);
+        return "usuario/details";
+    }
 
     // -------------------- MOSTRAR FORMULARIO DE EDICIÓN --------------------
-//    @GetMapping("/edit/{id}")
-//    public String edit(@PathVariable("id") Integer id, Model model) {
-//        Usuario usuario = usuarioService.buscarPorId(id)
-//                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
-//        model.addAttribute("usuario", usuario);
-//        model.addAttribute("roles", rolService.obtenerTodos());
-//        return "usuario/edit";
-//    }
+    @GetMapping("/edit/{id}")
+    public String edit(@PathVariable("id") Integer id, Model model) {
+        User usuario = usuarioService.obtenerPorId(id);
+        UserUpdate userUpdate = new UserUpdate();
+        userUpdate.setId(usuario.getId());
+        userUpdate.setRolId(usuario.getRolId());
+        if(usuario.getApellido() == null){
+            userUpdate.setApellido(userUpdate.getNombre());
+        }
+        else {
+            userUpdate.setApellido(usuario.getApellido());
+        }
+        userUpdate.setNombre(usuario.getNombre());
+        userUpdate.setEmail(usuario.getEmail());
+
+        model.addAttribute("usuario", userUpdate);
+        model.addAttribute("roles", rolService.obtenerTodos());
+        return "usuario/edit";
+    }
 
     // -------------------- ACTUALIZAR USUARIO --------------------
-//    @PostMapping("/update/{id}")
-//    public String update(@PathVariable("id") Integer id, @ModelAttribute Usuario usuario,
-//                         BindingResult result, RedirectAttributes redirect, Model model) {
-//
-//        if (result.hasErrors()) {
-//            model.addAttribute("roles", rolService.obtenerTodos());
-//            return "usuario/edit";
-//        }
-//
-//        Usuario usuarioExistente = usuarioService.buscarPorId(id)
-//                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
-//
-//        usuarioExistente.setNombre(usuario.getNombre());
-//        usuarioExistente.setEmail(usuario.getEmail());
-//
-//        if (usuario.getRol() != null && usuario.getRol().getId() != null) {
-//            Rol rolSeleccionado = rolService.buscarPorId(usuario.getRol().getId())
-//                    .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado con ID: " + usuario.getRol().getId()));
-//            usuarioExistente.setRol(rolSeleccionado);
-//        }
+    @PostMapping("/update/{id}")
+    public String update(@PathVariable("id") Integer id, @ModelAttribute UserUpdate usuario,
+                         BindingResult result, RedirectAttributes redirect, Model model) {
 
-//        // Esta es la lógica clave: establecer el estado explícitamente a 1 o 0
-//        if (usuario.getStatus() != null && usuario.getStatus() == 1) {
-//            usuarioExistente.setStatus(1);
-//        } else {
-//            usuarioExistente.setStatus(0);
-//        }
-//
-//        usuarioService.crearOEditar(usuarioExistente);
-//
-//        redirect.addFlashAttribute("msg", "Usuario actualizado exitosamente");
-//        return "redirect:/usuarios";
-//    }
+        if (result.hasErrors()) {
+            model.addAttribute("roles", rolService.obtenerTodos());
+            return "usuario/edit";
+        }
+
+        User usuarioExistente = usuarioService.obtenerPorId(id);
+        usuario.setId(usuarioExistente.getId());
+        usuario.setFoto(usuarioExistente.getFoto().getData());
+
+        usuarioService.editar(usuario);
+
+
+        redirect.addFlashAttribute("msg", "Usuario actualizado exitosamente");
+        return "redirect:/usuarios";
+    }
 
 
     // -------------------- ELIMINAR USUARIO --------------------
-//    @PostMapping("/delete/{id}")
-//    public String delete(@PathVariable("id") Integer id, RedirectAttributes redirect) {
-//        usuarioService.eliminarPorId(id);
-//        redirect.addFlashAttribute("msg", "Usuario eliminado exitosamente");
-//        return "redirect:/usuarios";
-//    }
-//
-//    // -------------------- VISTA DE CONFIRMACIÓN DE ELIMINACIÓN --------------------
-//    @GetMapping("/delete-confirm/{id}")
-//    public String showDeleteConfirmation(@PathVariable("id") Integer id, Model model) {
-//        Usuario usuario = usuarioService.buscarPorId(id)
-//                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
-//        model.addAttribute("usuario", usuario);
-//        return "usuario/delete";
-//    }
+    @PostMapping("/delete/{id}")
+    public String delete(@PathVariable("id") Integer id, RedirectAttributes redirect) {
+        usuarioService.eliminar(id);
+        redirect.addFlashAttribute("msg", "Usuario eliminado exitosamente");
+        return "redirect:/usuarios";
+    }
+
+    // -------------------- VISTA DE CONFIRMACIÓN DE ELIMINACIÓN --------------------
+    @GetMapping("/delete-confirm/{id}")
+    public String showDeleteConfirmation(@PathVariable("id") Integer id, Model model) {
+        User usuario = usuarioService.obtenerPorId(id);
+        model.addAttribute("usuario", usuario);
+        return "usuario/delete";
+    }
 }

@@ -46,18 +46,7 @@
                         </div>
                         <div class="bg-white p-4 rounded-lg shadow-sm">
                             <dt class="text-sm font-semibold text-gray-500 uppercase">Rol</dt>
-                            <dd class="mt-1 text-lg font-medium text-gray-800" th:text="${usuario.rol.nombre}"></dd>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <dt class="text-sm font-semibold text-gray-500 uppercase">Estatus</dt>
-                            <dd class="mt-1">
-                                <span th:if="${usuario.status == 1}" class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium bg-green-200 text-green-800">
-                                    <i class="fas fa-check-circle mr-2"></i> Activo
-                                </span>
-                                <span th:if="${usuario.status == 0}" class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium bg-red-200 text-red-800">
-                                    <i class="fas fa-times-circle mr-2"></i> Inactivo
-                                </span>
-                            </dd>
+                            <dd class="mt-1 text-lg font-medium text-gray-800" th:text="${usuario.rolId}"></dd>
                         </div>
                     </dl>
                 </div>

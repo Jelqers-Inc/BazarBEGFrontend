@@ -114,6 +114,11 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
+    public User obtenerPorId(Integer id){
+        return usuarioRepository.obtenerPorId(id);
+    }
+
+    @Override
     public User crear(UserCreate user){
         return usuarioRepository.crear(user);
     }
@@ -121,6 +126,11 @@ public class UsuarioService implements IUsuarioService {
     @Override
     public User editar(UserUpdate userUpdate){
         return usuarioRepository.actualizar(userUpdate);
+    }
+
+    @Override
+    public void eliminar(Integer id){
+        usuarioRepository.eliminar(id);
     }
 
 }

@@ -42,11 +42,7 @@
                         </div>
                         <div class="p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
                             <strong class="font-semibold text-gray-700 block">Rol:</strong> 
-                            <span th:text="${usuario.rol.nombre}" class="text-gray-900"></span>
-                        </div>
-                        <div class="p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
-                            <strong class="font-semibold text-gray-700 block">Estatus:</strong> 
-                            <span th:text="${usuario.status == 1 ? 'Activo' : 'Inactivo'}" class="text-gray-900"></span>
+                            <span th:text="${usuario.rolId}" class="text-gray-900"></span>
                         </div>
                     </div>
                 </div>

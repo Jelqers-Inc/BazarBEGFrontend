@@ -40,7 +40,6 @@
                 <th class="px-6 py-3 text-xs font-semibold tracking-wider text-left text-blue-800 uppercase">Nombre</th>
                 <th class="px-6 py-3 text-xs font-semibold tracking-wider text-left text-blue-800 uppercase">Email</th>
                 <th class="px-6 py-3 text-xs font-semibold tracking-wider text-left text-blue-800 uppercase">Rol</th>
-                <th class="px-6 py-3 text-xs font-semibold tracking-wider text-left text-blue-800 uppercase">Estatus</th>
                 <th class="px-6 py-3 text-xs font-semibold tracking-wider text-left text-blue-800 uppercase">Acciones</th>
             </tr>
             </thead>
@@ -51,14 +50,6 @@
                 <td th:text="${usuario.nombre}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"></td>
                 <td th:text="${usuario.email}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"></td>
                 <td th:each="rol : ${roles}" th:if="${rol.id == usuario.rolId}" th:text="${rol.nombre}" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700"></td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                        <span th:if="${usuario.status == 1}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-200 text-green-800">
-                            Activo
-                        </span>
-                    <span th:if="${usuario.status == 0}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-200 text-red-800">
-                            Inactivo
-                        </span>
-                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <a th:href="@{/usuarios/details/{id}(id=${usuario.id})}" class="text-gray-500 hover:text-blue-700 mr-3 transition-colors">
                         <i class="fas fa-eye"></i>
