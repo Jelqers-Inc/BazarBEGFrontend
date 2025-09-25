@@ -53,7 +53,7 @@
             
             <div class="flex flex-col items-center text-center">
                 <div class="profile-border mb-4">
-                    <img th:src="@{/perfil/imagen/{id}(id=${usuario.id})}" alt="Foto de perfil">
+                    <img th:src="@{/perfil/imagen}" alt="Foto de perfil">
                 </div>
                 
                 <p class="text-2xl font-bold text-gray-900 drop-shadow-sm" th:text="${usuario.nombre} + ' ' + ${usuario.apellido}"></p>

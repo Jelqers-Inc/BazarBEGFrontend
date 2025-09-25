@@ -4,6 +4,7 @@ import com.stripe.exception.StripeException;
 import org.esfr.BazarBEG.modelos.Carrito;
 import org.esfr.BazarBEG.modelos.Producto;
 import org.esfr.BazarBEG.modelos.Usuario;
+import org.esfr.BazarBEG.modelos.dtos.usuarios.User;
 import org.esfr.BazarBEG.servicios.implementaciones.StripeService;
 import org.esfr.BazarBEG.servicios.interfaces.IProductoService;
 import org.esfr.BazarBEG.servicios.interfaces.IPedidoService;
@@ -38,7 +39,7 @@ public class CheckoutController {
     @Autowired
     private IUsuarioService usuarioService;
 
-    @Value("${stripe.publishable.key}")
+    @Value("${stripe.secret.key}")
     private String publishableKey;
 
     @GetMapping
@@ -89,7 +90,7 @@ public class CheckoutController {
 
         // 1. Obtener el usuario actual por su email
         String email = principal.getName();
-        Usuario usuario = usuarioService.obtenerPorEmail(email).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        User usuario = usuarioService.obtenerPorEmail(email);
 
         // 2. Obtener los productos y calcular el total desde el carrito
         Map<Producto, Integer> productosPedido = new HashMap<>();
@@ -106,7 +107,7 @@ public class CheckoutController {
         }
 
         // 3. Crear el pedido en la base de datos
-        pedidoService.crearPedido(usuario, productosPedido, total);
+       // pedidoService.crearPedido(usuario, productosPedido, total);
 
         // 4. Vaciar el carrito del usuario para una nueva compra
         carrito.getItems().clear();

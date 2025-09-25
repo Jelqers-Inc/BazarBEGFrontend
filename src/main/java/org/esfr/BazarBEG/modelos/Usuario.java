@@ -9,7 +9,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.util.Date;
 import java.util.List;
 
-
 @Entity
 @Table(name = "usuarios")
 public class Usuario {

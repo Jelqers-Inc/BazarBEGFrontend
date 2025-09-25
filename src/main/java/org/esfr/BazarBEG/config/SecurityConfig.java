@@ -4,21 +4,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
 
     @Autowired
-    private AuthenticationSuccessHandler roleBasedRedirectHandler;
+    private RoleBasedRedirectHandler roleBasedRedirectHandler;
+
+    @Autowired
+    private ApiAuthenticationProvider apiAuthenticationProvider;
+
+    @Autowired
+    private  JwtAuthenticationFilter jwtAuthFilter;
+
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> auth
+        http.authenticationProvider(apiAuthenticationProvider)
+                .authorizeHttpRequests(auth -> auth
                         // Rutas públicas para todos
-                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/login", "/registro").permitAll()
+                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/login", "/registro", "/loginVerify").permitAll()
                         .requestMatchers("/catalogo/**").permitAll()
                         .requestMatchers("/categorias/imagen/**", "/productos/imagen/**").permitAll()
 
@@ -37,6 +48,7 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .usernameParameter("email")
                         .successHandler(roleBasedRedirectHandler)
                         .failureUrl("/login?error=true")
                         .permitAll()
@@ -48,7 +60,6 @@ public class SecurityConfig {
                         .clearAuthentication(true)
                         .permitAll()
                 )
-
                 .exceptionHandling(exceptions -> exceptions
                         .accessDeniedPage("/access-denied")
                 );
@@ -56,8 +67,5 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+
 }

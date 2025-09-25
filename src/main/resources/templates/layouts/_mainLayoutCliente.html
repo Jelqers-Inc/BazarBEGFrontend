@@ -77,14 +77,14 @@
             </div>
           </a>
         </div>
-        <div th:if="${usuario}">
+        <div th:if="${usuarioLogueado}">
           <a th:href="@{/perfil}" class="block">
-            <img th:src="@{/perfil/imagen/{id}(id=${usuario.id})}"
+            <img th:src="@{/perfil/imagen}"
                  alt="Foto de perfil"
                  class="w-10 h-10 rounded-full object-cover border-2 border-transparent hover:border-purple-500 transition-colors">
           </a>
         </div>
-        <div th:unless="${usuario}">
+        <div th:unless="${usuarioLogueado}">
           <a th:href="@{/login}" class="text-[#120e1b] text-sm font-medium leading-normal">Iniciar Sesión</a>
         </div>
       </div>
