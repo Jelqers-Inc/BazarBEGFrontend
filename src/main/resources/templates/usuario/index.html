@@ -50,7 +50,7 @@
                 <td th:text="${usuario.id}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"></td>
                 <td th:text="${usuario.nombre}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"></td>
                 <td th:text="${usuario.email}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"></td>
-                <td th:text="${usuario.rol.nombre}" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700"></td>
+                <td th:each="rol : ${roles}" th:if="${rol.id == usuario.rolId}" th:text="${rol.nombre}" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700"></td>
                 <td class="px-6 py-4 whitespace-nowrap">
                         <span th:if="${usuario.status == 1}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-200 text-green-800">
                             Activo

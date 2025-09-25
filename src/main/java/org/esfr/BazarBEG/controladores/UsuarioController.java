@@ -165,6 +165,7 @@ public class UsuarioController {
         // 4. The rest of your model logic can stay the same
         model.addAttribute("usuarios", usuarios);
         model.addAttribute("query", searchQuery);
+        model.addAttribute("roles", rolService.obtenerTodos());
 
         int totalPages = usuarios.getTotalPages();
         if (totalPages > 0) {

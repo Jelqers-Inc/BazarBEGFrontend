@@ -83,14 +83,14 @@
             </div>
           </button>
         </div>
-        <div th:if="${usuarioLogueado.isPresent()}">
+        <div th:if="${usuarioLogueado}">
           <a th:href="@{/usuarios/perfil}" class="block">
-            <img th:src="@{/usuarios/perfil/imagen/{id}(id=${usuarioLogueado.get().id})}"
+            <img th:src="@{/usuarios/perfil/imagen/{id}(id=${usuarioLogueado.getId()})}"
                  alt="Foto de perfil"
                  class="w-10 h-10 rounded-full object-cover border-2 border-transparent hover:border-purple-500 transition-colors">
           </a>
         </div>
-        <div th:unless="${usuarioLogueado.isPresent()}">
+        <div th:unless="${usuarioLogueado}">
           <a th:href="@{/login}" class="text-[#120e1b] text-sm font-medium leading-normal">Iniciar Sesión</a>
         </div>
       </div>

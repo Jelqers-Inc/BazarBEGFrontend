@@ -1,6 +1,8 @@
 package org.esfr.BazarBEG.modelos.dtos.usuarios;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.esfr.BazarBEG.utils.ImageBufferDeserializer;
 
 import java.util.Date;
 
@@ -27,6 +29,7 @@ public class User {
     private Integer status;
 
     @JsonProperty("foto")
+    @JsonDeserialize(using = ImageBufferDeserializer.class)
     private ImageBuffer foto;
 
     @JsonProperty("rol_id")
