@@ -2,6 +2,8 @@ package org.esfr.BazarBEG.controladores;
 
 import org.esfr.BazarBEG.modelos.Usuario;
 import org.esfr.BazarBEG.modelos.Rol;
+import org.esfr.BazarBEG.modelos.dtos.usuarios.User;
+import org.esfr.BazarBEG.modelos.dtos.usuarios.UserCreate;
 import org.esfr.BazarBEG.servicios.interfaces.IUsuarioService;
 import org.esfr.BazarBEG.repositorios.IRolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,32 +27,22 @@ public class RegistroController {
     @Autowired
     private IRolRepository rolRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @GetMapping
     public String mostrarFormularioRegistro(Model model) {
-        model.addAttribute("usuario", new Usuario());
+        model.addAttribute("usuario", new UserCreate());
         return "registro";
     }
 
     @PostMapping
-    public String procesarRegistro(Usuario usuario, RedirectAttributes redirectAttributes) {
-        if (usuarioService.obtenerPorEmail(usuario.getEmail()).isPresent()) {
+    public String procesarRegistro(UserCreate usuario, RedirectAttributes redirectAttributes) {
+        if (usuarioService.obtenerPorEmail(usuario.getEmail()).getEmail() != null) {
             redirectAttributes.addFlashAttribute("error", "El correo electrónico ya está registrado.");
             return "redirect:/registro";
         }
 
-        Optional<Rol> rolClienteOpt = rolRepository.findByNombre("CLIENTE");
-        if (rolClienteOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Error interno: Rol de cliente no encontrado.");
-            return "redirect:/registro";
-        }
-
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        usuario.setRol(rolClienteOpt.get());
-        usuario.setStatus(1);
-        usuarioService.crearOEditar(usuario);
+        usuario.setRol(2);
+        usuarioService.crear(usuario);
 
         redirectAttributes.addFlashAttribute("msg", "¡Registro exitoso! Ya puedes iniciar sesión.");
         return "redirect:/login";

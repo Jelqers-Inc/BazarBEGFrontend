@@ -145,21 +145,21 @@ public class PedidoController {
     }
 
     // -------------------- PEDIDOS DEL CLIENTE --------------------
-    @GetMapping("/historial")
-    public String historialPedidos(Model model, Principal principal) {
-        if (principal == null) {
-            return "redirect:/login";
-        }
-
-        String email = principal.getName();
-        Usuario usuario = usuarioService.obtenerPorEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-        List<Pedido> pedidosDelUsuario = pedidoService.obtenerPedidosPorUsuario(usuario);
-        model.addAttribute("pedidos", pedidosDelUsuario);
-
-        return "cliente/historial-pedidos";
-    }
+//    @GetMapping("/historial")
+//    public String historialPedidos(Model model, Principal principal) {
+//        if (principal == null) {
+//            return "redirect:/login";
+//        }
+//
+//        String email = principal.getName();
+//        Usuario usuario = usuarioService.obtenerPorEmail(email);
+//
+//
+//        List<Pedido> pedidosDelUsuario = pedidoService.obtenerPedidosPorUsuario(usuario);
+//        model.addAttribute("pedidos", pedidosDelUsuario);
+//
+//        return "cliente/historial-pedidos";
+//    }
 
     // -------------------- ACTUALIZAR ESTADO --------------------
     @PostMapping("/update-status/{id}")
