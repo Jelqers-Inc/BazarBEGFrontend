@@ -21,6 +21,7 @@ public class WebClientConfig {
 
         HttpClient httpClient = HttpClient.create().wiretap(true);
 
+        //Estrategias
         return WebClient.builder()
                 .exchangeStrategies(strategies)
                 .clientConnector(new ReactorClientHttpConnector(httpClient));
