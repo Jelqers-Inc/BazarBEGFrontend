@@ -1,6 +1,6 @@
 package org.esfr.BazarBEG.controladores;
 
-import org.esfr.BazarBEG.modelos.Rol;
+import org.esfr.BazarBEG.modelos.dtos.roles.Role;
 import org.esfr.BazarBEG.servicios.interfaces.IRolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,97 +26,96 @@ public class RolController {
     private IRolService rolService;
 
     // -------------------- LISTADO DE ROLES --------------------
-//    @GetMapping
-//    public String index(Model model, @RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size, @RequestParam("q") Optional<String> query) {
-//        int currentPage = page.orElse(1) - 1;
-//        int pageSize = size.orElse(5);
-//        Pageable pageable = PageRequest.of(currentPage, pageSize);
-//
-//        String searchQuery = query.orElse("").trim();
-//
-//        Page<Rol> roles;
-//        if (searchQuery.isBlank()) {
-//            roles = rolService.obtenerTodosPaginados(pageable);
-//        } else {
-//            roles = rolService.buscarPorTermino(searchQuery, pageable);
-//        }
-//
-//        model.addAttribute("roles", roles);
-//        model.addAttribute("query", searchQuery); // Mantiene el término de búsqueda
-//
-//        int totalPages = roles.getTotalPages();
-//        if (totalPages > 0) {
-//            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
-//                    .boxed()
-//                    .collect(Collectors.toList());
-//            model.addAttribute("pageNumbers", pageNumbers);
-//        }
-//
-//        return "rol/index";
-//    }
-//
-//     -------------------- MOSTRAR FORMULARIO DE CREACIÓN --------------------
-//    @GetMapping("/create")
-//    public String create(Model model) {
-//        model.addAttribute("rol", new Rol());
-//        return "rol/create";
-//    }
-//
-//     -------------------- GUARDAR UN NUEVO ROL --------------------
-//    @PostMapping("/save")
-//    public String save(@Valid @ModelAttribute Rol rol, BindingResult result, RedirectAttributes redirect) {
-//        if (result.hasErrors()) {
-//            return "rol/create";
-//        }
-//        rolService.crearOEditar(rol);
-//        redirect.addFlashAttribute("msg", "Rol guardado exitosamente");
-//        return "redirect:/roles";
-//    }
-//
-//     -------------------- DETALLES DE UN ROL --------------------
-//    @GetMapping("/details/{id}")
-//    public String details(@PathVariable("id") Integer id, Model model) {
-//        Rol rol = rolService.buscarPorId(id)
-//                .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado con ID: " + id));
-//        model.addAttribute("rol", rol);
-//        return "rol/details";
-//    }
-//
-//    @GetMapping("/edit/{id}")
-//     -------------------- MOSTRAR FORMULARIO DE EDICIÓN --------------------
-//    public String edit(@PathVariable("id") Integer id, Model model) {
-//        Rol rol = rolService.buscarPorId(id)
-//                .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado con ID: " + id));
-//        model.addAttribute("rol", rol);
-//        return "rol/edit";
-//    }
-//
-//     -------------------- ACTUALIZAR UN ROL --------------------
-//    @PostMapping("/update/{id}")
-//    public String update(@PathVariable("id") Integer id, @Valid @ModelAttribute Rol rol, BindingResult result, RedirectAttributes redirect) {
-//        if (result.hasErrors()) {
-//            return "rol/edit";
-//        }
-//        rol.setId(id);
-//        rolService.crearOEditar(rol);
-//        redirect.addFlashAttribute("msg", "Rol actualizado exitosamente");
-//        return "redirect:/roles";
-//    }
-//
-//     -------------------- ELIMINAR UN ROL --------------------
-//    @PostMapping("/delete/{id}")
-//    public String delete(@PathVariable("id") Integer id, RedirectAttributes redirect) {
-//        rolService.eliminarPorId(id);
-//        redirect.addFlashAttribute("msg", "Rol eliminado exitosamente");
-//        return "redirect:/roles";
-//    }
-//
+    @GetMapping
+    public String index(Model model, @RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
+        int currentPage = page.orElse(1) - 1;
+        int pageSize = size.orElse(5);
+        Pageable pageable = PageRequest.of(currentPage, pageSize);
+
+        // Se utiliza el método que devuelve Page<Role>
+        Page<Role> roles = rolService.obtenerTodosPaginados(pageable);
+
+        model.addAttribute("roles", roles);
+
+        int totalPages = roles.getTotalPages();
+        if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
+
+        return "rol/index";
+    }
+
+    // -------------------- MOSTRAR FORMULARIO DE CREACIÓN --------------------
+    @GetMapping("/create")
+    public String create(Model model) {
+        model.addAttribute("rol", new Role()); // Usa el DTO Role en el modelo
+        return "rol/create";
+    }
+
+    // -------------------- GUARDAR UN NUEVO ROL --------------------
+    @PostMapping("/save")
+    public String save(@Valid @ModelAttribute("rol") Role rol, BindingResult result, RedirectAttributes redirect) {
+        if (result.hasErrors()) {
+            return "rol/create";
+        }
+        rolService.crear(rol); // Llama al nuevo método crear del servicio
+        redirect.addFlashAttribute("msg", "Rol guardado exitosamente");
+        return "redirect:/roles";
+    }
+
+    // -------------------- DETALLES DE UN ROL --------------------
+    @GetMapping("/details/{id}")
+    public String details(@PathVariable("id") Integer id, Model model) {
+        Role rol = rolService.obtenerPorId(id); // Usa el nuevo método obtenerPorId
+        if (rol == null) {
+            throw new IllegalArgumentException("Rol no encontrado con ID: " + id);
+        }
+        model.addAttribute("rol", rol);
+        return "rol/details";
+    }
+
+    // -------------------- MOSTRAR FORMULARIO DE EDICIÓN --------------------
+    @GetMapping("/edit/{id}")
+    public String edit(@PathVariable("id") Integer id, Model model) {
+        Role rol = rolService.obtenerPorId(id); // Usa el nuevo método
+        if (rol == null) {
+            throw new IllegalArgumentException("Rol no encontrado con ID: " + id);
+        }
+        model.addAttribute("rol", rol);
+        return "rol/edit";
+    }
+
+    // -------------------- ACTUALIZAR UN ROL --------------------
+    @PostMapping("/update/{id}")
+    public String update(@PathVariable("id") Integer id, @Valid @ModelAttribute("rol") Role rol, BindingResult result, RedirectAttributes redirect) {
+        if (result.hasErrors()) {
+            return "rol/edit";
+        }
+        rol.setId(id);
+        rolService.editar(rol); // Llama al nuevo método editar
+        redirect.addFlashAttribute("msg", "Rol actualizado exitosamente");
+        return "redirect:/roles";
+    }
+
+    // -------------------- ELIMINAR UN ROL --------------------
+    @PostMapping("/delete/{id}")
+    public String delete(@PathVariable("id") Integer id, RedirectAttributes redirect) {
+        rolService.eliminar(id); // Llama al nuevo método eliminar
+        redirect.addFlashAttribute("msg", "Rol eliminado exitosamente");
+        return "redirect:/roles";
+    }
+
     // -------------------- VISTA DE CONFIRMACIÓN DE ELIMINACIÓN --------------------
-//    @GetMapping("/delete-confirm/{id}")
-//    public String showDeleteConfirmation(@PathVariable("id") Integer id, Model model) {
-//        Rol rol = rolService.buscarPorId(id)
-//                .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado con ID: " + id));
-//        model.addAttribute("rol", rol);
-//        return "rol/delete";
-//    }
+    @GetMapping("/delete-confirm/{id}")
+    public String showDeleteConfirmation(@PathVariable("id") Integer id, Model model) {
+        Role rol = rolService.obtenerPorId(id); // Usa el nuevo método
+        if (rol == null) {
+            throw new IllegalArgumentException("Rol no encontrado con ID: " + id);
+        }
+        model.addAttribute("rol", rol);
+        return "rol/delete";
+    }
 }
