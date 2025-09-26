@@ -56,6 +56,22 @@ public class UsuarioRepository {
                 .block();
     }
 
+    public User obtenerPorId(Integer id) {
+
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(false);
+        String token = (session != null) ? (String) session.getAttribute("JWT_TOKEN") : null;
+
+        return this.webClient.get()
+                .uri("/usuarios/{id}", id)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(status -> status.equals(HttpStatus.NOT_FOUND),
+                        response -> Mono.empty())
+                .bodyToMono(User.class)
+                .block();
+    }
+
     @CacheEvict(value = "usuarios", allEntries = true)
     public User crear(UserCreate userCreate){
         return  this.webClient.post()
@@ -118,14 +134,18 @@ public class UsuarioRepository {
 
     }
 
+    @CacheEvict(value = "usuarios", allEntries = true)
+    public void eliminar(Integer id) {
 
-    public UserCreate crearUsuario(UserCreate newUser, String token) {
-        return this.webClient.post()
-                .uri("/usuarios")
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(false);
+        String token = (session != null) ? (String) session.getAttribute("JWT_TOKEN") : null;
 
-                .body(Mono.just(newUser), UserCreate.class)
+        this.webClient.delete()
+                .uri("/usuarios/{id}", id)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
-                .bodyToMono(UserCreate.class)
+                .toBodilessEntity()
                 .block();
     }
 

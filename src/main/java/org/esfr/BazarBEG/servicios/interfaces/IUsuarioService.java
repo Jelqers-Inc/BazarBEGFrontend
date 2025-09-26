@@ -33,6 +33,8 @@ public interface IUsuarioService {
 
     List<User> obtenerUsuarios();
     User obtenerPorEmail(String email);
+    User obtenerPorId(Integer id);
+    void eliminar(Integer id);
     Page<User> obtenerTodosPaginados(Pageable pageable);
     LoginResponse loginObtener(String email, String password);
     User crear(UserCreate user);
