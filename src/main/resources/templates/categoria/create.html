@@ -1,68 +1,45 @@
+<!DOCTYPE html>
 <html lang="es"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="/layouts/_mainLayoutAdmin">
-
-<div layout:fragment="content">
-
-  <!-- Mensaje de error -->
-  <div th:if="${error}">
-    <script th:inline="javascript">
-      Swal.fire({
-        title: 'Error',
-        text: [[${error}]],
-        icon: 'error',
-        timer: 2500,
-        showConfirmButton: true
-      });
-    </script>
-  </div>
-
-<div class="flex items-center justify-center min-h-screen bg-gray-100 py-4">
-    <div class="w-full max-w-lg bg-white rounded-xl shadow-2xl p-8">
-        <div class="text-center mb-8">
-            <h2 class="text-2xl font-extrabold text-purple-800 tracking-tight">Crear Nueva Categoría</h2>
-            <p class="mt-2 text-sm text-gray-500">
-                Añade una nueva categoría a tu catálogo completando el siguiente formulario.
-            </p>
+      layout:decorate="~{layouts/_mainLayoutAdmin.html}">
+<head>
+    <title>Crear Categoría</title>
+</head>
+<div layout:fragment="content" class="p-6 flex justify-center items-center h-screen">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500 drop-shadow-md">
+                Crear Nueva Categoría
+            </h1>
         </div>
 
-        <form th:action="@{/categorias/save}" th:object="${categoria}"
-              method="post" class="space-y-6" enctype="multipart/form-data">
-            
-            <div>
-                <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre de la categoría</label>
-                <input type="text" th:field="*{nombre}" id="nombre" placeholder="Escriba el nombre de la categoría"
-                       class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm
-                              focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500
-                              transition duration-200 text-base"
-                       required>
+        <form th:action="@{/categorias/save}" th:object="${categoria}" method="post" enctype="multipart/form-data">
+
+            <div class="mb-6">
+                <label for="nombre" class="block text-gray-800 text-lg font-semibold mb-2">Nombre de la Categoría:</label>
+                <input type="text" id="nombre" th:field="*{nombre}"
+                       class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300 ease-in-out"
+                       th:classappend="${#fields.hasErrors('nombre')} ? 'border-red-500' : ''"
+                       placeholder="Ej: Electrónica, Ropa, Hogar">
+                <p th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}" class="text-red-500 text-sm italic mt-2"></p>
             </div>
 
-            <div>
-                <label for="imagen" class="block text-sm font-medium text-gray-700">Subir imagen</label>
-                <input type="file" name="fileImagen" id="imagen"
-                       class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
-                              file:rounded-full file:border-0 file:text-sm file:font-semibold
-                              file:bg-purple-50 file:text-purple-700
-                              hover:file:bg-purple-100 transition-all duration-200">
+            <div class="mb-6">
+                <label for="fileImagen" class="block text-gray-800 text-lg font-semibold mb-2">Imagen:</label>
+                <input type="file" id="fileImagen" name="fileImagen"
+                       class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300 ease-in-out">
             </div>
 
-            <div class="flex justify-end space-x-4 pt-4">
-                <a th:href="@{/categorias}"
-                   class="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-semibold
-                          hover:bg-gray-300 transform hover:scale-105 transition duration-300">
+            <div class="flex items-center justify-end gap-4">
+                <a th:href="@{/categorias}" class="text-gray-600 font-bold py-3 px-6 rounded-lg border border-gray-300 hover:bg-gray-100 transition duration-300 ease-in-out">
                     Cancelar
                 </a>
-                <button type="submit"
-                        class="px-6 py-3 bg-purple-600 text-white rounded-full font-semibold
-                               hover:bg-purple-700 transform hover:scale-105 transition duration-300">
+                <button type="submit" class="bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 shadow-md">
                     Guardar
                 </button>
             </div>
         </form>
     </div>
-</div>
-
 </div>
 </html>
