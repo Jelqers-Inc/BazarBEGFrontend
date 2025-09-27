@@ -17,4 +17,6 @@ public interface ICategoriaRepository extends JpaRepository<Categoria, Integer> 
 
     // Búsqueda con paginación
     Page<Categoria> findByNombreContainingIgnoreCase(String nombre, Pageable pageable);
+
+
 }
