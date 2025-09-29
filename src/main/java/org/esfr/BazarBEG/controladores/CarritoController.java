@@ -1,69 +1,59 @@
 package org.esfr.BazarBEG.controladores;
 
-import org.esfr.BazarBEG.modelos.Carrito;
-import org.esfr.BazarBEG.modelos.Producto;
-import org.esfr.BazarBEG.servicios.interfaces.IProductoService;
+
+import org.esfr.BazarBEG.modelos.dtos.carrito.CarritoItemDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/carrito")
 public class CarritoController {
 
-    @Autowired
-    private Carrito carrito;
+    private final WebClient webClient;
 
     @Autowired
-    private IProductoService productoService;
+    public CarritoController(WebClient webClient) {
+        this.webClient = webClient;
+    }
 
+    /**
+     * Maneja la solicitud GET para mostrar la página del carrito.
+     * @param model El modelo para pasar datos a la vista.
+     * @return El nombre de la vista de carrito.
+     */
     @GetMapping
     public String verCarrito(Model model) {
-        List<Producto> productosEnCarrito = new ArrayList<>();
+        // En un entorno real, el ID del usuario se obtendría del contexto de seguridad o sesión.
+        // Aquí se usa un valor estático para el ejemplo.
+        Long idUsuario = 1L;
+
+        // Realiza una llamada GET a la API del backend para obtener los productos del carrito.
+        Mono<List<CarritoItemDTO>> carritoMono = webClient.get()
+                .uri("/v1/carrito/{idUsuario}", idUsuario)
+                .retrieve()
+                .bodyToFlux(CarritoItemDTO.class)
+                .collectList();
+
+        List<CarritoItemDTO> carritoItems = carritoMono.block(); // .block() simplifica la ejecución, pero no es ideal para entornos de producción.
+
+        // Calcula el total del carrito sumando los precios de los productos.
         double total = 0.0;
-
-        for (Map.Entry<Long, Integer> entry : carrito.getItems().entrySet()) {
-            Producto producto = productoService.obtenerProductoActivoPorId(entry.getKey()).orElse(null);
-            if (producto != null) {
-                productosEnCarrito.add(producto);
-                total += producto.getPrecio() * entry.getValue();
-            }
+        if (carritoItems != null) {
+            total = carritoItems.stream()
+                    .mapToDouble(item -> item.getPrecio().doubleValue() * item.getCantidad())
+                    .sum();
         }
 
-        model.addAttribute("productos", productosEnCarrito);
+        // Agrega los datos al modelo para que la vista los pueda renderizar.
+        model.addAttribute("carritoItems", carritoItems);
         model.addAttribute("total", total);
-        model.addAttribute("items", carrito.getItems());
         return "carrito/carrito";
-    }
-
-    @PostMapping("/agregar/{id}")
-    public String agregarProducto(@PathVariable("id") Long id, @RequestParam(defaultValue = "1") int cantidad, RedirectAttributes redirectAttributes) {
-        Optional<Producto> productoOptional = productoService.obtenerProductoActivoPorId(id);
-        if (productoOptional.isPresent()) {
-            carrito.agregarProducto(id, cantidad);
-            redirectAttributes.addFlashAttribute("agregadoExitosamente", true);
-        }
-        return "redirect:/catalogo/producto/" + id;
-    }
-
-    @PostMapping("/eliminar/{id}")
-    public String eliminarProducto(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
-        carrito.eliminarProducto(id);
-        redirectAttributes.addFlashAttribute("eliminadoExitosamente", true);
-        return "redirect:/carrito";
-    }
-
-    @PostMapping("/actualizar/{id}")
-    public String actualizarCantidad(@PathVariable("id") Long id, @RequestParam("cantidad") int cantidad, RedirectAttributes redirectAttributes) {
-        carrito.actualizarCantidad(id, cantidad);
-        redirectAttributes.addFlashAttribute("actualizadoExitosamente", true);
-        return "redirect:/carrito";
     }
 }

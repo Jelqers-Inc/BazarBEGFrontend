@@ -25,5 +25,20 @@ public class WebClientConfig {
         return WebClient.builder()
                 .exchangeStrategies(strategies)
                 .clientConnector(new ReactorClientHttpConnector(httpClient));
+
+
+    }
+
+    /**
+     * 2. Bean principal de WebClient para la API del Carrito.
+     * Este método toma el WebClient.Builder configurado (del punto 1)
+     * y le añade la URL base específica de tu API de carrito antes de construirlo.
+     */
+    @Bean
+    public WebClient webClient(WebClient.Builder webClientBuilder) {
+        // La URL base es la dirección de tu API REST de carrito (backend)
+        return webClientBuilder
+                .baseUrl("https://apicliente-xkew.onrender.com/api")
+                .build();
     }
 }
