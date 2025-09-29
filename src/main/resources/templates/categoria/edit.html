@@ -30,7 +30,8 @@
             <div class="mb-6">
                 <label class="block text-gray-800 text-lg font-semibold mb-2">Imagen Actual:</label>
                 <div th:if="${categoria.imagen}" class="mb-3">
-                    <img th:src="${categoria.imagen}" alt="Imagen de Categoría" class="w-20 h-20 object-cover rounded-lg shadow-md"/>
+                    <img th:if="${categoria.imagen != null}"
+                         th:src="@{/categorias/imagen/{id}(id=${categoria.id})}" alt="Imagen de Categoría" class="w-20 h-20 object-cover rounded-lg shadow-md"/>
                     <p class="text-sm text-gray-500 mt-1">Nombre: <span th:text="${categoria.imagen}"></span></p>
                 </div>
                 <label for="fileImagen" class="block text-gray-800 text-lg font-semibold mb-2">Subir Nueva Imagen:</label>

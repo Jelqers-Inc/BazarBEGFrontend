@@ -13,7 +13,7 @@ public class Categoriadto  {
 
     // Nuevo campo según la API de Hoppscotch
     @JsonProperty("imagen")
-    private String imagen;
+    private byte[] imagen;
 
     // --- Constructor vacío ---
     public Categoriadto() {
@@ -37,11 +37,11 @@ public class Categoriadto  {
         this.nombre = nombre;
     }
 
-    public String getImagen() {
+    public byte[] getImagen() {
         return imagen;
     }
 
-    public void setImagen(String imagen) {
+    public void setImagen(byte[] imagen) {
         this.imagen = imagen;
     }
 }

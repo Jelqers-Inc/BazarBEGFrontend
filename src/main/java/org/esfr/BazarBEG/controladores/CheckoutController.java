@@ -42,77 +42,77 @@ public class CheckoutController {
     @Value("${stripe.secret.key}")
     private String publishableKey;
 
-    @GetMapping
-    public String verCheckout(Model model, Principal principal) {
-        if (principal == null) {
-            return "redirect:/login";
-        }
-        if (carrito.getItems().isEmpty()) {
-            return "redirect:/carrito";
-        }
+//    @GetMapping
+//    public String verCheckout(Model model, Principal principal) {
+//        if (principal == null) {
+//            return "redirect:/login";
+//        }
+//        if (carrito.getItems().isEmpty()) {
+//            return "redirect:/carrito";
+//        }
+//
+//        Map<Long, Integer> itemsDelCarrito = carrito.getItems();
+//        Map<Producto, Integer> productosParaVista = new HashMap<>();
+//        double total = 0.0;
+//
+//        for (Map.Entry<Long, Integer> entry : itemsDelCarrito.entrySet()) {
+//            Long productoId = entry.getKey();
+//            Integer cantidad = entry.getValue();
+//
+//            Optional<Producto> productoOpt = productoService.obtenerProductoActivoPorId(productoId);
+//
+//            if (productoOpt.isPresent()) {
+//                Producto producto = productoOpt.get();
+//                productosParaVista.put(producto, cantidad);
+//                total += producto.getPrecio() * cantidad;
+//            }
+//        }
 
-        Map<Long, Integer> itemsDelCarrito = carrito.getItems();
-        Map<Producto, Integer> productosParaVista = new HashMap<>();
-        double total = 0.0;
+//        try {
+//            String clientSecret = stripeService.createPaymentIntent(total, "usd"); // Asegúrate de que la divisa coincida con tu cuenta de Stripe
+//            model.addAttribute("productosEnCarrito", productosParaVista);
+//            model.addAttribute("totalCarrito", total);
+//            model.addAttribute("clientSecret", clientSecret);
+//            model.addAttribute("publishableKey", publishableKey);
+//
+//            return "cliente/checkout";
+//        } catch (StripeException e) {
+//            model.addAttribute("error", "Error al procesar el pago: " + e.getMessage());
+//            return "carrito/carrito";
+//        }
+//    }
 
-        for (Map.Entry<Long, Integer> entry : itemsDelCarrito.entrySet()) {
-            Long productoId = entry.getKey();
-            Integer cantidad = entry.getValue();
-
-            Optional<Producto> productoOpt = productoService.obtenerProductoActivoPorId(productoId);
-
-            if (productoOpt.isPresent()) {
-                Producto producto = productoOpt.get();
-                productosParaVista.put(producto, cantidad);
-                total += producto.getPrecio() * cantidad;
-            }
-        }
-
-        try {
-            String clientSecret = stripeService.createPaymentIntent(total, "usd"); // Asegúrate de que la divisa coincida con tu cuenta de Stripe
-            model.addAttribute("productosEnCarrito", productosParaVista);
-            model.addAttribute("totalCarrito", total);
-            model.addAttribute("clientSecret", clientSecret);
-            model.addAttribute("publishableKey", publishableKey);
-
-            return "cliente/checkout";
-        } catch (StripeException e) {
-            model.addAttribute("error", "Error al procesar el pago: " + e.getMessage());
-            return "carrito/carrito";
-        }
-    }
-
-    @GetMapping("/confirmacion-pago")
-    public String confirmacionPago(Principal principal) {
-        if (principal == null) {
-            return "redirect:/login";
-        }
+//    @GetMapping("/confirmacion-pago")
+//    public String confirmacionPago(Principal principal) {
+//        if (principal == null) {
+//            return "redirect:/login";
+//        }
 
         // 1. Obtener el usuario actual por su email
-        String email = principal.getName();
-        User usuario = usuarioService.obtenerPorEmail(email);
+//        String email = principal.getName();
+//        User usuario = usuarioService.obtenerPorEmail(email);
 
         // 2. Obtener los productos y calcular el total desde el carrito
-        Map<Producto, Integer> productosPedido = new HashMap<>();
-        double total = 0.0;
-        for (Map.Entry<Long, Integer> entry : carrito.getItems().entrySet()) {
-            Long productoId = entry.getKey();
-            Integer cantidad = entry.getValue();
-            Optional<Producto> productoOpt = productoService.obtenerProductoActivoPorId(productoId);
-            if (productoOpt.isPresent()) {
-                Producto producto = productoOpt.get();
-                productosPedido.put(producto, cantidad);
-                total += producto.getPrecio() * cantidad;
-            }
-        }
+//        Map<Producto, Integer> productosPedido = new HashMap<>();
+//        double total = 0.0;
+//        for (Map.Entry<Long, Integer> entry : carrito.getItems().entrySet()) {
+//            Long productoId = entry.getKey();
+//            Integer cantidad = entry.getValue();
+//            Optional<Producto> productoOpt = productoService.obtenerProductoActivoPorId(productoId);
+//            if (productoOpt.isPresent()) {
+//                Producto producto = productoOpt.get();
+//                productosPedido.put(producto, cantidad);
+//                total += producto.getPrecio() * cantidad;
+//            }
+//        }
 
         // 3. Crear el pedido en la base de datos
        // pedidoService.crearPedido(usuario, productosPedido, total);
 
         // 4. Vaciar el carrito del usuario para una nueva compra
-        carrito.getItems().clear();
+//        carrito.getItems().clear();
 
         // 5. Redirigir a la vista de confirmación
-        return "cliente/confirmacion-pago";
-    }
+//        return "cliente/confirmacion-pago";
+//    }
 }

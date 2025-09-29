@@ -56,4 +56,5 @@ public class CarritoController {
         model.addAttribute("total", total);
         return "carrito/carrito";
     }
+
 }

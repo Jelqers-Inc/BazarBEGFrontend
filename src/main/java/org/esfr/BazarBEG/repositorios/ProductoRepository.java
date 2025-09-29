@@ -2,6 +2,8 @@ package org.esfr.BazarBEG.repositorios;
 
 import jakarta.servlet.http.HttpSession;
 import org.esfr.BazarBEG.modelos.dtos.categorias.Categoriadto;
+import org.esfr.BazarBEG.modelos.dtos.productos.Product;
+import org.esfr.BazarBEG.modelos.dtos.productos.ProductCreation;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ByteArrayResource;
@@ -13,15 +15,15 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException; // Asegúrate de importar esto
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.List;
 
 @Service
-public class CategoriaRepository {
+public class ProductoRepository {
     private final WebClient webClient;
 
-    public CategoriaRepository(WebClient.Builder webClient) {
+    public ProductoRepository(WebClient.Builder webClient) {
         this.webClient = webClient.baseUrl("https://apiadministrador.onrender.com").build();
     }
 
@@ -37,32 +39,32 @@ public class CategoriaRepository {
         return token;
     }
 
-    @Cacheable("categorias")
-    public List<Categoriadto> obtenerTodas() {
+    @Cacheable("productos")
+    public List<Product> obtenerTodas() {
         String token = getToken();
 
         return this.webClient.get()
-                .uri("/categorias")
+                .uri("/productos")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
-                .bodyToFlux(Categoriadto.class)
+                .bodyToFlux(Product.class)
                 .collectList()
                 .block();
     }
 
     // 💡 Método ÚNICO y CORREGIDO para obtener por ID con manejo de errores
-    public Categoriadto obtenerPorId(Integer id) {
+    public Product obtenerPorId(Integer id) {
 
         try {
             return this.webClient.get()
-                    .uri("/categorias/{id}", id)
+                    .uri("/productos/{id}", id)
                     .retrieve()
-                    .bodyToMono(Categoriadto.class)
+                    .bodyToMono(Product.class)
                     .block();
 
         } catch (WebClientResponseException ex) {
             // Esto evita que un 502 de la API rompa tu aplicación cliente (que es lo que pasaba antes).
-            System.err.println("Error al obtener Categoría " + id + ". Código: " + ex.getStatusCode() + " - " + ex.getMessage());
+            System.err.println("Error al obtener Producto " + id + ". Código: " + ex.getStatusCode() + " - " + ex.getMessage());
             return null;
         }
     }
@@ -71,7 +73,7 @@ public class CategoriaRepository {
 
         try {
             return this.webClient.get()
-                    .uri("/categorias/{id}/imagen", id)
+                    .uri("/productos/{id}/imagen", id)
                     .retrieve()
                     .bodyToMono(byte[].class)
                     .block();
@@ -83,58 +85,69 @@ public class CategoriaRepository {
         }
     }
 
-    @CacheEvict(value = "categorias", allEntries = true)
-    public Categoriadto crear(Categoriadto categoria) {
+    @CacheEvict(value = "productos", allEntries = true)
+    public ProductCreation crear(ProductCreation producto) {
         String token = getToken();
 
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
 
-        builder.part("nombre", categoria.getNombre());
+        builder.part("nombre", producto.getNombre());
+        builder.part("descripcion", producto.getDescripcion());
+        builder.part("precio", producto.getPrecio());
+        builder.part("stock", producto.getStock());
+        builder.part("categoria_id", producto.getCategoriaId());
 
-        if (categoria.getImagen() != null) {
-            builder.part("imagen", new ByteArrayResource(categoria.getImagen()))
-                    .filename("category.png");
+        if (producto.getImagen() != null) {
+            builder.part("imagen", new ByteArrayResource(producto.getImagen()))
+                    .filename("product.png");
         }
 
         return this.webClient.post()
-                .uri("/categorias")
+                .uri("/productos")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .retrieve()
-                .bodyToMono(Categoriadto.class)
+                .bodyToMono(ProductCreation.class)
                 .block();
     }
 
-    @CacheEvict(value = "categorias", allEntries = true)
-    public Categoriadto actualizar(Categoriadto categoria) {
+
+
+    @CacheEvict(value = "productos", allEntries = true)
+    public ProductCreation actualizar(ProductCreation producto) {
         String token = getToken();
 
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
 
-        builder.part("nombre", categoria.getNombre());
+        builder.part("nombre", producto.getNombre());
+        builder.part("descripcion", producto.getDescripcion());
+        builder.part("precio", producto.getPrecio());
+        builder.part("stock", producto.getStock());
+        builder.part("status", producto.getStatus());
+        builder.part("categoria_id", producto.getCategoriaId());
 
-        if (categoria.getImagen() != null) {
-            builder.part("imagen", new ByteArrayResource(categoria.getImagen()))
-                    .filename("category.png");
+        if (producto.getImagen() != null) {
+            builder.part("imagen", new ByteArrayResource(producto.getImagen()))
+                    .filename("product.png");
         }
 
         return this.webClient.put()
-                .uri("/categorias/{id}", categoria.getId())
+                .uri("/productos/{id}", producto.getId())
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .retrieve()
-                .bodyToMono(Categoriadto.class)
+                .bodyToMono(ProductCreation.class)
                 .block();
     }
 
-    @CacheEvict(value = "categorias", allEntries = true)
+    @CacheEvict(value = "productos", allEntries = true)
     public void eliminar(Integer id) {
         String token = getToken();
 
         this.webClient.delete()
-                .uri("/categorias/{id}", id)
+                .uri("/productos/{id}", id)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .toBodilessEntity()

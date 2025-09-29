@@ -43,6 +43,11 @@ public class CategoriaService implements ICategoriaService {
     }
 
     @Override
+    public byte[] obtenerImagen(Integer id){
+        return categoriaRepository.obtenerImagenPorId(id);
+    }
+
+    @Override
     public void eliminar(Integer id) {
         categoriaRepository.eliminar(id);
     }

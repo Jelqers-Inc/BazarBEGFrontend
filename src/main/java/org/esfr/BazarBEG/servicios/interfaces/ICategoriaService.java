@@ -27,6 +27,8 @@ public interface ICategoriaService {
     // Eliminar
     void eliminar(Integer id);
 
+    byte[] obtenerImagen(Integer id);
+
     // Búsqueda con filtro (USA DTO)
     Page<Categoriadto> buscarPorTermino(String termino, Pageable pageable);
 

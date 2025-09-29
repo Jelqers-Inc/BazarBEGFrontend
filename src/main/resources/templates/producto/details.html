@@ -48,7 +48,7 @@
                 </div>
                 <div class="py-4">
                     <dt class="text-sm font-medium text-gray-500">Categoría</dt>
-                    <dd class="mt-1 text-lg font-semibold text-gray-900" th:text="${producto.categoria != null ? producto.categoria.nombre : 'Sin categoría'}"></dd>
+                    <dd class="mt-1 text-lg font-semibold text-gray-900" th:each="categoria : ${categorias}" th:if="${categoria.id == producto.categoriaId}" th:text="${categoria.nombre}"></dd>
                 </div>
             </dl>
         </div>

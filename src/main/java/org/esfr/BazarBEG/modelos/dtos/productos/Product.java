@@ -1,18 +1,20 @@
 package org.esfr.BazarBEG.modelos.dtos.productos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.esfr.BazarBEG.modelos.Categoria;
 import org.esfr.BazarBEG.modelos.dtos.categorias.Categoriadto;
 
-// DTO para mostrar la información completa del Producto (incluyendo el DTO de Categoría)
 public class Product {
     private Integer id;
     private String nombre;
     private String descripcion;
     private float precio;
     private int stock;
-    private String imagen;
-    private int status;
-    private Categoriadto categoria; // Usamos el DTO de Categoría
+    @JsonProperty("categoria_id")
+    private Integer categoriaId;
+    private Integer status;
+    private byte[] imagen;
+
 
     // Getters y Setters
 
@@ -56,29 +58,27 @@ public class Product {
         this.stock = stock;
     }
 
-    public String getImagen() {
+    public byte[] getImagen() {
         return imagen;
     }
 
-    public void setImagen(String imagen) {
+    public void setImagen(byte[] imagen) {
         this.imagen = imagen;
     }
 
-    public int getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
-    public Categoriadto getCategoria() {
-        return categoria;
+    public Integer getCategoriaId() {
+        return categoriaId;
     }
 
-    public void setCategoria(Categoria categoria) {
-        this.categoria = new Categoriadto();
+    public void setCategoriaId(Integer categoriaId) {
+        this.categoriaId = categoriaId;
     }
-
-
 }

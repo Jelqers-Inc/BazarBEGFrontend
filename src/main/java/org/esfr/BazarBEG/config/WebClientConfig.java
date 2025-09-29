@@ -19,7 +19,7 @@ public class WebClientConfig {
                 .codecs(codecs -> codecs.defaultCodecs().maxInMemorySize(size))
                 .build();
 
-        HttpClient httpClient = HttpClient.create().wiretap(true);
+        HttpClient httpClient = HttpClient.create();
 
         //Estrategias
         return WebClient.builder()
