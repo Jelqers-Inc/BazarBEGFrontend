@@ -35,7 +35,7 @@
                     <p class="text-sm font-medium text-gray-500 mt-2"><span class="font-bold text-gray-700">Descripción:</span> <span th:text="${producto.descripcion}"></span></p>
                     <p class="text-sm font-medium text-gray-500"><span class="font-bold text-gray-700">Precio:</span> $<span th:text="${#numbers.formatDecimal(producto.precio, 1, 'POINT', 2, 'COMMA')}"></span></p>
                     <p class="text-sm font-medium text-gray-500"><span class="font-bold text-gray-700">Stock:</span> <span th:text="${producto.stock}"></span></p>
-                    <p class="text-sm font-medium text-gray-500"><span class="font-bold text-gray-700">Categoría:</span> <span th:text="${producto.categoria != null ? producto.categoria.nombre : 'Sin categoría'}"></span></p>
+                    <p class="text-sm font-medium text-gray-500"><span class="font-bold text-gray-700">Categoría:</span> <span th:each="categoria : ${categorias}" th:if="${categoria.id == producto.categoriaId}" th:text="${categoria.nombre}"></span></p>
                 </div>
             </div>
 

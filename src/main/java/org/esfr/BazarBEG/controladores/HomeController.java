@@ -2,6 +2,7 @@ package org.esfr.BazarBEG.controladores;
 
 import org.esfr.BazarBEG.modelos.Categoria;
 import org.esfr.BazarBEG.modelos.Producto;
+import org.esfr.BazarBEG.modelos.dtos.productos.Product;
 import org.esfr.BazarBEG.servicios.interfaces.ICategoriaService;
 import org.esfr.BazarBEG.servicios.interfaces.IProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class HomeController {
         model.addAttribute("categorias", categorias);
 
         // Obtener una lista de productos destacados para mostrar en la página de inicio
-        List<Producto> productosDestacados = productoService.obtenerProductosActivos();
+        List<Product> productosDestacados = productoService.obtenerTodos();
         model.addAttribute("productosDestacados", productosDestacados);
 
         return "home/index";

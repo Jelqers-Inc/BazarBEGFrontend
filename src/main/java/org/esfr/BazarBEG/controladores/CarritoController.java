@@ -24,46 +24,46 @@ public class CarritoController {
     @Autowired
     private IProductoService productoService;
 
-    @GetMapping
-    public String verCarrito(Model model) {
-        List<Producto> productosEnCarrito = new ArrayList<>();
-        double total = 0.0;
+//    @GetMapping
+//    public String verCarrito(Model model) {
+//        List<Producto> productosEnCarrito = new ArrayList<>();
+//        double total = 0.0;
+//
+//        for (Map.Entry<Long, Integer> entry : carrito.getItems().entrySet()) {
+//            Producto producto = productoService.obtenerProductoActivoPorId(entry.getKey()).orElse(null);
+//            if (producto != null) {
+//                productosEnCarrito.add(producto);
+//                total += producto.getPrecio() * entry.getValue();
+//            }
+//        }
+//
+//        model.addAttribute("productos", productosEnCarrito);
+//        model.addAttribute("total", total);
+//        model.addAttribute("items", carrito.getItems());
+//        return "carrito/carrito";
+//    }
 
-        for (Map.Entry<Long, Integer> entry : carrito.getItems().entrySet()) {
-            Producto producto = productoService.obtenerProductoActivoPorId(entry.getKey()).orElse(null);
-            if (producto != null) {
-                productosEnCarrito.add(producto);
-                total += producto.getPrecio() * entry.getValue();
-            }
-        }
-
-        model.addAttribute("productos", productosEnCarrito);
-        model.addAttribute("total", total);
-        model.addAttribute("items", carrito.getItems());
-        return "carrito/carrito";
-    }
-
-    @PostMapping("/agregar/{id}")
-    public String agregarProducto(@PathVariable("id") Long id, @RequestParam(defaultValue = "1") int cantidad, RedirectAttributes redirectAttributes) {
-        Optional<Producto> productoOptional = productoService.obtenerProductoActivoPorId(id);
-        if (productoOptional.isPresent()) {
-            carrito.agregarProducto(id, cantidad);
-            redirectAttributes.addFlashAttribute("agregadoExitosamente", true);
-        }
-        return "redirect:/catalogo/producto/" + id;
-    }
-
-    @PostMapping("/eliminar/{id}")
-    public String eliminarProducto(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
-        carrito.eliminarProducto(id);
-        redirectAttributes.addFlashAttribute("eliminadoExitosamente", true);
-        return "redirect:/carrito";
-    }
-
-    @PostMapping("/actualizar/{id}")
-    public String actualizarCantidad(@PathVariable("id") Long id, @RequestParam("cantidad") int cantidad, RedirectAttributes redirectAttributes) {
-        carrito.actualizarCantidad(id, cantidad);
-        redirectAttributes.addFlashAttribute("actualizadoExitosamente", true);
-        return "redirect:/carrito";
-    }
+//    @PostMapping("/agregar/{id}")
+//    public String agregarProducto(@PathVariable("id") Long id, @RequestParam(defaultValue = "1") int cantidad, RedirectAttributes redirectAttributes) {
+//        Optional<Producto> productoOptional = productoService.obtenerProductoActivoPorId(id);
+//        if (productoOptional.isPresent()) {
+//            carrito.agregarProducto(id, cantidad);
+//            redirectAttributes.addFlashAttribute("agregadoExitosamente", true);
+//        }
+//        return "redirect:/catalogo/producto/" + id;
+//    }
+//
+//    @PostMapping("/eliminar/{id}")
+//    public String eliminarProducto(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+//        carrito.eliminarProducto(id);
+//        redirectAttributes.addFlashAttribute("eliminadoExitosamente", true);
+//        return "redirect:/carrito";
+//    }
+//
+//    @PostMapping("/actualizar/{id}")
+//    public String actualizarCantidad(@PathVariable("id") Long id, @RequestParam("cantidad") int cantidad, RedirectAttributes redirectAttributes) {
+//        carrito.actualizarCantidad(id, cantidad);
+//        redirectAttributes.addFlashAttribute("actualizadoExitosamente", true);
+//        return "redirect:/carrito";
+//    }
 }

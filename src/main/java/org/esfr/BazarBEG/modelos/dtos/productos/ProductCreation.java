@@ -1,5 +1,7 @@
 package org.esfr.BazarBEG.modelos.dtos.productos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,7 +10,7 @@ import jakarta.validation.constraints.Positive;
 // DTO para la creación/edición, solo lleva el ID de la categoría (Integer)
 public class ProductCreation {
 
-    // El ID se usa para la edición
+    @JsonIgnore
     private Integer id;
 
     @NotBlank(message = "El nombre es obligatorio")
@@ -25,10 +27,11 @@ public class ProductCreation {
 
     // Solo se necesita el ID de la categoría para guardar la relación
     @NotNull(message = "Debe seleccionar una categoría")
+    @JsonProperty("categoria_id")
     private Integer categoriaId;
 
-    private String imagen;
-    private int status;
+    private byte[] imagen;
+    private Integer status;
 
     // Getters y Setters
 
@@ -80,19 +83,19 @@ public class ProductCreation {
         this.categoriaId = categoriaId;
     }
 
-    public String getImagen() {
+    public byte[] getImagen() {
         return imagen;
     }
 
-    public void setImagen(String imagen) {
+    public void setImagen(byte[] imagen) {
         this.imagen = imagen;
     }
 
-    public int getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 }

@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -63,6 +65,18 @@ public class CategoriaController {
         return "categoria/index";
     }
 
+    @GetMapping( value = "/imagen/{id}", produces = MediaType.IMAGE_PNG_VALUE)
+    @ResponseBody
+    public ResponseEntity<byte[]> getImagenAdmin(@PathVariable("id") Integer id, Model model) {
+        byte[] img = categoriaService.obtenerImagen(id);
+
+        if (img != null && img.length > 0) {
+            return ResponseEntity.ok().body(img);
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
     // -------------------- CREAR y GUARDAR --------------------
     @GetMapping("/create")
     public String create(Model model) {
@@ -82,18 +96,21 @@ public class CategoriaController {
             return "categoria/create";
         }
 
-        // Aquí se asume que la API maneja la URL/nombre de la imagen
-        if (fileImagen != null && !fileImagen.isEmpty()) {
-            // Lógica para establecer el nombre de la imagen en el DTO si es necesario
-        }
+
 
         try {
-            if (categoria.getId() == null) {
+            if (categoria.getId() != null) {
+                if (fileImagen != null && !fileImagen.isEmpty()) {
+                    categoriaService.editar(categoria);
+                }
+                else {
+                    categoria.setImagen(categoriaService.obtenerImagen(categoria.getId()));
+                    categoriaService.editar(categoria);
+                }
+
+            } else {
                 // Es una creación
                 categoriaService.crear(categoria);
-            } else {
-                // Es una edición
-                categoriaService.editar(categoria);
             }
             attributes.addFlashAttribute("msg", "Categoría guardada correctamente");
         } catch (Exception e) {

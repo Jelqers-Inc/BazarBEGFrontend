@@ -44,6 +44,7 @@
               method="post" class="space-y-6" enctype="multipart/form-data">
             
             <input type="hidden" th:field="*{id}"/>
+            <input type="hidden" th:field="*{status}"/>
 
             <div>
                 <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
@@ -84,13 +85,13 @@
 
             <div>
                 <label for="categoria" class="block text-sm font-medium text-gray-700">Categoría</label>
-                <select th:field="*{categoria.id}" id="categoria"
+                <select th:field="*{categoriaId}" id="categoria"
                         class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm
                                focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500
                                transition duration-200 text-base"
                         required>
                     <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}"
-                            th:selected="${cat.id} == ${producto.categoria.id}"></option>
+                            th:selected="${cat.id} == ${producto.categoriaId}"></option>
                 </select>
             </div>
 

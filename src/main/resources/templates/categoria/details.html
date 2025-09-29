@@ -44,7 +44,8 @@
             <div class="mb-4">
                 <h3 class="text-lg font-semibold text-gray-800">Imagen:</h3>
                 <div th:if="${categoria.imagen}">
-                    <img th:src="${categoria.imagen}" alt="Imagen de Categoría" class="w-32 h-32 object-cover rounded-lg shadow-md mt-2"/>
+                    <img th:if="${categoria.imagen != null}"
+                         th:src="@{/categorias/imagen/{id}(id=${categoria.id})}" alt="Imagen de Categoría" class="w-32 h-32 object-cover rounded-lg shadow-md mt-2"/>
                 </div>
                 <div th:unless="${categoria.imagen}">
                     <p class="text-gray-500">No hay imagen cargada.</p>
