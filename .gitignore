@@ -33,5 +33,4 @@ build/
 .vscode/
 
 # ...existing code...
-application.properties
 # ...existing
