@@ -3,21 +3,14 @@ package org.esfr.BazarBEG.repositorios;
 import jakarta.servlet.http.HttpSession;
 import org.esfr.BazarBEG.modelos.dtos.carrito.CarritoInsert;
 import org.esfr.BazarBEG.modelos.dtos.carrito.CarritoItemDTO;
-import org.esfr.BazarBEG.modelos.dtos.categorias.Categoriadto;
 import org.esfr.BazarBEG.servicios.implementaciones.JWTService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -53,6 +46,7 @@ public class CarritoReopsitory {
                 .retrieve()
                 .bodyToFlux(CarritoItemDTO.class)
                 .collectList()
+                .onErrorResume(WebClientResponseException.NotFound.class, e -> Mono.empty())
                 .block();
     }
 

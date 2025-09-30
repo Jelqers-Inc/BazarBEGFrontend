@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -37,6 +38,10 @@ public class CarritoController {
                     .mapToDouble(item -> item.getPrecio().doubleValue() * item.getCantidad())
                     .sum();
         }
+        else {
+            carritoItems = new ArrayList<>();
+        }
+
 
         model.addAttribute("carritoItems", carritoItems);
         model.addAttribute("total", total);

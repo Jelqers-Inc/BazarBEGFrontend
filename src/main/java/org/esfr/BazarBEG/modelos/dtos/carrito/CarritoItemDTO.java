@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 public class CarritoItemDTO {
     private Long id;
     private Long id_usuario;
-    private Long id_producto;
+    private Integer id_producto;
     private int cantidad;
     private String nombre;
     private String descripcion;
@@ -33,11 +33,11 @@ public class CarritoItemDTO {
         this.id_usuario = id_usuario;
     }
 
-    public Long getId_producto() {
+    public Integer getId_producto() {
         return id_producto;
     }
 
-    public void setId_producto(Long id_producto) {
+    public void setId_producto(Integer id_producto) {
         this.id_producto = id_producto;
     }
 
