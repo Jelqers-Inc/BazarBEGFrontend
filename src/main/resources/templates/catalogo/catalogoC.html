@@ -33,7 +33,7 @@
                 <a th:href="@{'/catalogo/producto/' + ${producto.id}}" class="block">
                     <h3 th:text="${producto.nombre}" class="text-lg font-semibold text-gray-900 truncate"></h3>
                 </a>
-                <p class="mt-1 text-sm text-gray-500" th:text="${producto.categoria != null ? producto.categoria.nombre : ''}"></p>
+                <p class="mt-1 text-sm text-gray-500" th:each="categoria : ${categorias}" th:if="${categoria.id == producto.categoriaId}" th:text="${categoria.nombre}"></p>
                 <div class="flex items-center justify-between mt-2">
                     <span th:text="${#numbers.formatCurrency(producto.precio)}" class="text-xl font-bold text-gray-900"></span>
                     <a th:href="@{'/catalogo/producto/' + ${producto.id}}"

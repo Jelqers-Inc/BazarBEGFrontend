@@ -14,7 +14,7 @@
         ← Volver al catálogo
       </a>
       <h1 th:text="${producto.nombre}" class="text-4xl font-bold text-gray-900 mt-2"></h1>
-      <p class="mt-2 text-xl font-semibold text-gray-700">Categoría: <span th:text="${producto.categoria != null ? producto.categoria.nombre : ''}"></span></p>
+      <p class="mt-2 text-xl font-semibold text-gray-700">Categoría: <span th:each="categoria : ${categorias}" th:if="${categoria.id == producto.categoriaId}" th:text="${categoria.nombre}"></span></p>
       <p th:text="${producto.descripcion}" class="mt-4 text-gray-600 leading-relaxed"></p>
 
       <div class="mt-6">
