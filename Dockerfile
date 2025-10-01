@@ -11,7 +11,7 @@ COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 
 # Descargamos todas las dependencias del proyecto
-RUN chmod +x ./mvnw dependency:go-offline
+RUN chmod +x ./mvnw
 RUN ./mvnw dependency:go-offline
 
 # Copiamos el resto del código fuente del proyecto
