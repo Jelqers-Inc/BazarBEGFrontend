@@ -32,6 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,7 +47,6 @@ public class UsuarioController {
     @Autowired
     private IRolService rolService;
 
-    private final Path directorioSubidas = Paths.get("src/main/resources/static/uploads/perfiles");
 
     // -------------------- PÁGINA DE PERFIL DEL ADMINISTRADOR --------------------
     @GetMapping("/perfil")
@@ -243,13 +243,27 @@ public class UsuarioController {
 
         User usuarioExistente = usuarioService.obtenerPorId(id);
         usuario.setId(usuarioExistente.getId());
-        usuario.setFoto(usuarioExistente.getFoto().getData());
+        if(usuarioExistente.getFoto().getData() != null){
+            usuario.setFoto(usuarioExistente.getFoto().getData());
+        }
+        else {
+            byte[] bytes = getBytes();
+            usuario.setFoto(bytes);
+        }
+
 
         usuarioService.editar(usuario);
 
 
         redirect.addFlashAttribute("msg", "Usuario actualizado exitosamente");
         return "redirect:/usuarios";
+    }
+
+    private static byte[] getBytes() {
+        String base64String = "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABEElEQVR4AeRTSw6CMBBtId4CzqE7XLJw40XdGbeyMuEYwClMpL5XWiKhhZookkj6mP+8GT6R+PL1ZwRVVZ2Id55q8CNC47uU8igB6qEkswRN0+zqulZovLFNqdPHmPX55CQBmlyUUjdTXKZpKgnYJSAYYw51H7wEKHygKAcEJj6g8ZY6QZ0+6kBucqGOz4gAyRmgkKpjSZLEwBn24NAHxMYZsQbIjN0L3aS3OuXaCVFgUgwqW2OPBIItcxAoAB5bS13DRaADKNxrJeA2leslCOgblLIOArw85ULICuvYwE6Kl2l/NOualevaYHZcR8LvNnj9ahyDaVdIzvIb2C/FJfXYuLli1ofw4Cy/wYD+A8YTAAD//zWw63AAAAAGSURBVAMALYN+Mecr7RYAAAAASUVORK5CYII=";
+        Base64.Decoder decoder = Base64.getDecoder();
+        byte[] bytes = decoder.decode(base64String);
+        return bytes;
     }
 
 
