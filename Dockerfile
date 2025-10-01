@@ -11,13 +11,13 @@ COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 
 # Descargamos todas las dependencias del proyecto
-RUN ./mvnw dependency:go-offline
+RUN chmod +x ./mvnw dependency:go-offline
 
 # Copiamos el resto del código fuente del proyecto
 COPY src ./src
 
 # Compilamos el proyecto y generamos el .jar, omitiendo los tests
-RUN ./mvnw clean install -DskipTests
+RUN chmod +x ./mvnw clean install -DskipTests
 
 
 # =================================================================
